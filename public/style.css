@@ -317,13 +317,14 @@ body {
 
 .memory-preview {
     width: 100%;
-    height: 200px;
+    height: 250px;
     background: #f8f9fa;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     position: relative;
+    border-radius: 15px 15px 0 0;
 }
 
 .memory-preview img {
@@ -471,6 +472,8 @@ body {
     margin: 30px 0;
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .qr-description {
@@ -520,7 +523,9 @@ body {
     transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
+    margin: 0 auto;
 }
 
 .btn-download:hover {
@@ -829,7 +834,7 @@ body {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     gap: 15px;
     margin-top: 30px;
