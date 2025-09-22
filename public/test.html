@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络连接测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #fff;
+        }
+        .success { border-left-color: #4CAF50; }
+        .error { border-left-color: #f44336; }
+        .loading { border-left-color: #ff9800; }
+        button {
+            background: #8B5CF6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #7C3AED; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>🔧 网络连接测试</h1>
+    <p>此页面用于诊断服务器连接问题</p>
+    
+    <button onclick="testAll()">🧪 开始测试</button>
+    <button onclick="location.href='index.html'">🏠 返回主页</button>
+    
+    <div id="results"></div>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        function addResult(title, status, message) {
+            const div = document.createElement('div');
+            div.className = `test-item ${status}`;
+            div.innerHTML = `<h3>${title}</h3><p>${message}</p>`;
+            resultsDiv.appendChild(div);
+        }
+        
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+        
+        async function testBasicConnection() {
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    const data = await response.text();
+                    addResult('✅ 基础连接', 'success', '服务器API响应正常');
+                    return true;
+                } else {
+                    addResult('❌ 基础连接', 'error', `HTTP ${response.status}: ${response.statusText}`);
+                    return false;
+                }
+            } catch (error) {
+                addResult('❌ 基础连接', 'error', `连接失败: ${error.message}`);
+                return false;
+            }
+        }
+        
+        async function testMemoryList() {
+            try {
+                const response = await fetch('/api/memories');
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ 数据获取', 'success', `成功获取 ${data.data ? data.data.length : 0} 条回忆记录`);
+                    return data.data || [];
+                } else {
+                    addResult('❌ 数据获取', 'error', `HTTP ${response.status}: ${response.statusText}`);
+                    return [];
+                }
+            } catch (error) {
+                addResult('❌ 数据获取', 'error', `请求失败: ${error.message}`);
+                return [];
+            }
+        }
+        
+        async function testFileAccess(memories) {
+            if (memories.length === 0) {
+                addResult('⚠️ 文件访问', 'loading', '没有文件可测试');
+                return;
+            }
+            
+            const memory = memories[0];
+            try {
+                const response = await fetch(`/api/file/${memory.id}`);
+                if (response.ok) {
+                    addResult('✅ 文件访问', 'success', `文件 "${memory.displayName || memory.name}" 可正常访问`);
+                } else {
+                    addResult('❌ 文件访问', 'error', `HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                addResult('❌ 文件访问', 'error', `文件访问失败: ${error.message}`);
+            }
+        }
+        
+        function testNetworkInfo() {
+            const info = {
+                hostname: window.location.hostname,
+                port: window.location.port || '80',
+                protocol: window.location.protocol,
+                userAgent: navigator.userAgent,
+                platform: navigator.platform
+            };
+            
+            addResult('ℹ️ 网络信息', 'success', 
+                `主机: ${info.hostname}<br>` +
+                `端口: ${info.port}<br>` +
+                `协议: ${info.protocol}<br>` +
+                `设备: ${info.platform}<br>` +
+                `浏览器: ${info.userAgent.split(' ')[0]}`
+            );
+        }
+        
+        async function testAll() {
+            clearResults();
+            addResult('🚀 开始测试', 'loading', '正在检查各项连接...');
+            
+            // 网络信息
+            testNetworkInfo();
+            
+            // 基础连接测试
+            const basicOk = await testBasicConnection();
+            
+            if (basicOk) {
+                // 数据获取测试
+                const memories = await testMemoryList();
+                
+                // 文件访问测试
+                await testFileAccess(memories);
+                
+                addResult('🎉 测试完成', 'success', '所有测试已完成！');
+            } else {
+                addResult('❌ 测试终止', 'error', '基础连接失败，跳过后续测试');
+            }
+        }
+        
+        // 页面加载时显示基本信息
+        window.onload = () => {
+            testNetworkInfo();
+        };
+    </script>
+</body>
+</html>

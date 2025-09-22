@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 二维码功能测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .test-section {
+            background: rgba(255,255,255,0.1);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 15px;
+            border-left: 4px solid #8B5CF6;
+        }
+        .qr-demo-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .qr-demo {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 280px;
+            flex: 1;
+        }
+        .qr-canvas {
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        button {
+            background: #8B5CF6;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 8px 5px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        button:hover { 
+            background: #7C3AED; 
+            transform: translateY(-2px);
+        }
+        .success { 
+            color: #4CAF50; 
+            background: rgba(76, 175, 80, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .error { 
+            color: #f44336;
+            background: rgba(244, 67, 54, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .info { 
+            color: #2196F3;
+            background: rgba(33, 150, 243, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        #console-output {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+        .url-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid rgba(139, 92, 246, 0.5);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            margin: 10px 0;
+            font-size: 1rem;
+        }
+        .url-input::placeholder {
+            color: rgba(255,255,255,0.7);
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #8B5CF6;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 二维码功能测试工具</h1>
+    <p>测试各种二维码生成场景，验证可靠性</p>
+    
+    <div class="test-section">
+        <h2>📊 测试统计</h2>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="total-tests">0</div>
+                <div class="stat-label">总测试次数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="success-count">0</div>
+                <div class="stat-label">成功次数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="fail-count">0</div>
+                <div class="stat-label">失败次数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="success-rate">0%</div>
+                <div class="stat-label">成功率</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 快速测试</h2>
+        <button onclick="runQuickTest()">⚡ 快速测试</button>
+        <button onclick="runStressTest()">🏃 压力测试 (5次)</button>
+        <button onclick="runAllTests()">🔄 全面测试</button>
+        <button onclick="clearResults()">🗑️ 清空结果</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎯 自定义测试</h2>
+        <input type="text" 
+               class="url-input" 
+               id="custom-url" 
+               placeholder="输入要测试的URL (如: https://example.com/view.html?id=test)"
+               value="">
+        <br>
+        <button onclick="testCustomUrl()">📲 生成自定义二维码</button>
+        <button onclick="testLongUrl()">📏 测试长URL</button>
+        <button onclick="testSpecialChars()">🔣 测试特殊字符</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>📱 生成结果</h2>
+        <div class="qr-demo-container" id="qr-container">
+            <!-- 二维码将在这里显示 -->
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📝 控制台日志</h2>
+        <div id="console-output"></div>
+        <button onclick="clearConsole()">清空日志</button>
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <button onclick="location.href='index.html'">🏠 返回主应用</button>
+        <button onclick="location.href='fix-test.html'">🔧 综合测试</button>
+    </div>
+
+    <script src="qrcode-simple.js?v=1.3"></script>
+    <script>
+        let testStats = {
+            total: 0,
+            success: 0,
+            fail: 0
+        };
+
+        // 劫持console.log以显示日志
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        function addToConsole(message, type = 'log') {
+            const output = document.getElementById('console-output');
+            const time = new Date().toLocaleTimeString();
+            const colors = {
+                log: '#ffffff',
+                error: '#ff6b6b',
+                warn: '#ffd93d',
+                success: '#51cf66'
+            };
+            
+            output.innerHTML += `<div style="color: ${colors[type] || colors.log}">
+                [${time}] ${message}
+            </div>`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole(args.join(' '), 'error');
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole(args.join(' '), 'warn');
+        };
+
+        function updateStats() {
+            document.getElementById('total-tests').textContent = testStats.total;
+            document.getElementById('success-count').textContent = testStats.success;
+            document.getElementById('fail-count').textContent = testStats.fail;
+            
+            const rate = testStats.total > 0 ? Math.round((testStats.success / testStats.total) * 100) : 0;
+            document.getElementById('success-rate').textContent = rate + '%';
+        }
+
+        async function generateQR(url, title = '测试二维码') {
+            const container = document.getElementById('qr-container');
+            const qrId = 'qr-' + Date.now();
+            
+            // 创建容器
+            const qrDiv = document.createElement('div');
+            qrDiv.className = 'qr-demo';
+            qrDiv.innerHTML = `
+                <h3>${title}</h3>
+                <canvas id="${qrId}" class="qr-canvas" width="256" height="256"></canvas>
+                <p style="font-size: 0.9rem; word-break: break-all;">${url}</p>
+                <div id="status-${qrId}">⏳ 生成中...</div>
+            `;
+            container.appendChild(qrDiv);
+            
+            const canvas = document.getElementById(qrId);
+            const statusDiv = document.getElementById(`status-${qrId}`);
+            
+            testStats.total++;
+            updateStats();
+            
+            try {
+                console.log(`🎯 开始生成二维码: ${title}`);
+                const startTime = Date.now();
+                
+                await QRCode.toCanvas(canvas, url, {
+                    width: 256,
+                    margin: 2,
+                    color: {
+                        dark: '#8B5CF6',
+                        light: '#FFFFFF'
+                    }
+                });
+                
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                testStats.success++;
+                statusDiv.innerHTML = `<div class="success">✅ 生成成功 (${duration}ms)</div>`;
+                console.log(`✅ ${title} 生成成功，耗时: ${duration}ms`);
+                
+            } catch (error) {
+                testStats.fail++;
+                statusDiv.innerHTML = `<div class="error">❌ 生成失败: ${error.message}</div>`;
+                console.error(`❌ ${title} 生成失败:`, error);
+            }
+            
+            updateStats();
+        }
+
+        async function runQuickTest() {
+            clearResults();
+            const testUrl = `${window.location.origin}/view.html?id=test-${Date.now()}`;
+            await generateQR(testUrl, '快速测试');
+        }
+
+        async function runStressTest() {
+            clearResults();
+            console.log('🏃 开始压力测试 (5次)');
+            
+            for (let i = 1; i <= 5; i++) {
+                const testUrl = `${window.location.origin}/view.html?id=stress-test-${i}-${Date.now()}`;
+                await generateQR(testUrl, `压力测试 ${i}/5`);
+                
+                // 短暂延迟避免并发问题
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            console.log('🏁 压力测试完成');
+        }
+
+        async function runAllTests() {
+            clearResults();
+            console.log('🔄 开始全面测试');
+            
+            const tests = [
+                { url: `${window.location.origin}/view.html?id=test-basic`, title: '基础测试' },
+                { url: `${window.location.origin}/view.html?id=test-long-id-${Date.now()}-with-more-content`, title: '长ID测试' },
+                { url: `${window.location.origin}/view.html?id=测试中文-${Date.now()}`, title: '中文测试' },
+                { url: `${window.location.origin}/view.html?id=test&param=value&time=${Date.now()}`, title: '参数测试' },
+                { url: `https://example.com/test`, title: '外部URL测试' }
+            ];
+            
+            for (const test of tests) {
+                await generateQR(test.url, test.title);
+                await new Promise(resolve => setTimeout(resolve, 800));
+            }
+            
+            console.log('✨ 全面测试完成');
+        }
+
+        async function testCustomUrl() {
+            const url = document.getElementById('custom-url').value.trim();
+            if (!url) {
+                alert('请输入要测试的URL');
+                return;
+            }
+            
+            await generateQR(url, '自定义URL');
+        }
+
+        async function testLongUrl() {
+            const longParams = Array.from({length: 10}, (_, i) => `param${i}=value${i}`).join('&');
+            const longUrl = `${window.location.origin}/view.html?id=long-test-${Date.now()}&${longParams}&description=这是一个很长很长的测试URL用来验证二维码生成功能的稳定性`;
+            
+            await generateQR(longUrl, '长URL测试');
+        }
+
+        async function testSpecialChars() {
+            const specialUrl = `${window.location.origin}/view.html?id=special-测试-${Date.now()}&name=特殊字符!@#$%^&*()`;
+            await generateQR(specialUrl, '特殊字符测试');
+        }
+
+        function clearResults() {
+            document.getElementById('qr-container').innerHTML = '';
+            testStats = { total: 0, success: 0, fail: 0 };
+            updateStats();
+        }
+
+        function clearConsole() {
+            document.getElementById('console-output').innerHTML = '';
+        }
+
+        // 页面加载时初始化
+        window.onload = () => {
+            document.getElementById('custom-url').value = `${window.location.origin}/view.html?id=custom-test-${Date.now()}`;
+            updateStats();
+            console.log('🚀 二维码测试工具已启动');
+        };
+    </script>
+</body>
+</html>

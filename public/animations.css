@@ -1,0 +1,407 @@
+/* 额外的浪漫动画效果和交互细节 */
+
+/* 爱心粒子效果 */
+.love-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.particle {
+    position: absolute;
+    font-size: 12px;
+    animation: particleFloat 3s linear infinite;
+    opacity: 0;
+}
+
+@keyframes particleFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(100vh) scale(0);
+    }
+    10% {
+        opacity: 1;
+        transform: translateY(90vh) scale(1);
+    }
+    90% {
+        opacity: 1;
+        transform: translateY(10vh) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(0vh) scale(0);
+    }
+}
+
+/* 点击时的爱心爆炸效果 */
+.heart-burst {
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.burst-heart {
+    position: absolute;
+    font-size: 16px;
+    color: #F472B6;
+    animation: burstAnimation 1s ease-out forwards;
+}
+
+@keyframes burstAnimation {
+    0% {
+        opacity: 1;
+        transform: scale(0) translate(0, 0);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.2) translate(var(--tx), var(--ty));
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5) translate(calc(var(--tx) * 2), calc(var(--ty) * 2));
+    }
+}
+
+/* 鼠标悬停时的魔法光圈 */
+.magic-circle {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    border: 2px solid rgba(139, 92, 246, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 998;
+    animation: magicCircle 0.6s ease-out forwards;
+}
+
+@keyframes magicCircle {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+        border-width: 3px;
+    }
+    100% {
+        width: 150px;
+        height: 150px;
+        opacity: 0;
+        border-width: 1px;
+    }
+}
+
+/* 浪漫的文字打字机效果 */
+.typewriter {
+    overflow: hidden;
+    border-right: 3px solid rgba(139, 92, 246, 0.7);
+    white-space: nowrap;
+    margin: 0 auto;
+    animation: typewriterBlink 1s infinite;
+}
+
+@keyframes typewriterBlink {
+    0%, 50% {
+        border-color: rgba(139, 92, 246, 0.7);
+    }
+    51%, 100% {
+        border-color: transparent;
+    }
+}
+
+/* 卡片hover时的3D倾斜效果 */
+.memory-card.hover-3d {
+    transform-style: preserve-3d;
+    transition: all 0.3s ease;
+}
+
+.memory-card.hover-3d:hover {
+    transform: rotateX(5deg) rotateY(10deg) translateZ(50px);
+}
+
+/* 音频播放时的波纹效果 */
+.audio-ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.audio-ripple::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: rippleEffect 2s ease-out infinite;
+}
+
+@keyframes rippleEffect {
+    0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+    }
+}
+
+/* 浪漫的渐变文字效果 */
+.gradient-text {
+    background: linear-gradient(45deg, #8B5CF6, #F472B6, #A855F7, #EC4899);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* 上传成功时的庆祝动画 */
+.celebration {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: linear-gradient(45deg, #8B5CF6, #F472B6);
+    animation: confettiFall 3s linear infinite;
+}
+
+@keyframes confettiFall {
+    0% {
+        opacity: 1;
+        transform: translateY(-100vh) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100vh) rotate(720deg);
+    }
+}
+
+/* 彩虹边框效果 */
+.rainbow-border {
+    position: relative;
+    background: linear-gradient(45deg, #8B5CF6, #F472B6, #A855F7, #EC4899);
+    background-size: 400% 400%;
+    animation: rainbowBorder 3s ease infinite;
+    padding: 3px;
+    border-radius: 25px;
+}
+
+.rainbow-border::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 22px;
+    z-index: -1;
+}
+
+@keyframes rainbowBorder {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* 悬浮按钮的脉冲效果 */
+.pulse-button {
+    position: relative;
+    overflow: hidden;
+}
+
+.pulse-button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.5s ease;
+}
+
+.pulse-button:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* 星星闪烁的增强效果 */
+.enhanced-stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    animation: starTwinkle 2s ease-in-out infinite alternate;
+}
+
+@keyframes starTwinkle {
+    0% {
+        opacity: 0.3;
+        transform: scale(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* 梦幻的光晕效果 */
+.dreamy-glow {
+    position: relative;
+}
+
+.dreamy-glow::after {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+    border-radius: inherit;
+    z-index: -1;
+    animation: glowPulse 4s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.2);
+    }
+}
+
+/* 浪漫的烟花效果 */
+.firework {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    animation: fireworkExplode 1s ease-out forwards;
+}
+
+@keyframes fireworkExplode {
+    0% {
+        opacity: 1;
+        transform: scale(0) translate(0, 0);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1) translate(var(--dx), var(--dy));
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.5) translate(calc(var(--dx) * 2), calc(var(--dy) * 2));
+    }
+}
+
+/* 优雅的加载动画 */
+.elegant-loader {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(139, 92, 246, 0.3);
+    border-radius: 50%;
+    border-top-color: #8B5CF6;
+    animation: elegantSpin 1s ease-in-out infinite;
+}
+
+@keyframes elegantSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 响应式动画调整 */
+@media (max-width: 768px) {
+    .magic-circle {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .confetti {
+        width: 6px;
+        height: 6px;
+    }
+    
+    .dreamy-glow::after {
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+    }
+}
+
+/* 减少动画的选项 */
+@media (prefers-reduced-motion: reduce) {
+    .particle,
+    .burst-heart,
+    .magic-circle,
+    .confetti,
+    .firework {
+        animation: none !important;
+    }
+    
+    .dreamy-glow::after {
+        animation: none !important;
+        opacity: 0.3 !important;
+    }
+}
+
+/* 深色模式下的动画调整 */
+@media (prefers-color-scheme: dark) {
+    .star {
+        box-shadow: 0 0 15px rgba(255, 255, 255, 1);
+    }
+    
+    .magic-circle {
+        border-color: rgba(168, 85, 247, 0.8);
+    }
+}

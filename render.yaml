@@ -1,0 +1,43 @@
+services:
+  # Web服务配置
+  - type: web
+    name: birthday-memory-app
+    env: node
+    region: singapore  # 使用离中国较近的区域
+    plan: free  # 免费计划
+    buildCommand: npm run install-all  # 安装所有依赖
+    startCommand: npm start  # 启动命令
+    
+    # 环境变量
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000  # Render默认端口
+      - key: MONGODB_URI
+        sync: false  # 需要在Render控制台手动设置
+    
+    # 健康检查
+    healthCheckPath: /api/health
+    
+    # 自动部署设置
+    autoDeploy: true
+    branch: main  # 从main分支自动部署
+    
+    # 磁盘设置（用于文件上传）
+    disk:
+      name: uploads
+      mountPath: /opt/render/project/src/uploads
+      sizeGB: 1  # 1GB存储空间
+
+# 部署前预处理
+preDeployCommand: |
+  echo "开始部署生日回忆册应用..."
+  echo "Node.js版本: $(node --version)"
+  echo "NPM版本: $(npm --version)"
+
+# 部署后处理
+postDeployCommand: |
+  echo "部署完成！"
+  echo "应用已启动在端口 $PORT"
+  echo "MongoDB连接状态检查..."

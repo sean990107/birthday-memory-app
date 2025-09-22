@@ -1,0 +1,41 @@
+{
+  "name": "birthday-memory-app",
+  "version": "1.0.0",
+  "description": "浪漫生日回忆册 - 完整前后端应用",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "cd server && node server.js",
+    "dev": "cd server && nodemon server.js",
+    "install-server": "cd server && npm install",
+    "install-all": "npm run install-server",
+    "build": "npm run install-all",
+    "test": "echo 'Tests not implemented yet'",
+    "check-production": "node scripts/check-production.js",
+    "test-local": "node scripts/check-production.js http://localhost:3000",
+    "deploy": "bash scripts/deploy.sh production",
+    "deploy-dev": "bash scripts/deploy.sh development",
+    "postinstall": "npm run install-server",
+    "render-build": "npm run install-all",
+    "render-start": "npm start",
+    "pre-deploy": "node scripts/pre-deploy-check.js",
+    "deploy-check": "npm run pre-deploy"
+  },
+  "keywords": ["birthday", "memory", "romantic", "nodejs", "mongodb", "express"],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sean990107/birthday-memory-app.git"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "directories": {
+    "public": "public",
+    "server": "server", 
+    "config": "config",
+    "docs": "docs",
+    "scripts": "scripts"
+  }
+}
