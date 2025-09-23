@@ -1032,9 +1032,60 @@ function resetRecording() {
     document.getElementById('previewAudio').style.display = 'none';
 }
 
+// 🎤 强制初始化录音功能（HTTP环境特殊处理）
+function forceInitializeRecording() {
+    console.log('🔧 强制初始化录音功能...');
+    
+    // 强制创建navigator.mediaDevices
+    if (!navigator.mediaDevices) {
+        console.log('⚠️ 创建mediaDevices对象...');
+        navigator.mediaDevices = {};
+    }
+    
+    // 强制创建getUserMedia方法
+    if (!navigator.mediaDevices.getUserMedia) {
+        console.log('⚠️ 创建getUserMedia方法...');
+        
+        // 尝试各种可能的getUserMedia实现
+        const getUserMedia = navigator.getUserMedia || 
+                           navigator.webkitGetUserMedia || 
+                           navigator.mozGetUserMedia ||
+                           navigator.msGetUserMedia;
+        
+        if (getUserMedia) {
+            navigator.mediaDevices.getUserMedia = function(constraints) {
+                return new Promise(function(resolve, reject) {
+                    try {
+                        getUserMedia.call(navigator, constraints, resolve, reject);
+                    } catch(e) {
+                        reject(e);
+                    }
+                });
+            };
+            console.log('✅ getUserMedia polyfill创建成功');
+        } else {
+            // 最后的尝试：创建一个模拟的getUserMedia
+            navigator.mediaDevices.getUserMedia = function(constraints) {
+                return new Promise(function(resolve, reject) {
+                    reject(new Error('HTTP环境下浏览器限制录音功能，建议配置HTTPS或在浏览器中手动允许此站点录音权限'));
+                });
+            };
+            console.log('⚠️ 创建模拟getUserMedia（将提示用户手动允许权限）');
+        }
+    }
+    
+    // 检查MediaRecorder支持
+    if (!window.MediaRecorder) {
+        console.warn('⚠️ MediaRecorder不支持，录音功能可能受限');
+    }
+}
+
 // 🎤 检查录音功能兼容性
 function checkRecordingCompatibility() {
     console.log('🔍 检查录音功能兼容性...');
+    
+    // 先强制初始化
+    forceInitializeRecording();
     
     const isHTTP = location.protocol === 'http:';
     const isSecureContext = location.protocol === 'https:' || 
@@ -1101,51 +1152,24 @@ async function startRecording() {
     console.log('🎤 开始录音请求...');
     
     try {
-        // 🔧 强化浏览器兼容性检查和HTTP环境支持
-        console.log('🔍 检测录音环境...');
+        // 🔧 简化的录音环境检查（因为已经在页面加载时强制初始化）
+        console.log('🔍 开始录音流程...');
         console.log('navigator.mediaDevices:', !!navigator.mediaDevices);
-        console.log('location.protocol:', location.protocol);
-        console.log('location.hostname:', location.hostname);
+        console.log('getUserMedia:', !!navigator.mediaDevices?.getUserMedia);
+        console.log('MediaRecorder:', !!window.MediaRecorder);
         
-        // 尝试初始化mediaDevices（HTTP环境强制支持）
-        if (!navigator.mediaDevices) {
-            console.warn('⚠️ mediaDevices不可用，尝试polyfill...');
-            
-            // HTTP环境下强制创建mediaDevices polyfill
-            if (!navigator.mediaDevices && navigator.getUserMedia) {
-                navigator.mediaDevices = {};
-                navigator.mediaDevices.getUserMedia = function(constraints) {
-                    return new Promise(function(resolve, reject) {
-                        navigator.getUserMedia(constraints, resolve, reject);
-                    });
-                };
-            }
-            
-            // 如果还是不行，再次检查
-            if (!navigator.mediaDevices) {
-                // 最后尝试：直接检查老版本API
-                const getUserMedia = navigator.getUserMedia || 
-                                   navigator.webkitGetUserMedia || 
-                                   navigator.mozGetUserMedia ||
-                                   navigator.msGetUserMedia;
-                
-                if (getUserMedia) {
-                    console.log('✅ 找到老版本getUserMedia API');
-                    navigator.mediaDevices = {
-                        getUserMedia: function(constraints) {
-                            return new Promise(function(resolve, reject) {
-                                getUserMedia.call(navigator, constraints, resolve, reject);
-                            });
-                        }
-                    };
-                } else {
-                    throw new Error('您的浏览器不支持录音功能。HTTP环境下建议使用Chrome 47+、Firefox 36+或Safari 11+');
-                }
-            }
+        // 再次确保录音功能可用
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            // 最后一次强制初始化
+            forceInitializeRecording();
         }
         
-        if (!navigator.mediaDevices.getUserMedia) {
-            throw new Error('您的浏览器不支持麦克风访问，建议升级浏览器到最新版本');
+        if (!navigator.mediaDevices?.getUserMedia) {
+            throw new Error('录音功能初始化失败。请尝试：\n1. 使用HTTPS访问\n2. 在Chrome中访问 chrome://flags 搜索"insecure origins" 添加您的网站\n3. 使用最新版Chrome/Firefox/Safari');
+        }
+        
+        if (!window.MediaRecorder) {
+            throw new Error('浏览器不支持MediaRecorder API，无法进行录音');
         }
         
         // 检查是否在安全环境下（HTTPS 或 localhost）
@@ -1261,7 +1285,11 @@ async function startRecording() {
         let statusMessage = '';
         
         if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-            errorMessage = '录音权限被拒绝。解决方法：\n1. 点击浏览器地址栏的🔒图标\n2. 允许麦克风权限\n3. 刷新页面重试\n注意：某些浏览器在HTTP环境下限制录音功能';
+            if (location.protocol === 'http:') {
+                errorMessage = 'HTTP环境下录音权限被限制。解决方法：\n\n🔧 Chrome浏览器：\n1. 地址栏输入：chrome://flags/#unsafely-treat-insecure-origin-as-secure\n2. 启用该选项，在文本框中输入：http://118.24.3.190\n3. 重启浏览器\n\n🌐 或者配置HTTPS访问（推荐）';
+            } else {
+                errorMessage = '录音权限被拒绝。解决方法：\n1. 点击浏览器地址栏的🔒图标\n2. 允许麦克风权限\n3. 刷新页面重试';
+            }
             statusMessage = '<i class="fas fa-microphone-slash"></i> 麦克风权限被拒绝';
         } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
             errorMessage = '未找到可用的麦克风设备，请检查麦克风是否连接';
