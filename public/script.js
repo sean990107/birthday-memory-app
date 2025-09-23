@@ -127,7 +127,7 @@ async function handleFiles(files) {
         }
     }
 
-    // 验证文件类型
+    // 验证文件类型并分组
     const validFiles = Array.from(files).filter(file => {
         if (isValidFile(file)) {
             return true;
@@ -139,14 +139,35 @@ async function handleFiles(files) {
 
     if (validFiles.length === 0) return;
 
+    // 🎨 分离图片和音频文件
+    const imageFiles = validFiles.filter(file => file.type.startsWith('image/'));
+    const audioFiles = validFiles.filter(file => file.type.startsWith('audio/'));
+
     showLoading();
 
     try {
         if (isConnected) {
-            // 使用云端服务器API上传
-            const uploadedMemories = await memoryAPI.uploadFiles(validFiles);
-            memories.push(...uploadedMemories);
-            showEnhancedNotification(`🌐 成功上传 ${uploadedMemories.length} 个文件到云端数据库！`, 'success');
+            // 🖼️ 如果上传了多张图片，直接创建图片组合
+            if (imageFiles.length > 1) {
+                // 只上传图片文件用于组合（不创建单独记忆）
+                const galleryMemory = await createImageGallery(imageFiles);
+                if (galleryMemory) {
+                    memories.push(galleryMemory);
+                }
+                
+                // 如果还有音频文件，单独上传
+                if (audioFiles.length > 0) {
+                    const audioMemories = await memoryAPI.uploadFiles(audioFiles);
+                    memories.push(...audioMemories);
+                }
+            } else {
+                // 单文件上传（图片或音频）
+                const uploadedMemories = await memoryAPI.uploadFiles(validFiles);
+                memories.push(...uploadedMemories);
+            }
+            
+            const totalFiles = imageFiles.length + audioFiles.length;
+            showEnhancedNotification(`🌐 成功上传 ${totalFiles} 个文件到云端数据库！${imageFiles.length > 1 ? '已创建图片轮播' : ''}`, 'success');
             console.log(`✅ 文件已保存到云端: MongoDB数据库 + 服务器存储`);
         } else {
             // fallback到本地存储
@@ -233,11 +254,94 @@ function renderMemories() {
     grid.innerHTML = memories.map(memory => createMemoryCard(memory)).join('');
 }
 
+// 🖼️ 创建图片组合回忆
+async function createImageGallery(images) {
+    try {
+        if (images.length < 2) return null;
+        
+        // 判断是文件数组还是记忆对象数组
+        const isFileArray = images[0] instanceof File;
+        
+        let imageData;
+        
+        if (isFileArray) {
+            // 📤 先上传文件获得文件信息（但不创建单独记忆）
+            const uploadedFiles = await uploadFilesOnly(images);
+            imageData = uploadedFiles.map(file => ({
+                id: file.id,
+                name: file.originalName,
+                url: memoryAPI.getFileURL(file.id),
+                thumbnail: memoryAPI.getFileURL(file.id, true)
+            }));
+        } else {
+            // 已经是记忆对象，直接使用
+            imageData = images.map(img => ({
+                id: img.id,
+                name: img.originalName || img.name,
+                url: memoryAPI.getFileURL(img.id),
+                thumbnail: memoryAPI.getFileURL(img.id, true)
+            }));
+        }
+        
+        // 创建图片组合数据
+        const galleryData = {
+            displayName: `📸 图片组合 (${images.length}张)`,
+            description: `包含${images.length}张精美图片的回忆集合`,
+            images: imageData
+        };
+        
+        // 向服务器创建图片组合
+        const galleryMemory = await memoryAPI.createImageGallery(galleryData);
+        console.log('✅ 图片组合创建成功:', galleryMemory);
+        
+        return galleryMemory;
+    } catch (error) {
+        console.error('❌ 创建图片组合失败:', error);
+        // 如果组合创建失败，返回null，保持原始单独图片
+        return null;
+    }
+}
+
+// 🆕 只上传文件，不创建记忆
+async function uploadFilesOnly(files) {
+    try {
+        const formData = new FormData();
+        
+        for (let i = 0; i < files.length; i++) {
+            formData.append('files', files[i]);
+        }
+        
+        // 添加参数，告诉服务器只上传文件，不创建记忆
+        formData.append('createMemories', 'false');
+
+        const response = await fetch(`${memoryAPI.apiURL}/upload-files-only`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        
+        if (!data.success) {
+            throw new Error(data.message || '文件上传失败');
+        }
+        
+        return data.data;
+    } catch (error) {
+        console.error('文件上传失败:', error);
+        throw error;
+    }
+}
+
 // 创建回忆卡片
 function createMemoryCard(memory) {
     const date = new Date(memory.uploadDate || memory.createdAt).toLocaleDateString('zh-CN');
     const sizeText = formatFileSize(memory.size);
     const displayName = memory.displayName || memory.originalName || memory.name;
+    
+    // 🖼️ 处理图片组合类型
+    if (memory.type === 'gallery' && memory.images && memory.images.length > 0) {
+        return createGalleryCard(memory);
+    }
     
     // 获取预览URL
     let previewSrc = '';
@@ -272,6 +376,61 @@ function createMemoryCard(memory) {
                 <div class="memory-actions">
                     <button class="btn-view" onclick="viewMemory('${memory.id}')">
                         <i class="fas fa-eye"></i> 查看
+                    </button>
+                    <button class="btn-edit" onclick="editMemory('${memory.id}')" title="编辑描述和录音">
+                        <i class="fas fa-edit"></i> 编辑
+                    </button>
+                    <button class="btn-qr" onclick="generateQR('${memory.id}')">
+                        <i class="fas fa-qrcode"></i> 二维码
+                    </button>
+                    ${!memory.isLocal ? `<button class="btn-delete" onclick="deleteMemory('${memory.id}')" 
+                        style="background: rgba(239, 68, 68, 0.1); color: #EF4444; border: 2px solid #EF4444; padding: 6px 12px; border-radius: 15px; font-size: 0.8rem;" title="删除回忆">
+                        <i class="fas fa-trash"></i>
+                    </button>` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// 🎠 创建图片组合卡片
+function createGalleryCard(memory) {
+    const date = new Date(memory.uploadDate || memory.createdAt).toLocaleDateString('zh-CN');
+    const displayName = memory.displayName || `图片组合 (${memory.images.length}张)`;
+    const hasDescription = memory.description && memory.description.trim();
+    const hasAudioNote = memory.audioNote;
+    
+    return `
+        <div class="memory-card gallery-card" data-id="${memory.id}">
+            <div class="memory-preview gallery">
+                <div class="gallery-preview">
+                    <div class="gallery-main-image">
+                        <img src="${memory.images[0].thumbnail}" alt="${memory.images[0].name}" loading="lazy">
+                        <div class="gallery-count">
+                            <i class="fas fa-images"></i> ${memory.images.length}
+                        </div>
+                    </div>
+                    <div class="gallery-thumbnails">
+                        ${memory.images.slice(1, 4).map(img => 
+                            `<div class="gallery-thumb">
+                                <img src="${img.thumbnail}" alt="${img.name}" loading="lazy">
+                            </div>`
+                        ).join('')}
+                        ${memory.images.length > 4 ? `<div class="gallery-more">+${memory.images.length - 4}</div>` : ''}
+                    </div>
+                </div>
+                ${hasAudioNote ? `<div class="audio-note-indicator"><i class="fas fa-microphone"></i></div>` : ''}
+            </div>
+            <div class="memory-info">
+                <div class="memory-title">${truncateText(displayName, 30)}</div>
+                ${hasDescription ? `<div class="memory-description">${truncateText(memory.description, 50)}</div>` : ''}
+                <div class="memory-date">
+                    📅 ${date} • 🖼️ ${memory.images.length}张图片
+                    ${memory.isLocal ? ' • 💾 本地' : ' • ☁️ 服务器'}
+                </div>
+                <div class="memory-actions">
+                    <button class="btn-view" onclick="viewMemory('${memory.id}')">
+                        <i class="fas fa-eye"></i> 查看轮播
                     </button>
                     <button class="btn-edit" onclick="editMemory('${memory.id}')" title="编辑描述和录音">
                         <i class="fas fa-edit"></i> 编辑
@@ -779,6 +938,15 @@ function editMemory(id) {
     document.getElementById('editDisplayName').value = memory.displayName || memory.originalName || memory.name;
     document.getElementById('editDescription').value = memory.description || '';
     
+    // 🖼️ 处理图片组合编辑
+    const imageManagement = document.getElementById('imageManagement');
+    if (memory.type === 'gallery' && memory.images && memory.images.length > 0) {
+        imageManagement.style.display = 'block';
+        renderCurrentImages(memory.images);
+    } else {
+        imageManagement.style.display = 'none';
+    }
+    
     // 重置录音状态
     resetRecording();
     
@@ -793,6 +961,56 @@ function closeEditModal() {
     document.body.style.overflow = 'auto';
     currentEditingId = null;
     resetRecording();
+    clearImageManager();
+}
+
+// 🖼️ 图片管理功能
+let currentEditingImages = [];
+
+// 渲染当前图片列表
+function renderCurrentImages(images) {
+    currentEditingImages = [...images]; // 复制数组
+    const container = document.getElementById('currentImages');
+    
+    container.innerHTML = images.map((img, index) => `
+        <div class="image-item" data-index="${index}">
+            <img src="${img.thumbnail}" alt="${img.name}" loading="lazy">
+            <button class="delete-btn" onclick="removeImage(${index})" title="删除图片">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `).join('');
+    
+    console.log('🖼️ 渲染了', images.length, '张图片');
+}
+
+// 删除图片
+function removeImage(index) {
+    if (currentEditingImages.length <= 1) {
+        showNotification('图片组合至少需要保留一张图片', 'error');
+        return;
+    }
+    
+    if (confirm('确定要删除这张图片吗？')) {
+        currentEditingImages.splice(index, 1);
+        renderCurrentImages(currentEditingImages);
+        showNotification('图片已删除（未保存，需要点击保存按钮确认）', 'info');
+    }
+}
+
+// 清空图片管理器
+function clearImageManager() {
+    currentEditingImages = [];
+    const container = document.getElementById('currentImages');
+    if (container) {
+        container.innerHTML = '';
+    }
+    
+    // 重置文件输入
+    const newImageUpload = document.getElementById('newImageUpload');
+    if (newImageUpload) {
+        newImageUpload.value = '';
+    }
 }
 
 // 重置录音状态
@@ -816,10 +1034,31 @@ async function startRecording() {
     console.log('🎤 开始录音请求...');
     
     try {
+        // 🔧 添加浏览器兼容性检查
+        if (!navigator.mediaDevices) {
+            throw new Error('您的浏览器不支持录音功能，建议使用Chrome、Firefox或Safari最新版本');
+        }
+        
+        if (!navigator.mediaDevices.getUserMedia) {
+            throw new Error('您的浏览器不支持麦克风访问，建议升级浏览器到最新版本');
+        }
+        
+        // 检查是否在安全环境下（HTTPS 或 localhost）
+        const isSecure = location.protocol === 'https:' || 
+                        location.hostname === 'localhost' || 
+                        location.hostname === '127.0.0.1' ||
+                        location.hostname.startsWith('192.168.') ||
+                        location.hostname.startsWith('10.') ||
+                        location.hostname.startsWith('172.');
+        
+        if (!isSecure) {
+            console.warn('⚠️ 非安全环境，某些浏览器可能限制录音功能');
+        }
+        
         console.log('🔍 请求麦克风权限...');
         document.getElementById('recordingStatus').innerHTML = '<i class="fas fa-spinner fa-spin"></i> 请求麦克风权限...';
         
-        // 直接调用API，不做任何预检查
+        // 请求麦克风权限
         const stream = await navigator.mediaDevices.getUserMedia({ 
             audio: {
                 echoCancellation: true,
@@ -1004,6 +1243,36 @@ async function saveMemoryEdit() {
             console.log('基本信息更新成功:', updatedMemory);
         }
         
+        // 🖼️ 处理图片组合变化
+        const currentMemory = memories.find(m => m.id === currentEditingId);
+        if (currentMemory && currentMemory.type === 'gallery' && currentEditingImages.length > 0) {
+            // 检查图片是否有变化
+            const originalImageIds = currentMemory.images.map(img => img.id).sort();
+            const currentImageIds = currentEditingImages.map(img => img.id).sort();
+            
+            if (JSON.stringify(originalImageIds) !== JSON.stringify(currentImageIds)) {
+                console.log('🖼️ 图片组合发生变化，更新中...');
+                console.log('原始图片:', originalImageIds);
+                console.log('现在图片:', currentImageIds);
+                
+                // 重新创建图片组合
+                const galleryData = {
+                    displayName: displayName || currentMemory.displayName,
+                    description: description || currentMemory.description,
+                    images: currentEditingImages.map(img => ({
+                        id: img.id,
+                        name: img.name,
+                        url: `/api/file/${img.id}`,
+                        thumbnail: `/api/file/${img.id}?thumb=true`
+                    }))
+                };
+                
+                await memoryAPI.updateGallery(currentEditingId, galleryData);
+                console.log('✅ 图片组合更新成功');
+                showNotification('图片组合已更新', 'success');
+            }
+        }
+        
         // 上传录音笔记（如果有）
         if (recordedAudioBlob) {
             console.log('上传录音笔记...');
@@ -1087,6 +1356,51 @@ document.addEventListener('DOMContentLoaded', function() {
             previewAudio.style.display = 'block';
             
             document.getElementById('recordingStatus').innerHTML = '<i class="fas fa-music"></i> 音频文件已选择: ' + file.name;
+        }
+    });
+    
+    // 🖼️ 新图片上传处理
+    document.getElementById('newImageUpload').addEventListener('change', async function(event) {
+        const files = event.target.files;
+        if (files.length === 0) return;
+        
+        showLoading();
+        
+        try {
+            // 验证文件类型
+            const validFiles = Array.from(files).filter(file => {
+                if (file.type.startsWith('image/')) {
+                    return true;
+                } else {
+                    showNotification('只能添加图片文件: ' + file.name, 'error');
+                    return false;
+                }
+            });
+            
+            if (validFiles.length === 0) return;
+            
+            // 上传新图片
+            const uploadedMemories = await memoryAPI.uploadFiles(validFiles);
+            const newImages = uploadedMemories.filter(m => m.type === 'image').map(img => ({
+                id: img.id,
+                name: img.originalName || img.name,
+                url: memoryAPI.getFileURL(img.id),
+                thumbnail: memoryAPI.getFileURL(img.id, true)
+            }));
+            
+            // 添加到当前编辑的图片列表
+            currentEditingImages.push(...newImages);
+            renderCurrentImages(currentEditingImages);
+            
+            showNotification(`✅ 成功添加 ${newImages.length} 张图片（未保存，需要点击保存按钮确认）`, 'success');
+            
+        } catch (error) {
+            console.error('添加图片失败:', error);
+            showNotification('添加图片失败：' + error.message, 'error');
+        } finally {
+            hideLoading();
+            // 清空文件输入
+            event.target.value = '';
         }
     });
 });
@@ -1270,3 +1584,6 @@ window.showSettings = showSettings;
 window.closeSettings = closeSettings;
 window.saveSettings = saveSettings;
 window.testQRCode = testQRCode;
+// 🖼️ 图片管理函数
+window.removeImage = removeImage;
+window.renderCurrentImages = renderCurrentImages;

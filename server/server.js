@@ -13,7 +13,7 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/birthday_memories';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://studentcsh:csh12300..@cluster0.xk00m.mongodb.net/birthday_memories?retryWrites=true&w=majority&appName=Cluster0';
 
 // 安全中间件
 app.use(helmet({
@@ -88,16 +88,25 @@ const memorySchema = new mongoose.Schema({
     displayName: { type: String }, // 用户自定义显示名称
     description: { type: String, default: '' }, // 用户添加的文字描述
     audioNote: { type: String }, // 录音笔记文件路径
-    type: { type: String, enum: ['image', 'audio'], required: true },
-    mimeType: { type: String, required: true },
-    size: { type: Number, required: true },
-    filePath: { type: String, required: true },
+    type: { type: String, enum: ['image', 'audio', 'gallery'], required: true }, // 🖼️ 添加gallery类型
+    mimeType: { type: String }, // gallery类型时为可选
+    size: { type: Number }, // gallery类型时为可选
+    filePath: { type: String }, // gallery类型时为可选
     thumbnailPath: { type: String }, // 图片缩略图路径
+    
+    // 🖼️ 图片组合专用字段
+    images: [{
+        id: String,        // 原图片的ID
+        name: String,      // 图片名称
+        url: String,       // 图片URL路径
+        thumbnail: String  // 缩略图路径
+    }],
     uploadDate: { type: Date, default: Date.now },
     metadata: {
         width: Number,
         height: Number,
-        duration: Number // 音频时长
+        duration: Number, // 音频时长
+        imageCount: Number // 🖼️ 图片组合中的图片数量
     }
 }, {
     timestamps: true,
@@ -105,6 +114,28 @@ const memorySchema = new mongoose.Schema({
 });
 
 const Memory = mongoose.model('Memory', memorySchema);
+
+// File模型（用于临时文件存储）
+const fileSchema = new mongoose.Schema({
+    id: { type: String, unique: true, required: true },
+    originalName: { type: String, required: true },
+    displayName: { type: String },
+    filePath: { type: String, required: true },
+    thumbnailPath: { type: String },
+    size: { type: Number, required: true },
+    mimeType: { type: String, required: true },
+    uploadDate: { type: Date, default: Date.now },
+    metadata: {
+        width: Number,
+        height: Number,
+        format: String
+    }
+}, {
+    timestamps: true,
+    collection: 'files'
+});
+
+const File = mongoose.model('File', fileSchema);
 
 // 文件上传配置
 const storage = multer.diskStorage({
@@ -184,6 +215,98 @@ app.get('/api/memories/:id', async (req, res) => {
 });
 
 // 文件上传接口
+// 🆕 只上传文件，不创建记忆（用于图片组合）
+app.post('/api/upload-files-only', uploadLimiter, upload.array('files', 10), async (req, res) => {
+    try {
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: '没有上传文件'
+            });
+        }
+
+        const uploadedFiles = [];
+
+        for (const file of req.files) {
+            const fileId = uuidv4();
+            const type = file.mimetype.startsWith('image/') ? 'image' : 'audio';
+            
+            let thumbnailPath = null;
+            let metadata = {};
+
+            // 为图片生成缩略图
+            if (type === 'image') {
+                try {
+                    const thumbnailFilename = `thumb_${path.basename(file.path)}`;
+                    thumbnailPath = path.join(path.dirname(file.path), thumbnailFilename);
+                    
+                    await sharp(file.path)
+                        .resize(300, 300, { 
+                            fit: 'inside', 
+                            withoutEnlargement: true 
+                        })
+                        .jpeg({ quality: 85 })
+                        .toFile(thumbnailPath);
+                    
+                    console.log(`✅ 生成缩略图: ${thumbnailPath}`);
+                    
+                    // 获取图片元数据
+                    const imageMetadata = await sharp(file.path).metadata();
+                    metadata = {
+                        width: imageMetadata.width,
+                        height: imageMetadata.height,
+                        format: imageMetadata.format
+                    };
+                } catch (error) {
+                    console.error(`❌ 缩略图生成失败 ${file.path}:`, error);
+                }
+            }
+
+            // 只返回文件信息，不创建记忆记录
+            const fileInfo = {
+                id: fileId,
+                originalName: file.originalname,
+                filePath: file.path,
+                thumbnailPath,
+                size: file.size,
+                mimeType: file.mimetype,
+                type,
+                metadata
+            };
+
+            // 临时存储文件信息（用于后续创建图片组合时使用）
+            await File.create({
+                id: fileId,
+                originalName: file.originalname,
+                displayName: file.originalname,
+                filePath: file.path,
+                thumbnailPath,
+                size: file.size,
+                mimeType: file.mimetype,
+                uploadDate: new Date(),
+                metadata
+            });
+
+            uploadedFiles.push(fileInfo);
+        }
+
+        console.log(`📁 成功上传${uploadedFiles.length}个文件（仅文件，未创建记忆）`);
+        
+        res.json({
+            success: true,
+            message: `成功上传 ${uploadedFiles.length} 个文件`,
+            data: uploadedFiles
+        });
+
+    } catch (error) {
+        console.error('❌ 文件上传失败:', error);
+        res.status(500).json({
+            success: false,
+            message: '服务器错误: ' + error.message
+        });
+    }
+});
+
 app.post('/api/upload', uploadLimiter, upload.array('files', 10), async (req, res) => {
     try {
         if (!req.files || req.files.length === 0) {
@@ -321,12 +444,18 @@ app.post('/api/memories/:id/audio-note', uploadLimiter, upload.single('audioNote
 
         // 删除旧的音频笔记
         if (memory.audioNote) {
-            await fs.remove(memory.audioNote).catch(console.error);
+            const oldAudioPath = path.isAbsolute(memory.audioNote) 
+                ? memory.audioNote  // 兼容旧的绝对路径
+                : path.join(uploadsDir, memory.audioNote);  // 新的相对路径
+            await fs.remove(oldAudioPath).catch(console.error);
         }
 
-        // 更新音频笔记路径
-        memory.audioNote = req.file.path;
+        // 更新音频笔记路径（只存储相对路径，避免环境路径冲突）
+        const relativePath = path.relative(uploadsDir, req.file.path);
+        memory.audioNote = relativePath;
         await memory.save();
+        
+        console.log(`✅ 录音笔记上传成功: ${memory.id}, 相对路径: ${relativePath}`);
 
         res.json({
             success: true,
@@ -343,6 +472,153 @@ app.post('/api/memories/:id/audio-note', uploadLimiter, upload.single('audioNote
             success: false,
             message: '音频笔记上传失败',
             error: error.message
+        });
+    }
+});
+
+// 🖼️ 创建图片组合
+app.post('/api/gallery', async (req, res) => {
+    try {
+        console.log('📸 创建图片组合请求:', req.body);
+        
+        const { displayName, description, images } = req.body;
+        
+        // 验证输入
+        if (!images || !Array.isArray(images) || images.length < 2) {
+            return res.status(400).json({
+                success: false,
+                message: '至少需要2张图片才能创建组合'
+            });
+        }
+        
+        // 验证所有图片是否存在（检查File集合中的临时文件）
+        const imageIds = images.map(img => img.id);
+        const existingFiles = await File.find({ 
+            id: { $in: imageIds }
+        });
+        
+        if (existingFiles.length !== imageIds.length) {
+            return res.status(400).json({
+                success: false,
+                message: '部分图片不存在或不是有效的图片文件'
+            });
+        }
+        
+        // 创建图片组合对象
+        const galleryId = uuidv4();
+        const galleryData = {
+            id: galleryId,
+            name: displayName || `图片组合_${new Date().toLocaleDateString()}`,
+            originalName: displayName || `图片组合_${new Date().toLocaleDateString()}`,
+            displayName: displayName || `📸 图片组合 (${images.length}张)`,
+            description: description || `包含${images.length}张精美图片的回忆集合`,
+            type: 'gallery',
+            images: images.map(img => ({
+                id: img.id,
+                name: img.name,
+                url: `/api/file/${img.id}`,
+                thumbnail: `/api/file/${img.id}?thumb=true`
+            })),
+            uploadDate: new Date(),
+            metadata: {
+                imageCount: images.length
+            }
+        };
+        
+        // 保存到数据库
+        const gallery = new Memory(galleryData);
+        await gallery.save();
+        
+        console.log('✅ 图片组合创建成功:', galleryId);
+        
+        res.json({
+            success: true,
+            data: gallery,
+            message: `成功创建包含${images.length}张图片的组合`
+        });
+        
+    } catch (error) {
+        console.error('❌ 创建图片组合失败:', error);
+        res.status(500).json({
+            success: false,
+            message: '创建图片组合失败: ' + error.message
+        });
+    }
+});
+
+// 🖼️ 更新图片组合
+app.put('/api/gallery/:id', async (req, res) => {
+    try {
+        console.log('📸 更新图片组合请求:', req.params.id, req.body);
+        
+        const galleryId = req.params.id;
+        const { displayName, description, images } = req.body;
+        
+        // 验证图片组合是否存在
+        const existingGallery = await Memory.findOne({ id: galleryId, type: 'gallery' });
+        if (!existingGallery) {
+            return res.status(404).json({
+                success: false,
+                message: '图片组合不存在'
+            });
+        }
+        
+        // 验证输入
+        if (!images || !Array.isArray(images) || images.length < 1) {
+            return res.status(400).json({
+                success: false,
+                message: '图片组合至少需要1张图片'
+            });
+        }
+        
+        // 验证所有图片是否存在
+        const imageIds = images.map(img => img.id);
+        const existingImages = await Memory.find({ 
+            id: { $in: imageIds }, 
+            type: 'image' 
+        });
+        
+        if (existingImages.length !== imageIds.length) {
+            return res.status(400).json({
+                success: false,
+                message: '部分图片不存在或不是有效的图片文件'
+            });
+        }
+        
+        // 更新图片组合
+        const updatedData = {
+            displayName: displayName || existingGallery.displayName,
+            description: description || existingGallery.description,
+            images: images.map(img => ({
+                id: img.id,
+                name: img.name,
+                url: `/api/file/${img.id}`,
+                thumbnail: `/api/file/${img.id}?thumb=true`
+            })),
+            metadata: {
+                imageCount: images.length
+            }
+        };
+        
+        const updatedGallery = await Memory.findOneAndUpdate(
+            { id: galleryId },
+            updatedData,
+            { new: true }
+        );
+        
+        console.log('✅ 图片组合更新成功:', galleryId);
+        
+        res.json({
+            success: true,
+            data: updatedGallery,
+            message: `图片组合已更新，包含${images.length}张图片`
+        });
+        
+    } catch (error) {
+        console.error('❌ 更新图片组合失败:', error);
+        res.status(500).json({
+            success: false,
+            message: '更新图片组合失败: ' + error.message
         });
     }
 });
@@ -364,7 +640,10 @@ app.delete('/api/memories/:id', async (req, res) => {
             await fs.remove(memory.thumbnailPath).catch(console.error);
         }
         if (memory.audioNote) {
-            await fs.remove(memory.audioNote).catch(console.error);
+            const audioPath = path.isAbsolute(memory.audioNote) 
+                ? memory.audioNote  // 兼容旧的绝对路径
+                : path.join(uploadsDir, memory.audioNote);  // 新的相对路径
+            await fs.remove(audioPath).catch(console.error);
         }
 
         // 删除数据库记录
@@ -390,8 +669,15 @@ app.get('/api/file/:id', async (req, res) => {
     try {
         console.log(`🔍 文件访问请求: ID=${req.params.id}, 查询参数:`, req.query);
         
-        const memory = await Memory.findOne({ id: req.params.id });
-        if (!memory) {
+        // 首先在Memory集合中查找
+        let fileRecord = await Memory.findOne({ id: req.params.id });
+        
+        // 如果Memory中没有，再在File集合中查找
+        if (!fileRecord) {
+            fileRecord = await File.findOne({ id: req.params.id });
+        }
+        
+        if (!fileRecord) {
             console.log(`❌ 文件不存在: ${req.params.id}`);
             return res.status(404).json({
                 success: false,
@@ -400,30 +686,42 @@ app.get('/api/file/:id', async (req, res) => {
         }
 
         console.log(`📂 找到记录:`, {
-            id: memory.id,
-            filePath: memory.filePath,
-            originalName: memory.originalName,
-            displayName: memory.displayName
+            id: fileRecord.id,
+            filePath: fileRecord.filePath,
+            originalName: fileRecord.originalName,
+            displayName: fileRecord.displayName
         });
 
         let filePath;
-        let mimeType = memory.mimeType;
+        let mimeType = fileRecord.mimeType;
         
         // 根据查询参数选择文件类型
         if (req.query.type === 'audioNote') {
-            if (!memory.audioNote || !fs.existsSync(memory.audioNote)) {
+            if (!fileRecord.audioNote) {
                 return res.status(404).json({
                     success: false,
                     message: '音频笔记不存在'
                 });
             }
-            filePath = memory.audioNote;
+            // 构建完整的音频笔记路径（相对路径 + 当前环境的uploads目录）
+            const audioNotePath = path.isAbsolute(fileRecord.audioNote) 
+                ? fileRecord.audioNote  // 兼容旧的绝对路径数据
+                : path.join(uploadsDir, fileRecord.audioNote);  // 新的相对路径数据
+            
+            if (!fs.existsSync(audioNotePath)) {
+                console.log(`❌ 音频笔记文件不存在: ${audioNotePath}`);
+                return res.status(404).json({
+                    success: false,
+                    message: '音频笔记文件不存在'
+                });
+            }
+            filePath = audioNotePath;
             mimeType = 'audio/wav'; // 音频笔记默认为wav格式
-        } else if (req.query.thumb && memory.thumbnailPath) {
-            filePath = memory.thumbnailPath;
+        } else if (req.query.thumb && fileRecord.thumbnailPath) {
+            filePath = fileRecord.thumbnailPath;
             mimeType = 'image/jpeg'; // 缩略图为jpeg格式
         } else {
-            filePath = memory.filePath;
+            filePath = fileRecord.filePath;
         }
 
         if (!fs.existsSync(filePath)) {
@@ -443,7 +741,7 @@ app.get('/api/file/:id', async (req, res) => {
         
         // 为音频笔记设置合适的文件名
         if (req.query.type === 'audioNote') {
-            res.setHeader('Content-Disposition', `inline; filename="audio-note-${memory.id}.wav"`);
+            res.setHeader('Content-Disposition', `inline; filename="audio-note-${fileRecord.id}.wav"`);
         }
         
         res.sendFile(path.resolve(filePath));

@@ -160,6 +160,84 @@ class MemoryAPI {
         return `${this.apiURL}/file/${id}${params}`;
     }
 
+    // 🖼️ 创建图片组合
+    async createImageGallery(galleryData) {
+        try {
+            console.log('创建图片组合请求:', galleryData);
+            
+            const response = await fetch(`${this.apiURL}/gallery`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(galleryData)
+            });
+
+            console.log('图片组合响应状态:', response.status, response.statusText);
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error('请求的API不存在');
+                } else if (response.status === 500) {
+                    throw new Error('服务器内部错误');
+                } else {
+                    throw new Error(`HTTP错误 ${response.status}: ${response.statusText}`);
+                }
+            }
+
+            const data = await response.json();
+            console.log('图片组合响应数据:', data);
+            
+            if (!data.success) {
+                throw new Error(data.message || '创建图片组合失败');
+            }
+            
+            return data.data;
+        } catch (error) {
+            console.error('创建图片组合失败详细:', error);
+            throw error;
+        }
+    }
+
+    // 🖼️ 更新图片组合
+    async updateGallery(galleryId, galleryData) {
+        try {
+            console.log('更新图片组合请求:', galleryId, galleryData);
+            
+            const response = await fetch(`${this.apiURL}/gallery/${galleryId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(galleryData)
+            });
+
+            console.log('图片组合更新响应状态:', response.status, response.statusText);
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error('图片组合不存在');
+                } else if (response.status === 500) {
+                    throw new Error('服务器内部错误');
+                } else {
+                    throw new Error(`HTTP错误 ${response.status}: ${response.statusText}`);
+                }
+            }
+
+            const data = await response.json();
+            console.log('图片组合更新响应数据:', data);
+            
+            if (!data.success) {
+                throw new Error(data.message || '更新图片组合失败');
+            }
+            
+            return data.data;
+        } catch (error) {
+            console.error('更新图片组合失败详细:', error);
+            throw error;
+        }
+    }
+
     // 检查服务器健康状态
     async checkHealth() {
         try {

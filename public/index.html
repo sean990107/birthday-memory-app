@@ -194,6 +194,27 @@
                     <textarea id="editDescription" placeholder="记录下这个美好瞬间的故事..." maxlength="200" rows="3"></textarea>
                 </div>
                 
+                <!-- 🖼️ 图片管理部分（仅图片组合显示） -->
+                <div class="form-group" id="imageManagement" style="display: none;">
+                    <label>
+                        <i class="fas fa-images"></i> 图片管理
+                    </label>
+                    <div class="image-manager">
+                        <div class="current-images" id="currentImages">
+                            <!-- 动态生成的图片列表 -->
+                        </div>
+                        <div class="image-actions">
+                            <button type="button" class="btn-add-images" onclick="document.getElementById('newImageUpload').click()">
+                                <i class="fas fa-plus"></i> 添加图片
+                            </button>
+                            <input type="file" id="newImageUpload" accept="image/*" multiple style="display: none;">
+                        </div>
+                        <div class="image-manager-tip">
+                            <small>💡 提示：您可以添加新图片或删除现有图片</small>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label>
                         <i class="fas fa-microphone"></i> 语音笔记

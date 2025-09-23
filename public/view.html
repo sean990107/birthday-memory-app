@@ -516,9 +516,79 @@
     <script src="script.js?v=2.6"></script>
     <script>
         // 视图页面专用JavaScript
+        
+        // 🔧 添加缺失的工具函数
+        function showLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+            }
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+
+        function showNotification(message, type = 'info') {
+            // 移除现有通知
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            // 创建通知元素
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span class="notification-icon">
+                        ${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}
+                    </span>
+                    <span class="notification-message">${message}</span>
+                </div>
+            `;
+
+            // 添加样式
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? 'linear-gradient(135deg, #10B981, #059669)' : 
+                             type === 'error' ? 'linear-gradient(135deg, #EF4444, #DC2626)' : 
+                             'linear-gradient(135deg, #8B5CF6, #A855F7)'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+                max-width: 300px;
+                backdrop-filter: blur(10px);
+            `;
+
+            // 添加到页面
+            document.body.appendChild(notification);
+
+            // 自动移除
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
-            loadMemoryView();
-            setupViewEventListeners();
+            // 等待script.js加载完成
+            setTimeout(() => {
+                loadMemoryView();
+                setupViewEventListeners();
+            }, 100);
         });
 
         function setupViewEventListeners() {
@@ -613,7 +683,10 @@
 
             let contentHtml = '';
             
-            if (memory.type === 'image') {
+            // 🖼️ 处理图片组合类型
+            if (memory.type === 'gallery' && memory.images && memory.images.length > 0) {
+                contentHtml = createImageSwiper(memory.images);
+            } else if (memory.type === 'image') {
                 contentHtml = `
                     <div class="image-container">
                         <img src="${fileURL}" 
@@ -986,6 +1059,151 @@
         function truncateText(text, maxLength) {
             if (text.length <= maxLength) return text;
             return text.substr(0, maxLength) + '...';
+        }
+
+        // 🎠 创建图片轮播组件
+        function createImageSwiper(images) {
+            if (!images || images.length === 0) return '';
+            
+            const swiperHtml = `
+                <div class="image-swiper">
+                    <div class="swiper-container" id="imageSwiper">
+                        ${images.map((img, index) => `
+                            <div class="swiper-slide ${index === 0 ? 'active' : ''}" data-index="${index}">
+                                <img src="${img.url}" 
+                                     alt="${img.name}" 
+                                     onclick="openFullscreen(this.src)"
+                                     onload="console.log('✅ 轮播图片加载成功:', this.src)"
+                                     onerror="handleImageError(this, '${img.url}')">
+                            </div>
+                        `).join('')}
+                        
+                        ${images.length > 1 ? `
+                            <button class="swiper-button-prev" onclick="previousImage()">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="swiper-button-next" onclick="nextImage()">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                            
+                            <div class="swiper-pagination">
+                                ${images.map((_, index) => `
+                                    <button class="swiper-pagination-bullet ${index === 0 ? 'active' : ''}" 
+                                            onclick="goToImage(${index})" data-index="${index}"></button>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="swiper-info">
+                        <span id="currentImageInfo">1 / ${images.length}</span>
+                        <span id="currentImageName">${images[0].name}</span>
+                    </div>
+                </div>
+            `;
+            
+            // 初始化轮播状态
+            setTimeout(() => {
+                initializeSwiper(images);
+            }, 100);
+            
+            return swiperHtml;
+        }
+
+        // 🎠 初始化轮播组件
+        let currentImageIndex = 0;
+        let swiperImages = [];
+
+        function initializeSwiper(images) {
+            swiperImages = images;
+            currentImageIndex = 0;
+            
+            // 添加键盘支持
+            document.addEventListener('keydown', handleSwiperKeyboard);
+            
+            console.log('✅ 图片轮播初始化完成，共', images.length, '张图片');
+        }
+
+        // 🎯 轮播控制函数
+        function nextImage() {
+            if (swiperImages.length <= 1) return;
+            
+            currentImageIndex = (currentImageIndex + 1) % swiperImages.length;
+            updateSwiperDisplay();
+        }
+
+        function previousImage() {
+            if (swiperImages.length <= 1) return;
+            
+            currentImageIndex = currentImageIndex === 0 ? swiperImages.length - 1 : currentImageIndex - 1;
+            updateSwiperDisplay();
+        }
+
+        function goToImage(index) {
+            if (index >= 0 && index < swiperImages.length) {
+                currentImageIndex = index;
+                updateSwiperDisplay();
+            }
+        }
+
+        function updateSwiperDisplay() {
+            const slides = document.querySelectorAll('.swiper-slide');
+            const bullets = document.querySelectorAll('.swiper-pagination-bullet');
+            const info = document.getElementById('currentImageInfo');
+            const name = document.getElementById('currentImageName');
+            
+            // 🎯 重叠翻页效果 - 类似iMessage
+            slides.forEach((slide, index) => {
+                // 移除所有状态类
+                slide.classList.remove('active', 'prev', 'next');
+                
+                if (index === currentImageIndex) {
+                    // 当前激活的图片
+                    slide.classList.add('active');
+                } else if (index < currentImageIndex) {
+                    // 之前的图片（左侧）
+                    slide.classList.add('prev');
+                } else {
+                    // 之后的图片（右侧）
+                    slide.classList.add('next');
+                }
+            });
+            
+            // 更新分页器
+            bullets.forEach((bullet, index) => {
+                bullet.classList.toggle('active', index === currentImageIndex);
+            });
+            
+            // 更新信息
+            if (info) {
+                info.textContent = `${currentImageIndex + 1} / ${swiperImages.length}`;
+            }
+            
+            if (name && swiperImages[currentImageIndex]) {
+                name.textContent = swiperImages[currentImageIndex].name;
+            }
+            
+            console.log('🎯 翻页到图片', currentImageIndex + 1);
+        }
+
+        // ⌨️ 键盘控制
+        function handleSwiperKeyboard(e) {
+            if (swiperImages.length <= 1) return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    previousImage();
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    nextImage();
+                    break;
+                case 'Escape':
+                    e.preventDefault();
+                    // 可以添加退出全屏的逻辑
+                    break;
+            }
         }
     </script>
 </body>
