@@ -1080,6 +1080,93 @@ function forceInitializeRecording() {
     }
 }
 
+// 🔧 显示HTTP录音解决方案
+function showHTTPRecordingSolution() {
+    const solutionHTML = `
+        <div style="
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            z-index: 10000; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        ">
+            <div style="
+                background: white; 
+                padding: 30px; 
+                border-radius: 15px; 
+                max-width: 600px; 
+                max-height: 80vh; 
+                overflow-y: auto;
+                position: relative;
+            ">
+                <button onclick="this.parentElement.parentElement.remove()" style="
+                    position: absolute; 
+                    top: 15px; 
+                    right: 15px; 
+                    background: #ff4757; 
+                    color: white; 
+                    border: none; 
+                    border-radius: 50%; 
+                    width: 30px; 
+                    height: 30px; 
+                    cursor: pointer;
+                    font-size: 16px;
+                ">×</button>
+                
+                <h2 style="color: #2f3542; margin-bottom: 20px;">🎤 HTTP环境录音解决方案</h2>
+                
+                <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                    <strong>⚠️ 问题：</strong> 浏览器出于安全考虑，在HTTP环境下限制了录音功能
+                </div>
+                
+                <h3 style="color: #2f3542;">🔧 解决方法1：Chrome浏览器设置（推荐）</h3>
+                <ol style="line-height: 1.6;">
+                    <li><strong>复制链接：</strong> 
+                        <input type="text" value="chrome://flags/#unsafely-treat-insecure-origin-as-secure" 
+                               style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px;" 
+                               onclick="this.select(); document.execCommand('copy'); alert('链接已复制到剪贴板！');" readonly>
+                    </li>
+                    <li><strong>粘贴到Chrome地址栏</strong> 并回车</li>
+                    <li><strong>启用该选项</strong></li>
+                    <li><strong>在文本框中输入：</strong> 
+                        <input type="text" value="http://118.24.3.190" 
+                               style="width: 100%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px;" 
+                               onclick="this.select(); document.execCommand('copy'); alert('地址已复制到剪贴板！');" readonly>
+                    </li>
+                    <li><strong>重启Chrome浏览器</strong></li>
+                    <li><strong>重新访问本网站测试录音</strong></li>
+                </ol>
+                
+                <h3 style="color: #2f3542;">🌐 解决方法2：配置HTTPS（最佳方案）</h3>
+                <p>联系网站管理员配置SSL证书，使用https访问</p>
+                
+                <h3 style="color: #2f3542;">📁 临时方案：文件上传</h3>
+                <p>可以使用手机录音软件录制音频，然后上传到网站：</p>
+                <button onclick="document.getElementById('newAudioUpload').click(); this.parentElement.parentElement.remove();" 
+                        style="
+                            background: #5352ed; 
+                            color: white; 
+                            border: none; 
+                            padding: 10px 20px; 
+                            border-radius: 6px; 
+                            cursor: pointer; 
+                            font-size: 14px;
+                        ">📤 上传录音文件</button>
+                
+                <div style="background: #d1ecf1; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <strong>💡 提示：</strong> 方法1最简单，只需要设置一次Chrome就能正常使用录音功能了！
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', solutionHTML);
+}
+
 // 🎤 检查录音功能兼容性
 function checkRecordingCompatibility() {
     console.log('🔍 检查录音功能兼容性...');
@@ -1142,8 +1229,19 @@ function checkRecordingCompatibility() {
         }, 2000);
     } else if (statusClass === 'warning') {
         setTimeout(() => {
-            showNotification(compatibilityStatus, 'warning');
+            if (isHTTP) {
+                showNotification('⚠️ HTTP环境下录音功能受限。点击"开始录音"按钮查看详细解决方案。', 'warning');
+            } else {
+                showNotification(compatibilityStatus, 'warning');
+            }
         }, 3000);
+    }
+    
+    // HTTP环境下添加特殊提示
+    if (isHTTP && hasGetUserMedia) {
+        setTimeout(() => {
+            showNotification('🔧 检测到HTTP环境，录音功能可能需要特殊配置。建议先尝试录音，如失败会显示解决方案。', 'info');
+        }, 5000);
     }
 }
 
@@ -1286,7 +1384,9 @@ async function startRecording() {
         
         if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
             if (location.protocol === 'http:') {
-                errorMessage = 'HTTP环境下录音权限被限制。解决方法：\n\n🔧 Chrome浏览器：\n1. 地址栏输入：chrome://flags/#unsafely-treat-insecure-origin-as-secure\n2. 启用该选项，在文本框中输入：http://118.24.3.190\n3. 重启浏览器\n\n🌐 或者配置HTTPS访问（推荐）';
+                // HTTP环境特殊处理 - 显示详细解决方案
+                showHTTPRecordingSolution();
+                errorMessage = 'HTTP环境录音受限，已为您显示详细解决方案';
             } else {
                 errorMessage = '录音权限被拒绝。解决方法：\n1. 点击浏览器地址栏的🔒图标\n2. 允许麦克风权限\n3. 刷新页面重试';
             }
@@ -1307,17 +1407,49 @@ async function startRecording() {
             errorMessage = '录音被中断';
             statusMessage = '<i class="fas fa-stop"></i> 录音被中断';
         } else {
-            // 显示真实错误信息以便调试
-            errorMessage = '录音失败：' + (error.message || error.name || '未知错误');
-            statusMessage = '<i class="fas fa-exclamation-triangle"></i> 录音失败';
-            console.error('🔍 详细错误信息:', {
-                name: error.name,
-                message: error.message,
-                stack: error.stack,
-                navigator: !!navigator.mediaDevices,
-                getUserMedia: !!navigator.mediaDevices?.getUserMedia,
-                MediaRecorder: !!window.MediaRecorder
-            });
+            // HTTP环境下的特殊处理
+            if (location.protocol === 'http:' && error.message && error.message.includes('HTTP')) {
+                showHTTPRecordingSolution();
+                errorMessage = 'HTTP环境录音受限，已显示解决方案';
+                statusMessage = '<i class="fas fa-cog"></i> 请查看解决方案';
+            } else {
+                // 显示真实错误信息以便调试
+                errorMessage = '录音失败：' + (error.message || error.name || '未知错误');
+                statusMessage = '<i class="fas fa-exclamation-triangle"></i> 录音失败';
+                
+                // HTTP环境下，即使是其他错误也提供解决方案
+                if (location.protocol === 'http:') {
+                    errorMessage += '\n\n点击下方按钮查看HTTP环境录音解决方案';
+                    setTimeout(() => {
+                        const button = document.createElement('button');
+                        button.innerHTML = '🔧 查看解决方案';
+                        button.style.cssText = `
+                            background: #5352ed; 
+                            color: white; 
+                            border: none; 
+                            padding: 10px 20px; 
+                            border-radius: 6px; 
+                            cursor: pointer; 
+                            margin: 10px 5px;
+                            font-size: 14px;
+                        `;
+                        button.onclick = () => {
+                            showHTTPRecordingSolution();
+                            button.remove();
+                        };
+                        document.getElementById('recordingStatus').appendChild(button);
+                    }, 1000);
+                }
+                
+                console.error('🔍 详细错误信息:', {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack,
+                    navigator: !!navigator.mediaDevices,
+                    getUserMedia: !!navigator.mediaDevices?.getUserMedia,
+                    MediaRecorder: !!window.MediaRecorder
+                });
+            }
         }
         
         showNotification(errorMessage, 'error');
