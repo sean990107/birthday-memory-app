@@ -1049,10 +1049,13 @@ async function startRecording() {
                         location.hostname === '127.0.0.1' ||
                         location.hostname.startsWith('192.168.') ||
                         location.hostname.startsWith('10.') ||
-                        location.hostname.startsWith('172.');
+                        location.hostname.startsWith('172.') ||
+                        location.hostname === '118.24.3.190';  // 临时允许生产服务器IP
         
         if (!isSecure) {
             console.warn('⚠️ 非安全环境，某些浏览器可能限制录音功能');
+            // 显示非安全环境提示
+            showNotification('⚠️ 当前为HTTP环境，部分浏览器可能限制录音功能。建议配置HTTPS以获得最佳体验。', 'warning');
         }
         
         console.log('🔍 请求麦克风权限...');
@@ -1153,7 +1156,7 @@ async function startRecording() {
         let statusMessage = '';
         
         if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
-            errorMessage = '录音权限被拒绝，请在浏览器地址栏点击🔒图标，允许麦克风权限后刷新页面';
+            errorMessage = '录音权限被拒绝。解决方法：\n1. 点击浏览器地址栏的🔒图标\n2. 允许麦克风权限\n3. 刷新页面重试\n注意：某些浏览器在HTTP环境下限制录音功能';
             statusMessage = '<i class="fas fa-microphone-slash"></i> 麦克风权限被拒绝';
         } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
             errorMessage = '未找到可用的麦克风设备，请检查麦克风是否连接';
