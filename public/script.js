@@ -19,6 +19,9 @@ async function initializeApp() {
         setupMagicalEffects();
         createStarsBackground();
         
+        // 🎤 检查录音功能兼容性
+        checkRecordingCompatibility();
+        
         // 检查服务器连接
         showLoading();
         isConnected = await memoryAPI.checkHealth();
@@ -1029,14 +1032,116 @@ function resetRecording() {
     document.getElementById('previewAudio').style.display = 'none';
 }
 
+// 🎤 检查录音功能兼容性
+function checkRecordingCompatibility() {
+    console.log('🔍 检查录音功能兼容性...');
+    
+    const isHTTP = location.protocol === 'http:';
+    const isSecureContext = location.protocol === 'https:' || 
+                           location.hostname === 'localhost' || 
+                           location.hostname === '127.0.0.1' ||
+                           location.hostname.startsWith('192.168.') ||
+                           location.hostname.startsWith('10.') ||
+                           location.hostname.startsWith('172.') ||
+                           location.hostname === '118.24.3.190';
+    
+    let compatibilityStatus = '';
+    let statusClass = '';
+    
+    // 检查基础API支持
+    const hasMediaDevices = !!navigator.mediaDevices;
+    const hasGetUserMedia = !!(navigator.mediaDevices?.getUserMedia || 
+                              navigator.getUserMedia || 
+                              navigator.webkitGetUserMedia || 
+                              navigator.mozGetUserMedia);
+    const hasMediaRecorder = !!window.MediaRecorder;
+    
+    console.log('🔍 兼容性检查结果:', {
+        protocol: location.protocol,
+        hasMediaDevices,
+        hasGetUserMedia,
+        hasMediaRecorder,
+        isSecureContext
+    });
+    
+    if (!hasGetUserMedia) {
+        compatibilityStatus = '❌ 浏览器不支持录音功能';
+        statusClass = 'error';
+    } else if (!hasMediaRecorder) {
+        compatibilityStatus = '❌ 浏览器不支持音频录制';
+        statusClass = 'error';
+    } else if (isHTTP && !isSecureContext) {
+        compatibilityStatus = '⚠️ HTTP环境可能限制录音功能，建议使用HTTPS';
+        statusClass = 'warning';
+    } else if (!hasMediaDevices) {
+        compatibilityStatus = '⚠️ 录音功能可能受限，尝试兼容模式';
+        statusClass = 'warning';
+    } else {
+        compatibilityStatus = '✅ 录音功能支持良好';
+        statusClass = 'success';
+    }
+    
+    // 显示兼容性状态
+    console.log('🎤 录音兼容性:', compatibilityStatus);
+    
+    // 如果有严重兼容性问题，提前提示用户
+    if (statusClass === 'error') {
+        setTimeout(() => {
+            showNotification(compatibilityStatus + '。建议使用Chrome、Firefox或Safari最新版本。', 'error');
+        }, 2000);
+    } else if (statusClass === 'warning') {
+        setTimeout(() => {
+            showNotification(compatibilityStatus, 'warning');
+        }, 3000);
+    }
+}
+
 // 开始录音
 async function startRecording() {
     console.log('🎤 开始录音请求...');
     
     try {
-        // 🔧 添加浏览器兼容性检查
+        // 🔧 强化浏览器兼容性检查和HTTP环境支持
+        console.log('🔍 检测录音环境...');
+        console.log('navigator.mediaDevices:', !!navigator.mediaDevices);
+        console.log('location.protocol:', location.protocol);
+        console.log('location.hostname:', location.hostname);
+        
+        // 尝试初始化mediaDevices（HTTP环境强制支持）
         if (!navigator.mediaDevices) {
-            throw new Error('您的浏览器不支持录音功能，建议使用Chrome、Firefox或Safari最新版本');
+            console.warn('⚠️ mediaDevices不可用，尝试polyfill...');
+            
+            // HTTP环境下强制创建mediaDevices polyfill
+            if (!navigator.mediaDevices && navigator.getUserMedia) {
+                navigator.mediaDevices = {};
+                navigator.mediaDevices.getUserMedia = function(constraints) {
+                    return new Promise(function(resolve, reject) {
+                        navigator.getUserMedia(constraints, resolve, reject);
+                    });
+                };
+            }
+            
+            // 如果还是不行，再次检查
+            if (!navigator.mediaDevices) {
+                // 最后尝试：直接检查老版本API
+                const getUserMedia = navigator.getUserMedia || 
+                                   navigator.webkitGetUserMedia || 
+                                   navigator.mozGetUserMedia ||
+                                   navigator.msGetUserMedia;
+                
+                if (getUserMedia) {
+                    console.log('✅ 找到老版本getUserMedia API');
+                    navigator.mediaDevices = {
+                        getUserMedia: function(constraints) {
+                            return new Promise(function(resolve, reject) {
+                                getUserMedia.call(navigator, constraints, resolve, reject);
+                            });
+                        }
+                    };
+                } else {
+                    throw new Error('您的浏览器不支持录音功能。HTTP环境下建议使用Chrome 47+、Firefox 36+或Safari 11+');
+                }
+            }
         }
         
         if (!navigator.mediaDevices.getUserMedia) {
