@@ -8,23 +8,23 @@
     --base-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-/* 主题1: 🌸 浪漫樱花 - 温馨粉嫩，樱花飘落 */
+/* 主题1: 🌸 浪漫樱花 - 紫色樱花，圆润形状 */
 [data-theme="theme1"] {
     --theme-name: "浪漫樱花";
     --emoji: "🌸";
 }
 
 [data-theme="theme1"] .view-container {
-    background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 50%, #e0e7ff 100%);
+    background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 50%, #ddd6fe 100%);
 }
 
 [data-theme="theme1"] .memory-viewer {
     background: rgba(255, 255, 255, 0.95);
-    border: 2px solid rgba(236, 72, 153, 0.2);
+    border: 2px solid rgba(139, 92, 246, 0.3);
     box-shadow: 
-        0 20px 40px rgba(236, 72, 153, 0.15),
+        0 20px 40px rgba(139, 92, 246, 0.15),
         0 0 0 1px rgba(255, 255, 255, 0.8);
-    border-radius: 25px;
+    border-radius: 30px;
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(20px);
@@ -38,6 +38,7 @@
     font-size: 2rem;
     animation: sakuraFloat 4s ease-in-out infinite alternate;
     z-index: 10;
+    filter: hue-rotate(280deg);
 }
 
 [data-theme="theme1"] .memory-viewer::after {
@@ -48,8 +49,8 @@
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(circle at 20% 20%, rgba(252, 165, 165, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(244, 114, 182, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 50%),
         radial-gradient(circle at 40% 60%, rgba(196, 181, 253, 0.1) 0%, transparent 50%);
     pointer-events: none;
     z-index: 1;
@@ -61,7 +62,7 @@
 }
 
 [data-theme="theme1"] .memory-title-view {
-    color: #ec4899;
+    color: var(--base-purple);
     font-weight: 600;
     position: relative;
     z-index: 2;
@@ -75,34 +76,35 @@
 }
 
 [data-theme="theme1"] .btn-action {
-    background: linear-gradient(135deg, #ec4899, #f472b6);
+    background: linear-gradient(135deg, var(--base-purple), var(--base-purple-light));
     color: white;
     border: none;
-    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
 [data-theme="theme1"] .btn-action:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
 }
 
-/* 主题2: 💕 甜蜜爱心 - 爱心飘动，粉紫渐变 */
+/* 主题2: 💜 甜蜜爱心 - 紫色爱心，方形卡片 */
 [data-theme="theme2"] {
     --theme-name: "甜蜜爱心";
-    --emoji: "💕";
+    --emoji: "💜";
 }
 
 [data-theme="theme2"] .view-container {
-    background: linear-gradient(135deg, #fce7f3 0%, #f3e8ff 50%, #ddd6fe 100%);
+    background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 50%, #c7d2fe 100%);
 }
 
 [data-theme="theme2"] .memory-viewer {
     background: rgba(255, 255, 255, 0.98);
-    border: 3px solid rgba(219, 39, 119, 0.2);
+    border: 3px solid rgba(139, 92, 246, 0.3);
     box-shadow: 
-        0 25px 50px rgba(219, 39, 119, 0.15),
+        0 25px 50px rgba(139, 92, 246, 0.15),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    border-radius: 30px;
+    border-radius: 15px;
     position: relative;
     overflow: hidden;
     animation: gentleHeartbeat 3s ease-in-out infinite;
@@ -121,16 +123,16 @@
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(circle at 15% 15%, rgba(236, 72, 153, 0.1) 0%, transparent 40%),
-        radial-gradient(circle at 85% 25%, rgba(219, 39, 119, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 70% 85%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 25% 75%, rgba(244, 114, 182, 0.1) 0%, transparent 40%);
+        radial-gradient(circle at 15% 15%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 85% 25%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 70% 85%, rgba(196, 181, 253, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 25% 75%, rgba(139, 92, 246, 0.1) 0%, transparent 40%);
     pointer-events: none;
     z-index: 1;
 }
 
 [data-theme="theme2"] .memory-viewer::after {
-    content: '💕';
+    content: '💜';
     position: absolute;
     top: 15px;
     right: 25px;
@@ -145,9 +147,9 @@
 }
 
 [data-theme="theme2"] .memory-title-view {
-    color: #db2777;
+    color: var(--base-purple);
     font-weight: 700;
-    text-shadow: 0 2px 10px rgba(219, 39, 119, 0.2);
+    text-shadow: 0 2px 10px rgba(139, 92, 246, 0.2);
     position: relative;
     z-index: 2;
 }
@@ -160,36 +162,36 @@
 }
 
 [data-theme="theme2"] .btn-action {
-    background: linear-gradient(135deg, #db2777, #ec4899);
+    background: linear-gradient(135deg, var(--base-purple), var(--base-purple-light));
     color: white;
     border: none;
-    border-radius: 25px;
-    box-shadow: 0 5px 15px rgba(219, 39, 119, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
 }
 
 [data-theme="theme2"] .btn-action:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(219, 39, 119, 0.4);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
 }
 
-/* 主题3: 🌹 优雅玫瑰 - 经典浪漫，玫瑰装饰 */
+/* 主题3: 🌹 优雅玫瑰 - 紫色玫瑰，典雅边框 */
 [data-theme="theme3"] {
     --theme-name: "优雅玫瑰";
     --emoji: "🌹";
 }
 
 [data-theme="theme3"] .view-container {
-    background: linear-gradient(135deg, #fef3f2 0%, #fdf2f8 50%, #f5f3ff 100%);
+    background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 50%, #c7d2fe 100%);
 }
 
 [data-theme="theme3"] .memory-viewer {
     background: rgba(255, 255, 255, 0.95);
-    border: 2px solid rgba(190, 18, 60, 0.2);
+    border: 3px solid rgba(139, 92, 246, 0.4);
     box-shadow: 
-        0 20px 40px rgba(190, 18, 60, 0.12),
+        0 20px 40px rgba(139, 92, 246, 0.12),
         0 0 0 1px rgba(255, 255, 255, 0.5),
         inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    border-radius: 20px;
+    border-radius: 5px;
     position: relative;
     overflow: hidden;
 }
@@ -202,9 +204,9 @@
     right: -20px;
     bottom: -20px;
     background: 
-        radial-gradient(circle at 10% 10%, rgba(190, 18, 60, 0.08) 0%, transparent 30%),
-        radial-gradient(circle at 90% 20%, rgba(157, 23, 77, 0.06) 0%, transparent 30%),
-        radial-gradient(circle at 80% 90%, rgba(168, 85, 247, 0.06) 0%, transparent 30%);
+        radial-gradient(circle at 10% 10%, rgba(139, 92, 246, 0.08) 0%, transparent 30%),
+        radial-gradient(circle at 90% 20%, rgba(168, 85, 247, 0.06) 0%, transparent 30%),
+        radial-gradient(circle at 80% 90%, rgba(196, 181, 253, 0.06) 0%, transparent 30%);
     animation: roseGlow 8s ease-in-out infinite alternate;
     pointer-events: none;
     z-index: 1;
@@ -223,7 +225,7 @@
     font-size: 1.8rem;
     animation: roseFloat 3s ease-in-out infinite alternate;
     z-index: 10;
-    filter: drop-shadow(0 2px 4px rgba(190, 18, 60, 0.3));
+    filter: hue-rotate(280deg) drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3));
 }
 
 @keyframes roseFloat {
@@ -243,15 +245,15 @@
     left: 20px;
     right: 20px;
     height: 3px;
-    background: linear-gradient(90deg, transparent 0%, #be123c 20%, #a21caf 80%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, var(--base-purple) 20%, var(--base-purple-light) 80%, transparent 100%);
     border-radius: 2px;
 }
 
 [data-theme="theme3"] .memory-title-view {
-    color: #be123c;
+    color: var(--base-purple);
     font-weight: 600;
     font-family: 'Georgia', serif;
-    text-shadow: 0 1px 3px rgba(190, 18, 60, 0.2);
+    text-shadow: 0 1px 3px rgba(139, 92, 246, 0.2);
     position: relative;
     z-index: 2;
 }
@@ -263,17 +265,17 @@
 }
 
 [data-theme="theme3"] .btn-action {
-    background: linear-gradient(135deg, #be123c, #a21caf);
+    background: linear-gradient(135deg, var(--base-purple), var(--base-purple-light));
     color: white;
     border: none;
-    border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(190, 18, 60, 0.3);
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
     font-family: 'Georgia', serif;
 }
 
 [data-theme="theme3"] .btn-action:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(190, 18, 60, 0.4);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
 }
 
 /* 主题4: ✨ 梦幻星光 - 闪烁星光，梦幻渐变 */
@@ -398,8 +400,9 @@
     --emoji: "🎂";
 }
 
+
 [data-theme="theme5"] .view-container {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #f59e0b 70%, #d97706 100%);
+    background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 30%, #a5b4fc 70%, #8b5cf6 100%);
     position: relative;
     overflow: hidden;
 }
@@ -429,11 +432,11 @@
 
 [data-theme="theme5"] .memory-viewer {
     background: rgba(255, 255, 255, 0.95);
-    border: 3px solid #f59e0b;
+    border: 3px solid var(--base-purple);
     box-shadow: 
-        0 25px 50px rgba(245, 158, 11, 0.3),
+        0 25px 50px rgba(139, 92, 246, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    border-radius: 25px;
+    border-radius: 50px 25px 50px 25px;
     position: relative;
     overflow: hidden;
 }
@@ -446,9 +449,9 @@
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(circle at 15% 20%, rgba(245, 158, 11, 0.1) 0%, transparent 30%),
-        radial-gradient(circle at 85% 30%, rgba(249, 115, 22, 0.08) 0%, transparent 30%),
-        radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 30%);
+        radial-gradient(circle at 15% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 30%),
+        radial-gradient(circle at 85% 30%, rgba(168, 85, 247, 0.08) 0%, transparent 30%),
+        radial-gradient(circle at 70% 80%, rgba(196, 181, 253, 0.08) 0%, transparent 30%);
     pointer-events: none;
     z-index: 1;
 }
@@ -461,7 +464,7 @@
     font-size: 2rem;
     animation: cakeBounce 2s ease-in-out infinite;
     z-index: 10;
-    filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.4));
+    filter: drop-shadow(0 2px 6px rgba(139, 92, 246, 0.4));
 }
 
 @keyframes cakeBounce {
@@ -483,6 +486,7 @@
     text-align: center;
     font-size: 1.5rem;
     animation: partyFloat 3s ease-in-out infinite alternate;
+    filter: hue-rotate(280deg);
 }
 
 @keyframes partyFloat {
@@ -491,9 +495,9 @@
 }
 
 [data-theme="theme5"] .memory-title-view {
-    color: #f59e0b;
+    color: var(--base-purple);
     font-weight: 700;
-    text-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+    text-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
     position: relative;
     z-index: 2;
 }
@@ -505,17 +509,17 @@
 }
 
 [data-theme="theme5"] .btn-action {
-    background: linear-gradient(135deg, #f59e0b, #f97316);
+    background: linear-gradient(135deg, var(--base-purple), var(--base-purple-light));
     color: white;
     border: none;
-    border-radius: 25px;
-    box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
     font-weight: 600;
 }
 
 [data-theme="theme5"] .btn-action:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.6);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
 }
 
 /* 主题6: 🦄 独角兽梦 - 彩虹渐变，少女心满满 */
@@ -525,7 +529,7 @@
 }
 
 [data-theme="theme6"] .view-container {
-    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #a8edea 75%, #fed6e3 100%);
+    background: linear-gradient(135deg, #ddd6fe 0%, #c7d2fe 25%, #a5b4fc 50%, #8b5cf6 75%, #7c3aed 100%);
     position: relative;
     overflow: hidden;
 }
@@ -554,11 +558,11 @@
 
 [data-theme="theme6"] .memory-viewer {
     background: rgba(255, 255, 255, 0.9);
-    border: 3px solid rgba(255, 182, 193, 0.5);
+    border: 3px solid rgba(139, 92, 246, 0.5);
     box-shadow: 
-        0 30px 60px rgba(255, 182, 193, 0.3),
+        0 30px 60px rgba(139, 92, 246, 0.3),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    border-radius: 30px;
+    border-radius: 20px 50px 20px 50px;
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(15px);
@@ -604,12 +608,9 @@
 }
 
 [data-theme="theme6"] .memory-title-view {
-    background: linear-gradient(135deg, #ff6b9d, #c44569, #6c5ce7, #00b894);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--base-purple);
     font-weight: 700;
-    text-shadow: 0 2px 10px rgba(255, 182, 193, 0.3);
+    text-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
     position: relative;
     z-index: 2;
 }
@@ -622,18 +623,18 @@
 }
 
 [data-theme="theme6"] .btn-action {
-    background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a8edea, #fed6e3);
+    background: linear-gradient(135deg, var(--base-purple), var(--base-purple-light));
     color: white;
     border: none;
-    border-radius: 25px;
-    box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4);
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
     font-weight: 600;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
 [data-theme="theme6"] .btn-action:hover {
     transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 8px 25px rgba(255, 182, 193, 0.6);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
 }
 
 /* 主题7: 🌺 热带花园 - 热带花朵，温暖明亮 */
@@ -643,7 +644,7 @@
 }
 
 [data-theme="theme7"] .view-container {
-    background: linear-gradient(135deg, #ff6a88 0%, #ff9472 25%, #f9ca24 50%, #6c5ce7 75%, #a29bfe 100%);
+    background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 25%, #8b5cf6 50%, #7c3aed 75%, #6d28d9 100%);
     position: relative;
     overflow: hidden;
 }
@@ -675,11 +676,11 @@
 
 [data-theme="theme7"] .memory-viewer {
     background: rgba(255, 255, 255, 0.92);
-    border: 3px solid rgba(255, 106, 136, 0.4);
+    border: 3px solid rgba(139, 92, 246, 0.4);
     box-shadow: 
-        0 25px 50px rgba(255, 106, 136, 0.25),
+        0 25px 50px rgba(139, 92, 246, 0.25),
         inset 0 1px 0 rgba(255, 255, 255, 0.9);
-    border-radius: 25px;
+    border-radius: 0;
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(10px);
@@ -693,9 +694,9 @@
     right: 0;
     bottom: 0;
     background: 
-        radial-gradient(circle at 20% 20%, rgba(255, 106, 136, 0.1) 0%, transparent 40%),
-        radial-gradient(circle at 80% 30%, rgba(255, 148, 114, 0.08) 0%, transparent 40%),
-        radial-gradient(circle at 60% 80%, rgba(249, 202, 36, 0.08) 0%, transparent 40%);
+        radial-gradient(circle at 20% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 30%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 60% 80%, rgba(196, 181, 253, 0.08) 0%, transparent 40%);
     animation: tropicalGlow 10s ease-in-out infinite alternate;
     pointer-events: none;
     z-index: 1;
@@ -714,7 +715,7 @@
     font-size: 2rem;
     animation: flowerDance 4s ease-in-out infinite;
     z-index: 10;
-    filter: drop-shadow(0 2px 6px rgba(255, 106, 136, 0.4));
+    filter: hue-rotate(280deg) drop-shadow(0 2px 6px rgba(139, 92, 246, 0.4));
 }
 
 @keyframes flowerDance {
@@ -725,9 +726,9 @@
 }
 
 [data-theme="theme7"] .memory-title-view {
-    color: #ff6a88;
+    color: var(--base-purple);
     font-weight: 700;
-    text-shadow: 0 2px 8px rgba(255, 106, 136, 0.3);
+    text-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
     position: relative;
     z-index: 2;
 }
@@ -740,17 +741,17 @@
 }
 
 [data-theme="theme7"] .btn-action {
-    background: linear-gradient(135deg, #ff6a88, #ff9472);
+    background: linear-gradient(135deg, var(--base-purple), var(--base-purple-light));
     color: white;
     border: none;
-    border-radius: 25px;
-    box-shadow: 0 5px 15px rgba(255, 106, 136, 0.4);
+    border-radius: 0;
+    box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
     font-weight: 600;
 }
 
 [data-theme="theme7"] .btn-action:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(255, 106, 136, 0.6);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
 }
 
 /* 主题8: 💎 钻石闪耀 - 钻石光效，奢华浪漫 */
@@ -1073,6 +1074,16 @@
 
 .swiper-pagination-bullet.active {
     background: var(--base-purple);
+}
+
+/* 🚫 隐藏所有主题中的图片文件名和信息显示 */
+.swiper-info {
+    display: none !important;
+}
+
+#currentImageName,
+#currentImageInfo {
+    display: none !important;
 }
 
 /* 🌟 高对比度和无障碍设计 */
