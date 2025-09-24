@@ -275,6 +275,17 @@
             transform: translateY(-2px) scale(1.02);
         }
 
+        .btn-share-card {
+            background: linear-gradient(135deg, #ec4899, #f97316);
+            color: white;
+            border: none;
+        }
+
+        .btn-share-card:hover {
+            background: linear-gradient(135deg, #db2777, #ea580c);
+            transform: translateY(-2px) scale(1.02);
+        }
+
         .btn-action:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
@@ -863,6 +874,10 @@
                         <i class="fas fa-download"></i>
                         下载文件
                     </button>
+                    <button class="btn-action btn-share-card" onclick="generateShareCard()" title="生成精美分享卡片">
+                        <i class="fas fa-share-alt"></i>
+                        生成卡片
+                    </button>
                     <button class="btn-action btn-refresh" onclick="refreshTheme()" title="刷新获得新主题">
                         <i class="fas fa-palette"></i>
                         换个主题
@@ -1314,6 +1329,444 @@
                     break;
             }
         }
+
+        // 分享卡片生成功能
+        function generateShareCard() {
+            showNotification('🎨 正在生成分享卡片...', 'info');
+            document.getElementById('shareCardModal').style.display = 'flex';
+            setTimeout(() => {
+                drawShareCard();
+            }, 300);
+        }
+
+        function closeShareCardModal() {
+            document.getElementById('shareCardModal').style.display = 'none';
+        }
+
+        function drawShareCard() {
+            const canvas = document.getElementById('shareCardCanvas');
+            const ctx = canvas.getContext('2d');
+            const memory = window.currentMemory;
+            
+            if (!memory) {
+                showNotification('❌ 回忆数据未找到', 'error');
+                return;
+            }
+
+            // 清空画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 设置紫色渐变背景
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#8B5CF6');
+            gradient.addColorStop(0.5, '#A855F7');
+            gradient.addColorStop(1, '#9333EA');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 添加装饰性图案
+            drawCardDecorations(ctx, canvas.width, canvas.height);
+            
+            // 添加内容区域（白色半透明背景）
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            ctx.roundRect(60, 100, canvas.width - 120, canvas.height - 200, 30);
+            ctx.fill();
+            
+            // 添加标题
+            ctx.fillStyle = '#6D28D9';
+            ctx.font = 'bold 48px "Microsoft YaHei", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('💜 美好回忆 💜', canvas.width / 2, 180);
+            
+            // 添加副标题
+            ctx.fillStyle = '#8B5CF6';
+            ctx.font = '32px "Microsoft YaHei", sans-serif';
+            ctx.fillText('生日快乐，孙佳乐', canvas.width / 2, 230);
+            
+            // 根据回忆类型绘制内容
+            if (memory.type === 'image') {
+                drawImageCard(ctx, memory, canvas.width, canvas.height);
+            } else if (memory.type === 'gallery') {
+                drawGalleryCard(ctx, memory, canvas.width, canvas.height);
+            } else if (memory.type === 'audio') {
+                drawAudioCard(ctx, memory, canvas.width, canvas.height);
+            }
+            
+            // 添加底部信息
+            drawCardFooter(ctx, memory, canvas.width, canvas.height);
+            
+            showNotification('✨ 分享卡片生成完成！', 'success');
+        }
+
+        function drawCardDecorations(ctx, width, height) {
+            // 绘制装饰性emoji和图案
+            ctx.font = '60px serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            
+            // 随机分布的装饰emoji
+            const decorEmojis = ['💜', '✨', '🌸', '💖', '🌟', '💝'];
+            for (let i = 0; i < 15; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const emoji = decorEmojis[Math.floor(Math.random() * decorEmojis.length)];
+                ctx.fillText(emoji, x, y);
+            }
+        }
+
+        function drawImageCard(ctx, memory, width, height) {
+            // 为图片类型绘制特殊内容
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = function() {
+                // 计算图片显示区域
+                const imgArea = {
+                    x: 120,
+                    y: 280,
+                    width: width - 240,
+                    height: 400
+                };
+                
+                // 保持比例绘制图片
+                const scale = Math.min(imgArea.width / img.width, imgArea.height / img.height);
+                const scaledWidth = img.width * scale;
+                const scaledHeight = img.height * scale;
+                const offsetX = (imgArea.width - scaledWidth) / 2;
+                const offsetY = (imgArea.height - scaledHeight) / 2;
+                
+                ctx.drawImage(img, 
+                    imgArea.x + offsetX, 
+                    imgArea.y + offsetY, 
+                    scaledWidth, 
+                    scaledHeight
+                );
+                
+                // 添加图片边框
+                ctx.strokeStyle = '#8B5CF6';
+                ctx.lineWidth = 6;
+                ctx.roundRect(imgArea.x + offsetX - 3, imgArea.y + offsetY - 3, scaledWidth + 6, scaledHeight + 6, 15);
+                ctx.stroke();
+            };
+            
+            // 获取图片URL
+            const serverBase = window.location.origin;
+            if (memory.isLocal) {
+                img.src = memory.fileURL;
+            } else {
+                img.src = `${serverBase}/api/file/${memory.id}`;
+            }
+        }
+
+        function drawGalleryCard(ctx, memory, width, height) {
+            // 为图片组合绘制特殊布局
+            ctx.fillStyle = '#8B5CF6';
+            ctx.font = '36px "Microsoft YaHei", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`📸 ${memory.images.length} 张珍贵照片`, width / 2, 350);
+            
+            // 绘制小型预览图网格
+            const gridSize = Math.min(3, memory.images.length);
+            const cellSize = 120;
+            const spacing = 20;
+            const startX = (width - (gridSize * cellSize + (gridSize - 1) * spacing)) / 2;
+            const startY = 400;
+            
+            for (let i = 0; i < Math.min(gridSize, memory.images.length); i++) {
+                const x = startX + i * (cellSize + spacing);
+                const y = startY;
+                
+                // 绘制占位符
+                ctx.fillStyle = 'rgba(139, 92, 246, 0.2)';
+                ctx.roundRect(x, y, cellSize, cellSize, 15);
+                ctx.fill();
+                
+                // 添加图片图标
+                ctx.fillStyle = '#8B5CF6';
+                ctx.font = '48px serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('🖼️', x + cellSize / 2, y + cellSize / 2 + 15);
+            }
+        }
+
+        function drawAudioCard(ctx, memory, width, height) {
+            // 为音频类型绘制特殊内容
+            ctx.fillStyle = '#8B5CF6';
+            ctx.font = '72px serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('🎵', width / 2, 380);
+            
+            ctx.font = '36px "Microsoft YaHei", sans-serif';
+            ctx.fillText('一段美好的声音回忆', width / 2, 450);
+            
+            // 绘制音波图案
+            ctx.strokeStyle = '#A855F7';
+            ctx.lineWidth = 4;
+            for (let i = 0; i < 20; i++) {
+                const x = 200 + i * 20;
+                const height1 = Math.random() * 60 + 20;
+                ctx.beginPath();
+                ctx.moveTo(x, 500);
+                ctx.lineTo(x, 500 + height1);
+                ctx.stroke();
+            }
+        }
+
+        function drawCardFooter(ctx, memory, width, height) {
+            // 添加日期
+            const date = new Date(memory.uploadDate || Date.now());
+            const dateStr = date.toLocaleDateString('zh-CN', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            
+            ctx.fillStyle = '#6D28D9';
+            ctx.font = '28px "Microsoft YaHei", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`📅 ${dateStr}`, width / 2, height - 120);
+            
+            // 添加描述（如果有）
+            if (memory.description && memory.description.trim()) {
+                ctx.fillStyle = '#8B5CF6';
+                ctx.font = '24px "Microsoft YaHei", sans-serif';
+                const desc = memory.description.length > 50 
+                    ? memory.description.substring(0, 50) + '...' 
+                    : memory.description;
+                ctx.fillText(`"${desc}"`, width / 2, height - 80);
+            }
+            
+            // 添加爱心装饰
+            ctx.font = '36px serif';
+            ctx.fillStyle = '#EC4899';
+            ctx.fillText('💖', 150, height - 40);
+            ctx.fillText('💖', width - 150, height - 40);
+        }
+
+        function regenerateCard() {
+            showNotification('🔄 重新生成卡片...', 'info');
+            setTimeout(() => {
+                drawShareCard();
+            }, 300);
+        }
+
+        function downloadCard() {
+            const canvas = document.getElementById('shareCardCanvas');
+            const link = document.createElement('a');
+            link.download = `回忆卡片-${new Date().getTime()}.png`;
+            link.href = canvas.toDataURL('image/png', 0.9);
+            link.click();
+            showNotification('📱 卡片已保存到下载文件夹！', 'success');
+        }
+
+        // 添加圆角矩形方法
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+            this.beginPath();
+            this.moveTo(x + radius, y);
+            this.lineTo(x + width - radius, y);
+            this.quadraticCurveTo(x + width, y, x + width, y + radius);
+            this.lineTo(x + width, y + height - radius);
+            this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            this.lineTo(x + radius, y + height);
+            this.quadraticCurveTo(x, y + height, x, y + height - radius);
+            this.lineTo(x, y + radius);
+            this.quadraticCurveTo(x, y, x + radius, y);
+            this.closePath();
+        };
     </script>
+
+    <!-- 分享卡片生成模态框 -->
+    <div id="shareCardModal" class="card-modal" style="display: none;">
+        <div class="card-modal-content">
+            <div class="card-modal-header">
+                <h3><i class="fas fa-share-alt"></i> 生成分享卡片</h3>
+                <button class="card-modal-close" onclick="closeShareCardModal()">&times;</button>
+            </div>
+            <div class="card-modal-body">
+                <div class="card-preview-container">
+                    <canvas id="shareCardCanvas" width="800" height="1000"></canvas>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-card-action btn-regenerate" onclick="regenerateCard()">
+                        <i class="fas fa-redo"></i> 重新生成
+                    </button>
+                    <button class="btn-card-action btn-download-card" onclick="downloadCard()">
+                        <i class="fas fa-download"></i> 下载卡片
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* 分享卡片模态框样式 */
+        .card-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .card-modal-content {
+            background: linear-gradient(135deg, #f3e8ff, #e0e7ff);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        .card-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 30px;
+            border-bottom: 2px solid rgba(139, 92, 246, 0.2);
+            background: linear-gradient(135deg, #8B5CF6, #A855F7);
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .card-modal-header h3 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .card-modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .card-modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .card-modal-body {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .card-preview-container {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #shareCardCanvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+            border: 3px solid #8B5CF6;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-card-action {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 160px;
+            justify-content: center;
+        }
+
+        .btn-regenerate {
+            background: linear-gradient(135deg, #10B981, #34D399);
+            color: white;
+        }
+
+        .btn-regenerate:hover {
+            background: linear-gradient(135deg, #059669, #10B981);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        .btn-download-card {
+            background: linear-gradient(135deg, #8B5CF6, #A855F7);
+            color: white;
+        }
+
+        .btn-download-card:hover {
+            background: linear-gradient(135deg, #7C3AED, #8B5CF6);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .card-modal-content {
+                margin: 20px;
+                max-width: calc(100vw - 40px);
+            }
+
+            .card-modal-header {
+                padding: 20px;
+            }
+
+            .card-modal-body {
+                padding: 20px;
+            }
+
+            #shareCardCanvas {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .card-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-card-action {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
 </body>
 </html>
