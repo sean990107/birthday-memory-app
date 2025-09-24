@@ -39,6 +39,7 @@
     animation: sakuraFloat 4s ease-in-out infinite alternate;
     z-index: 10;
     filter: hue-rotate(280deg);
+    pointer-events: none;
 }
 
 [data-theme="theme1"] .memory-viewer::after {
@@ -139,6 +140,7 @@
     font-size: 1.8rem;
     animation: heartFloat 2s ease-in-out infinite alternate;
     z-index: 10;
+    pointer-events: none;
 }
 
 @keyframes heartFloat {
@@ -226,6 +228,7 @@
     animation: roseFloat 3s ease-in-out infinite alternate;
     z-index: 10;
     filter: hue-rotate(280deg) drop-shadow(0 2px 4px rgba(139, 92, 246, 0.3));
+    pointer-events: none;
 }
 
 @keyframes roseFloat {
@@ -247,6 +250,7 @@
     height: 3px;
     background: linear-gradient(90deg, transparent 0%, var(--base-purple) 20%, var(--base-purple-light) 80%, transparent 100%);
     border-radius: 2px;
+    pointer-events: none;
 }
 
 [data-theme="theme3"] .memory-title-view {
@@ -335,6 +339,7 @@
     animation: starGlow 2s ease-in-out infinite alternate;
     z-index: 10;
     filter: drop-shadow(0 0 5px #fff);
+    pointer-events: none;
 }
 
 @keyframes starGlow {
@@ -465,6 +470,7 @@
     animation: cakeBounce 2s ease-in-out infinite;
     z-index: 10;
     filter: drop-shadow(0 2px 6px rgba(139, 92, 246, 0.4));
+    pointer-events: none;
 }
 
 @keyframes cakeBounce {
@@ -487,6 +493,7 @@
     font-size: 1.5rem;
     animation: partyFloat 3s ease-in-out infinite alternate;
     filter: hue-rotate(280deg);
+    pointer-events: none;
 }
 
 @keyframes partyFloat {
@@ -599,7 +606,8 @@
     font-size: 2rem;
     animation: unicornFloat 3s ease-in-out infinite alternate;
     z-index: 10;
-    filter: drop-shadow(0 2px 8px rgba(255, 182, 193, 0.6));
+    filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.6));
+    pointer-events: none;
 }
 
 @keyframes unicornFloat {
@@ -716,6 +724,7 @@
     animation: flowerDance 4s ease-in-out infinite;
     z-index: 10;
     filter: hue-rotate(280deg) drop-shadow(0 2px 6px rgba(139, 92, 246, 0.4));
+    pointer-events: none;
 }
 
 @keyframes flowerDance {
@@ -850,6 +859,7 @@
     animation: diamondFloat 3s ease-in-out infinite alternate;
     z-index: 10;
     filter: drop-shadow(0 0 10px #8B5CF6);
+    pointer-events: none;
 }
 
 @keyframes diamondFloat {
