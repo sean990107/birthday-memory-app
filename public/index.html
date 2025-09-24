@@ -31,12 +31,9 @@
             <div class="header-top">
                 <h1 class="main-title">
                     <span class="title-heart">💜</span>
-                    <span class="title-text">生日回忆册</span>
+                    <span class="title-text">生日快乐，孙佳乐</span>
                     <span class="title-heart">💜</span>
                 </h1>
-                <button class="btn-settings" onclick="showSettings()" title="设置二维码访问地址">
-                    <i class="fas fa-cog"></i>
-                </button>
             </div>
             <p class="subtitle">为你珍藏每一个美好瞬间</p>
         </header>
@@ -94,7 +91,7 @@
             <div class="qr-container">
                 <canvas id="qrCanvas"></canvas>
             </div>
-            <p class="qr-description">扫描二维码查看这份美好回忆</p>
+            <p class="qr-description">专属个性化二维码，中心包含您的珍藏图片 💜</p>
             
             <!-- 添加直接链接 -->
             <div class="qr-link-container">
@@ -112,66 +109,6 @@
         </div>
     </div>
     
-    <!-- 设置模态框 -->
-    <div id="settingsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeSettings()">&times;</span>
-            <h3>⚙️ 设置二维码访问地址</h3>
-            
-            <div class="settings-form">
-                <div class="settings-info">
-                    <p><strong>当前访问地址：</strong></p>
-                    <code id="currentURL">检测中...</code>
-                    
-                    <div class="url-status" id="urlStatus">
-                        <p>📱 <strong>手机扫码状态：</strong></p>
-                        <div class="status-item">
-                            <span class="status-indicator" id="mobileStatus">⚠️</span>
-                            <span id="mobileStatusText">检测中...</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="settings-option">
-                    <h4>🔧 修复方案</h4>
-                    
-                    <div class="radio-group">
-                        <label class="radio-option">
-                            <input type="radio" name="urlMode" value="auto" checked>
-                            <span class="radio-label">
-                                <strong>自动模式</strong> 
-                                <small>部署后自动工作，本地需手动访问IP地址</small>
-                            </span>
-                        </label>
-                        
-                        <label class="radio-option">
-                            <input type="radio" name="urlMode" value="custom">
-                            <span class="radio-label">
-                                <strong>自定义地址</strong> 
-                                <small>指定外部访问地址（推荐用于本地测试）</small>
-                            </span>
-                        </label>
-                    </div>
-                    
-                    <div class="custom-url-input" id="customUrlInput" style="display: none;">
-                        <label for="customBaseURL">外部访问地址：</label>
-                        <input type="url" id="customBaseURL" placeholder="http://192.168.1.46:3000" 
-                               value="http://192.168.1.46:3000">
-                        <small>例如：http://192.168.1.46:3000 或 https://your-domain.com</small>
-                    </div>
-                </div>
-                
-                <div class="settings-actions">
-                    <button class="btn-save" onclick="saveSettings()">
-                        <i class="fas fa-save"></i> 保存设置
-                    </button>
-                    <button class="btn-test" onclick="testQRCode()">
-                        <i class="fas fa-mobile"></i> 测试二维码
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
     
     <!-- 编辑模态框 -->
     <div id="editModal" class="modal">

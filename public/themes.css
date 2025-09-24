@@ -1,0 +1,329 @@
+/* 多套UI主题系统 - 为孙佳乐的生日惊喜 */
+
+/* 主题1: 梦幻紫色 (原始主题) */
+[data-theme="theme1"] {
+    --primary-color: #8B5CF6;
+    --secondary-color: #A855F7;
+    --accent-color: #C084FC;
+    --background-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card-background: rgba(255, 255, 255, 0.95);
+    --text-primary: #1F2937;
+    --text-secondary: #6B7280;
+    --shadow-color: rgba(139, 92, 246, 0.3);
+    --theme-name: "梦幻紫罗兰";
+    --emoji: "💜";
+}
+
+/* 主题2: 浪漫粉色 */
+[data-theme="theme2"] {
+    --primary-color: #EC4899;
+    --secondary-color: #F472B6;
+    --accent-color: #FB7185;
+    --background-gradient: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+    --card-background: rgba(255, 255, 255, 0.9);
+    --text-primary: #BE185D;
+    --text-secondary: #9F1239;
+    --shadow-color: rgba(236, 72, 153, 0.3);
+    --theme-name: "浪漫樱花";
+    --emoji: "🌸";
+}
+
+/* 主题3: 温暖橙色 */
+[data-theme="theme3"] {
+    --primary-color: #F97316;
+    --secondary-color: #FB923C;
+    --accent-color: #FDBA74;
+    --background-gradient: linear-gradient(135deg, #ff9a56 0%, #ffad56 100%);
+    --card-background: rgba(255, 255, 255, 0.95);
+    --text-primary: #9A3412;
+    --text-secondary: #C2410C;
+    --shadow-color: rgba(249, 115, 22, 0.3);
+    --theme-name: "温暖夕阳";
+    --emoji: "🧡";
+}
+
+/* 主题4: 清新绿色 */
+[data-theme="theme4"] {
+    --primary-color: #10B981;
+    --secondary-color: #34D399;
+    --accent-color: #6EE7B7;
+    --background-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    --card-background: rgba(255, 255, 255, 0.95);
+    --text-primary: #064E3B;
+    --text-secondary: #047857;
+    --shadow-color: rgba(16, 185, 129, 0.3);
+    --theme-name: "清新薄荷";
+    --emoji: "💚";
+}
+
+/* 主题5: 天空蓝色 */
+[data-theme="theme5"] {
+    --primary-color: #3B82F6;
+    --secondary-color: #60A5FA;
+    --accent-color: #93C5FD;
+    --background-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --card-background: rgba(255, 255, 255, 0.95);
+    --text-primary: #1E3A8A;
+    --text-secondary: #1D4ED8;
+    --shadow-color: rgba(59, 130, 246, 0.3);
+    --theme-name: "天空之境";
+    --emoji: "💙";
+}
+
+/* 主题6: 神秘黑金 */
+[data-theme="theme6"] {
+    --primary-color: #D97706;
+    --secondary-color: #F59E0B;
+    --accent-color: #FCD34D;
+    --background-gradient: linear-gradient(135deg, #2D1B69 0%, #11998e 100%);
+    --card-background: rgba(0, 0, 0, 0.8);
+    --text-primary: #F9FAFB;
+    --text-secondary: #D1D5DB;
+    --shadow-color: rgba(217, 119, 6, 0.4);
+    --theme-name: "神秘星夜";
+    --emoji: "🖤";
+}
+
+/* 主题7: 彩虹渐变 */
+[data-theme="theme7"] {
+    --primary-color: #8B5CF6;
+    --secondary-color: #EC4899;
+    --accent-color: #F59E0B;
+    --background-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+    --card-background: rgba(255, 255, 255, 0.9);
+    --text-primary: #581C87;
+    --text-secondary: #7C3AED;
+    --shadow-color: rgba(139, 92, 246, 0.4);
+    --theme-name: "彩虹仙境";
+    --emoji: "🌈";
+}
+
+/* 主题8: 优雅薰衣草 */
+[data-theme="theme8"] {
+    --primary-color: #8B5A90;
+    --secondary-color: #A678A6;
+    --accent-color: #D8B4FE;
+    --background-gradient: linear-gradient(135deg, #e3aadd 0%, #c850c0 46%, #4158d0 100%);
+    --card-background: rgba(255, 255, 255, 0.95);
+    --text-primary: #4C1D95;
+    --text-secondary: #6D28D9;
+    --shadow-color: rgba(139, 90, 144, 0.3);
+    --theme-name: "薰衣草田";
+    --emoji: "💜";
+}
+
+/* 应用主题变量到各个组件 */
+body {
+    background: var(--background-gradient);
+}
+
+.memory-viewer {
+    background: var(--card-background);
+    border: 2px solid var(--primary-color, rgba(139, 92, 246, 0.2));
+    box-shadow: 0 20px 60px var(--shadow-color);
+}
+
+.memory-title-view {
+    color: var(--primary-color);
+}
+
+.btn-action {
+    transition: all 0.3s ease;
+}
+
+.btn-home {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+.btn-download {
+    background: rgba(var(--primary-color-rgb, 139, 92, 246), 0.1);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--shadow-color);
+}
+
+.audio-note-section h3, 
+.memory-description-section h3 {
+    color: var(--primary-color);
+}
+
+.memory-description-text {
+    border-left: 4px solid var(--primary-color);
+    color: var(--text-primary);
+}
+
+.audio-container {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+/* 主题专用背景效果 */
+[data-theme="theme1"] .view-background {
+    background: radial-gradient(circle at center, rgba(139, 92, 246, 0.3) 0%, rgba(168, 85, 247, 0.2) 50%, transparent 100%),
+                linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="theme2"] .view-background {
+    background: radial-gradient(circle at center, rgba(236, 72, 153, 0.3) 0%, rgba(244, 114, 182, 0.2) 50%, transparent 100%),
+                linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+}
+
+[data-theme="theme3"] .view-background {
+    background: radial-gradient(circle at center, rgba(249, 115, 22, 0.3) 0%, rgba(251, 146, 60, 0.2) 50%, transparent 100%),
+                linear-gradient(135deg, #ff9a56 0%, #ffad56 100%);
+}
+
+[data-theme="theme4"] .view-background {
+    background: radial-gradient(circle at center, rgba(16, 185, 129, 0.3) 0%, rgba(52, 211, 153, 0.2) 50%, transparent 100%),
+                linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+[data-theme="theme5"] .view-background {
+    background: radial-gradient(circle at center, rgba(59, 130, 246, 0.3) 0%, rgba(96, 165, 250, 0.2) 50%, transparent 100%),
+                linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+[data-theme="theme6"] .view-background {
+    background: radial-gradient(circle at center, rgba(217, 119, 6, 0.4) 0%, rgba(245, 158, 11, 0.3) 50%, transparent 100%),
+                linear-gradient(135deg, #2D1B69 0%, #11998e 100%);
+}
+
+[data-theme="theme6"] .memory-viewer {
+    background: rgba(30, 30, 50, 0.95);
+    color: #F9FAFB;
+    border: 2px solid var(--primary-color);
+}
+
+[data-theme="theme6"] .memory-title-view,
+[data-theme="theme6"] .audio-note-section h3,
+[data-theme="theme6"] .memory-description-section h3 {
+    color: var(--primary-color);
+}
+
+[data-theme="theme6"] .memory-description-text {
+    color: #D1D5DB;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="theme7"] .view-background {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+    animation: rainbowShift 10s ease-in-out infinite alternate;
+}
+
+@keyframes rainbowShift {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(30deg); }
+}
+
+[data-theme="theme8"] .view-background {
+    background: radial-gradient(circle at center, rgba(139, 90, 144, 0.3) 0%, rgba(166, 120, 166, 0.2) 50%, transparent 100%),
+                linear-gradient(135deg, #e3aadd 0%, #c850c0 46%, #4158d0 100%);
+}
+
+/* 主题切换动画 */
+.theme-transition {
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 主题标识 */
+.theme-indicator {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: var(--card-background);
+    border: 2px solid var(--primary-color);
+    border-radius: 15px;
+    padding: 10px 15px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    box-shadow: 0 4px 15px var(--shadow-color);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    animation: fadeInLeft 1s ease-out;
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .theme-indicator {
+        top: 10px;
+        left: 10px;
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+/* 特殊主题的额外装饰 */
+[data-theme="theme2"] .floating-hearts .heart:nth-child(even) {
+    color: #EC4899;
+}
+
+[data-theme="theme3"] .floating-hearts .heart {
+    color: #F97316;
+}
+
+[data-theme="theme4"] .floating-hearts .heart {
+    color: #10B981;
+}
+
+[data-theme="theme5"] .floating-hearts .heart {
+    color: #3B82F6;
+}
+
+[data-theme="theme6"] .floating-hearts .heart {
+    color: #F59E0B;
+}
+
+[data-theme="theme7"] .floating-hearts .heart {
+    animation: rainbowHeart 3s ease-in-out infinite;
+}
+
+@keyframes rainbowHeart {
+    0% { filter: hue-rotate(0deg); }
+    50% { filter: hue-rotate(180deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
+[data-theme="theme8"] .floating-hearts .heart {
+    color: #8B5A90;
+}
+
+/* 主题专用按钮样式 */
+[data-theme="theme6"] .btn-home,
+[data-theme="theme6"] .btn-download {
+    border-color: var(--primary-color);
+}
+
+[data-theme="theme6"] .btn-home {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+[data-theme="theme6"] .btn-download {
+    background: rgba(217, 119, 6, 0.1);
+    color: var(--primary-color);
+}
+
+/* 轮播图主题适配 */
+.swiper-button-prev,
+.swiper-button-next {
+    background: rgba(var(--primary-color-rgb, 139, 92, 246), 0.8);
+}
+
+.swiper-pagination-bullet.active {
+    background: var(--primary-color);
+}

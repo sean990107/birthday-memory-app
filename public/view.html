@@ -6,6 +6,7 @@
     <title>💜 美好回忆 💜</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="animations.css">
+    <link rel="stylesheet" href="themes.css">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -584,12 +585,77 @@
         }
         
         document.addEventListener('DOMContentLoaded', function() {
+            // 随机选择主题，创造惊喜
+            selectRandomTheme();
+            
             // 等待script.js加载完成
             setTimeout(() => {
                 loadMemoryView();
                 setupViewEventListeners();
             }, 100);
         });
+        
+        // 🎨 随机主题选择系统
+        function selectRandomTheme() {
+            const themes = [
+                { id: 'theme1', name: '梦幻紫罗兰', emoji: '💜' },
+                { id: 'theme2', name: '浪漫樱花', emoji: '🌸' },
+                { id: 'theme3', name: '温暖夕阳', emoji: '🧡' },
+                { id: 'theme4', name: '清新薄荷', emoji: '💚' },
+                { id: 'theme5', name: '天空之境', emoji: '💙' },
+                { id: 'theme6', name: '神秘星夜', emoji: '🖤' },
+                { id: 'theme7', name: '彩虹仙境', emoji: '🌈' },
+                { id: 'theme8', name: '薰衣草田', emoji: '💜' }
+            ];
+            
+            // 根据URL ID生成相对固定但看起来随机的主题选择
+            const memoryId = getUrlParameter('id') || 'default';
+            let hash = 0;
+            for (let i = 0; i < memoryId.length; i++) {
+                const char = memoryId.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // 转为32位整数
+            }
+            
+            // 使用时间因子增加随机性，但同一天内相同ID会显示相同主题
+            const dayOfYear = Math.floor((Date.now() / (1000 * 60 * 60 * 24)) % 365);
+            const themeIndex = Math.abs(hash + dayOfYear) % themes.length;
+            const selectedTheme = themes[themeIndex];
+            
+            console.log('🎨 选择主题:', selectedTheme.name, selectedTheme.emoji);
+            
+            // 应用主题到文档
+            document.documentElement.setAttribute('data-theme', selectedTheme.id);
+            document.body.classList.add('theme-transition');
+            
+            // 显示主题标识
+            setTimeout(() => {
+                showThemeIndicator(selectedTheme);
+            }, 500);
+            
+            return selectedTheme;
+        }
+        
+        // 显示主题标识
+        function showThemeIndicator(theme) {
+            const indicator = document.createElement('div');
+            indicator.className = 'theme-indicator';
+            indicator.innerHTML = `${theme.emoji} ${theme.name}`;
+            
+            document.body.appendChild(indicator);
+            
+            // 3秒后淡出
+            setTimeout(() => {
+                indicator.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+                indicator.style.opacity = '0';
+                indicator.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    if (indicator.parentNode) {
+                        indicator.parentNode.removeChild(indicator);
+                    }
+                }, 500);
+            }, 3000);
+        }
 
         function setupViewEventListeners() {
             // 全屏查看

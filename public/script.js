@@ -527,15 +527,19 @@ async function generateQR(id) {
 
         console.log('🎯 开始生成二维码...');
         
-        // 生成二维码
+        // 生成基础二维码
         await QRCode.toCanvas(canvas, viewUrl, {
             width: 256,
             margin: 2,
             color: {
                 dark: '#8B5CF6',
                 light: '#FFFFFF'
-            }
+            },
+            errorCorrectionLevel: 'H' // 使用高容错等级，支持添加中心图片
         });
+        
+        // 🖼️ 在二维码中心添加图片
+        await addCenterImageToQR(canvas, memory);
 
         console.log('✅ 二维码生成成功！');
         
@@ -1855,3 +1859,201 @@ window.testQRCode = testQRCode;
 // 🖼️ 图片管理函数
 window.removeImage = removeImage;
 window.renderCurrentImages = renderCurrentImages;
+
+// 🎨 二维码中心图片功能
+async function addCenterImageToQR(canvas, memory) {
+    try {
+        console.log('🖼️ 开始为二维码添加中心图片...');
+        
+        const ctx = canvas.getContext('2d');
+        const centerImg = await selectCenterImage(memory);
+        
+        if (!centerImg) {
+            console.log('⚠️ 没有合适的图片用作二维码中心，使用默认装饰');
+            addDefaultCenterDecoration(canvas);
+            return;
+        }
+        
+        // 创建图片元素
+        const img = new Image();
+        img.crossOrigin = 'anonymous'; // 处理跨域问题
+        
+        return new Promise((resolve, reject) => {
+            img.onload = function() {
+                try {
+                    const qrSize = canvas.width;
+                    const centerSize = Math.floor(qrSize * 0.2); // 中心图片占二维码的20%
+                    const centerX = (qrSize - centerSize) / 2;
+                    const centerY = (qrSize - centerSize) / 2;
+                    
+                    // 清除中心区域
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(centerX - 4, centerY - 4, centerSize + 8, centerSize + 8);
+                    
+                    // 绘制白色背景圆形
+                    const radius = centerSize / 2 + 2;
+                    ctx.beginPath();
+                    ctx.arc(centerX + centerSize/2, centerY + centerSize/2, radius, 0, 2 * Math.PI);
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fill();
+                    
+                    // 绘制装饰边框
+                    ctx.beginPath();
+                    ctx.arc(centerX + centerSize/2, centerY + centerSize/2, radius, 0, 2 * Math.PI);
+                    ctx.strokeStyle = '#8B5CF6';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                    
+                    // 绘制圆形裁剪区域
+                    ctx.save();
+                    ctx.beginPath();
+                    ctx.arc(centerX + centerSize/2, centerY + centerSize/2, radius - 2, 0, 2 * Math.PI);
+                    ctx.clip();
+                    
+                    // 绘制图片（自动居中和缩放）
+                    const imgAspect = img.width / img.height;
+                    let drawWidth = centerSize - 4;
+                    let drawHeight = centerSize - 4;
+                    let drawX = centerX + 2;
+                    let drawY = centerY + 2;
+                    
+                    if (imgAspect > 1) {
+                        // 宽图片
+                        drawHeight = drawWidth / imgAspect;
+                        drawY = centerY + (centerSize - drawHeight) / 2;
+                    } else {
+                        // 高图片
+                        drawWidth = drawHeight * imgAspect;
+                        drawX = centerX + (centerSize - drawWidth) / 2;
+                    }
+                    
+                    ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+                    ctx.restore();
+                    
+                    console.log('✅ 二维码中心图片添加成功！');
+                    resolve();
+                } catch (error) {
+                    console.error('❌ 绘制中心图片失败:', error);
+                    reject(error);
+                }
+            };
+            
+            img.onerror = function() {
+                console.warn('⚠️ 中心图片加载失败，使用默认装饰');
+                addDefaultCenterDecoration(canvas);
+                resolve();
+            };
+            
+            img.src = centerImg;
+        });
+        
+    } catch (error) {
+        console.error('❌ 添加二维码中心图片失败:', error);
+        // 失败时添加默认装饰
+        addDefaultCenterDecoration(canvas);
+    }
+}
+
+// 选择中心图片
+async function selectCenterImage(memory) {
+    try {
+        console.log('🔍 选择二维码中心图片...', memory.type);
+        
+        // 如果是图片类型的回忆，直接使用该图片
+        if (memory.type === 'image' && memory.id && isConnected) {
+            const centerImgUrl = memoryAPI.getFileURL(memory.id, true); // 使用缩略图
+            console.log('📸 使用当前回忆图片作为二维码中心:', centerImgUrl);
+            return centerImgUrl;
+        }
+        
+        // 如果是图片组合类型，使用第一张图片
+        if (memory.type === 'gallery' && memory.images && memory.images.length > 0) {
+            const centerImgUrl = memory.images[0].thumbnail;
+            console.log('🖼️ 使用图片组合的第一张作为二维码中心:', centerImgUrl);
+            return centerImgUrl;
+        }
+        
+        // 如果是音频文件，从最近的图片回忆中随机选择一张
+        if (memory.type === 'audio') {
+            const imageMemories = memories.filter(m => 
+                (m.type === 'image' || m.type === 'gallery') && 
+                !m.isLocal && 
+                m.id !== memory.id
+            );
+            
+            if (imageMemories.length > 0) {
+                const randomMemory = imageMemories[Math.floor(Math.random() * imageMemories.length)];
+                let centerImgUrl;
+                
+                if (randomMemory.type === 'image') {
+                    centerImgUrl = memoryAPI.getFileURL(randomMemory.id, true);
+                } else if (randomMemory.type === 'gallery' && randomMemory.images?.length > 0) {
+                    centerImgUrl = randomMemory.images[0].thumbnail;
+                }
+                
+                console.log('🎵 为音频文件选择随机图片作为二维码中心:', centerImgUrl);
+                return centerImgUrl;
+            }
+        }
+        
+        // 如果没有找到合适的图片，返回null使用默认装饰
+        console.log('ℹ️ 没有找到合适的图片，将使用默认装饰');
+        return null;
+        
+    } catch (error) {
+        console.error('❌ 选择中心图片失败:', error);
+        return null;
+    }
+}
+
+// 添加默认中心装饰
+function addDefaultCenterDecoration(canvas) {
+    try {
+        console.log('🎨 添加二维码默认中心装饰...');
+        
+        const ctx = canvas.getContext('2d');
+        const qrSize = canvas.width;
+        const centerSize = Math.floor(qrSize * 0.15);
+        const centerX = (qrSize - centerSize) / 2;
+        const centerY = (qrSize - centerSize) / 2;
+        
+        // 绘制圆形背景
+        const radius = centerSize / 2;
+        ctx.beginPath();
+        ctx.arc(centerX + radius, centerY + radius, radius, 0, 2 * Math.PI);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
+        
+        // 绘制紫色边框
+        ctx.beginPath();
+        ctx.arc(centerX + radius, centerY + radius, radius - 2, 0, 2 * Math.PI);
+        ctx.strokeStyle = '#8B5CF6';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // 绘制渐变背景
+        const gradient = ctx.createRadialGradient(
+            centerX + radius, centerY + radius, 0,
+            centerX + radius, centerY + radius, radius - 2
+        );
+        gradient.addColorStop(0, '#A855F7');
+        gradient.addColorStop(1, '#8B5CF6');
+        
+        ctx.beginPath();
+        ctx.arc(centerX + radius, centerY + radius, radius - 2, 0, 2 * Math.PI);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        
+        // 绘制爱心图标
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `${centerSize * 0.5}px serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('💜', centerX + radius, centerY + radius);
+        
+        console.log('✅ 默认中心装饰添加成功');
+        
+    } catch (error) {
+        console.error('❌ 添加默认装饰失败:', error);
+    }
+}
