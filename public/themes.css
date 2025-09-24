@@ -20,47 +20,55 @@
     overflow: hidden;
 }
 
-/* 🌸 浪漫樱花 - 多层飘落效果 */
+/* 🌸 浪漫樱花 - 真正的随机分散效果 */
 [data-theme="theme1"] .view-container::before {
-    content: '🌸🌺🌷💮🏵️🌸🌺🌷💮🏵️🌸🌺🌷💮🏵️🌸🌺🌷💮🏵️';
+    content: '🌸      🌺           🌷       💮             🏵️     🌸          🌺       🌷     💮        🏵️';
     position: absolute;
-    top: -100px;
+    top: 10%;
     left: 0;
-    right: 0;
-    bottom: 0;
-    font-size: 2.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-around;
+    width: 100%;
+    height: 100%;
+    font-size: 2rem;
     opacity: 0.2;
-    animation: sakuraFall 12s linear infinite;
+    letter-spacing: 5vw;
+    line-height: 15vh;
+    animation: sakuraFloat1 12s ease-in-out infinite;
     pointer-events: none;
     z-index: 1;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 [data-theme="theme1"] .view-container::after {
-    content: '🌸💐🌺🌷💮🌸💐🌺🌷💮🌸💐🌺🌷💮';
+    content: '       🌺     🌷              💮         🏵️           🌸       🌺    🌷         💮     🏵️';
     position: absolute;
-    top: -150px;
+    top: 30%;
     left: 0;
-    right: 0;
-    bottom: 0;
-    font-size: 1.8rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    font-size: 1.5rem;
     opacity: 0.15;
-    animation: sakuraFall 18s linear infinite;
+    letter-spacing: 6vw;
+    line-height: 12vh;
+    animation: sakuraFloat2 18s ease-in-out infinite;
     animation-delay: -6s;
     pointer-events: none;
     z-index: 0;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
-@keyframes sakuraFall {
-    0% { transform: translateY(-100px) rotate(0deg); }
-    100% { transform: translateY(calc(100vh + 100px)) rotate(360deg); }
+@keyframes sakuraFloat1 {
+    0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+    25% { transform: translateY(-10px) rotate(5deg) scale(1.05); }
+    50% { transform: translateY(5px) rotate(-3deg) scale(0.95); }
+    75% { transform: translateY(-5px) rotate(2deg) scale(1.02); }
+}
+
+@keyframes sakuraFloat2 {
+    0%, 100% { transform: translateX(0) rotate(0deg) scale(1); }
+    33% { transform: translateX(8px) rotate(3deg) scale(1.03); }
+    66% { transform: translateX(-5px) rotate(-2deg) scale(0.97); }
 }
 
 [data-theme="theme1"] .memory-viewer {
@@ -146,42 +154,42 @@
     overflow: hidden;
 }
 
-/* 💜 甜蜜爱心 - 多层跳动爱心效果 */
+/* 💜 甜蜜爱心 - 分散跳动爱心效果 */
 [data-theme="theme2"] .view-container::before {
-    content: '💜❤️💖💕💝💜❤️💖💕💝💜❤️💖💕💝💜❤️💖💕💝';
+    content: '💜    ❤️        💖     💕          💝   💜       ❤️    💖       💕    💝';
     position: absolute;
-    top: 0;
+    top: 15%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 2rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: space-around;
-    justify-content: space-around;
     opacity: 0.2;
+    letter-spacing: 4vw;
+    line-height: 12vh;
     animation: heartBounce 3s ease-in-out infinite;
     pointer-events: none;
     z-index: 1;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 [data-theme="theme2"] .view-container::after {
-    content: '💗💘💓💞💜💗💘💓💞💜💗💘💓💞💜';
+    content: '     💗     💘           💓      💞        💜     💗   💘      💓   💞';
     position: absolute;
-    top: 0;
+    top: 35%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 1.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
     opacity: 0.15;
+    letter-spacing: 5vw;
+    line-height: 10vh;
     animation: heartPulse 4s ease-in-out infinite;
     animation-delay: -1.5s;
     pointer-events: none;
     z-index: 0;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 @keyframes heartBounce {
@@ -285,42 +293,42 @@
     overflow: hidden;
 }
 
-/* 🌹 优雅玫瑰 - 多层玫瑰花园效果 */
+/* 🌹 优雅玫瑰 - 分散玫瑰花园效果 */
 [data-theme="theme3"] .view-container::before {
-    content: '🌹🥀🌺🌷🌸🌹🥀🌺🌷🌸🌹🥀🌺🌷🌸🌹🥀🌺🌷🌸';
+    content: '🌹     🥀       🌺    🌷         🌸   🌹      🥀    🌺      🌷   🌸';
     position: absolute;
-    top: 0;
+    top: 12%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 2.2rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: space-around;
-    justify-content: space-around;
     opacity: 0.18;
+    letter-spacing: 4.5vw;
+    line-height: 14vh;
     animation: roseGarden 15s ease-in-out infinite;
     pointer-events: none;
     z-index: 1;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 [data-theme="theme3"] .view-container::after {
-    content: '💐🌹🌺🏵️💮🌷💐🌹🌺🏵️💮🌷💐🌹🌺🏵️💮🌷';
+    content: '      💐   🌹        🌺     🏵️       💮   🌷     💐   🌹   🌺';
     position: absolute;
-    top: 0;
+    top: 32%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 1.8rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
     opacity: 0.12;
+    letter-spacing: 5.5vw;
+    line-height: 11vh;
     animation: roseBreeze 20s ease-in-out infinite;
     animation-delay: -7s;
     pointer-events: none;
     z-index: 0;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 @keyframes roseGarden {
@@ -444,42 +452,42 @@
     overflow: hidden;
 }
 
-/* 🌟 梦幻星光 - 多层星空闪烁效果 + emoji星星 */
+/* ✨ 梦幻星光 - 分散星空闪烁效果 */
 [data-theme="theme4"] .view-container::before {
-    content: '✨⭐🌟💫⚡✨⭐🌟💫⚡✨⭐🌟💫⚡✨⭐🌟💫⚡✨⭐🌟💫⚡';
+    content: '✨     ⭐        🌟    💫         ⚡   ✨       ⭐   🌟        💫   ⚡';
     position: absolute;
-    top: 0;
+    top: 8%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 2rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: space-around;
-    justify-content: space-around;
     opacity: 0.3;
+    letter-spacing: 6vw;
+    line-height: 16vh;
     animation: starSparkle 6s ease-in-out infinite;
     pointer-events: none;
     z-index: 1;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 [data-theme="theme4"] .view-container::after {
-    content: '🌠✨⭐🌟💫🌠✨⭐🌟💫🌠✨⭐🌟💫🌠✨⭐🌟💫';
+    content: '       🌠  ✨         ⭐     🌟        💫   🌠    ✨    ⭐      🌟';
     position: absolute;
-    top: 0;
+    top: 28%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 1.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
     opacity: 0.2;
+    letter-spacing: 7vw;
+    line-height: 13vh;
     animation: starShower 8s ease-in-out infinite;
     animation-delay: -3s;
     pointer-events: none;
     z-index: 0;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 @keyframes starSparkle {
@@ -594,42 +602,42 @@
     overflow: hidden;
 }
 
-/* 🎂 生日蛋糕 - 超级庆祝派对效果 */
+/* 🎂 生日蛋糕 - 分散庆祝派对效果 */
 [data-theme="theme5"] .view-container::before {
-    content: '🎉🎊🎈🎁🎂🍰🧁🎉🎊🎈🎁🎂🍰🧁🎉🎊🎈🎁🎂🍰🧁🎉🎊🎈🎁🎂🍰🧁';
+    content: '🎉   🎊      🎈    🎁        🎂  🍰     🧁   🎉     🎊  🎈';
     position: absolute;
-    top: 0;
+    top: 5%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 2.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: space-around;
-    justify-content: space-around;
     opacity: 0.2;
+    letter-spacing: 3.5vw;
+    line-height: 11vh;
     animation: partyExplosion 8s ease-in-out infinite;
     pointer-events: none;
     z-index: 1;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 [data-theme="theme5"] .view-container::after {
-    content: '🪩🎪🎨🎭🎵🎶🪩🎪🎨🎭🎵🎶🪩🎪🎨🎭🎵🎶🪩🎪🎨🎭🎵🎶';
+    content: '     🪩  🎪       🎨   🎭      🎵    🎶  🪩      🎪   🎨';
     position: absolute;
-    top: 0;
+    top: 25%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 1.8rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
     opacity: 0.15;
+    letter-spacing: 4.5vw;
+    line-height: 9vh;
     animation: partyVibes 12s ease-in-out infinite;
     animation-delay: -4s;
     pointer-events: none;
     z-index: 0;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 @keyframes partyExplosion {
@@ -757,42 +765,42 @@
     overflow: hidden;
 }
 
-/* 🦄 独角兽梦 - 梦幻彩虹效果 */
+/* 🦄 独角兽梦 - 分散梦幻彩虹效果 */
 [data-theme="theme6"] .view-container::before {
-    content: '🦄🌈✨💖🌟🦄🌈✨💖🌟🦄🌈✨💖🌟🦄🌈✨💖🌟🦄🌈✨💖🌟';
+    content: '🦄     🌈      ✨     💖        🌟   🦄     🌈    ✨       💖  🌟';
     position: absolute;
-    top: 0;
+    top: 6%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 2.3rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: space-around;
-    justify-content: space-around;
     opacity: 0.25;
+    letter-spacing: 4vw;
+    line-height: 13vh;
     animation: unicornDream 10s ease-in-out infinite;
     pointer-events: none;
     z-index: 1;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 [data-theme="theme6"] .view-container::after {
-    content: '🧚‍♀️💫🌙⭐🎀🧚‍♀️💫🌙⭐🎀🧚‍♀️💫🌙⭐🎀🧚‍♀️💫🌙⭐🎀';
+    content: '      🧚‍♀️   💫       🌙    ⭐      🎀   🧚‍♀️     💫   🌙    ⭐';
     position: absolute;
-    top: 0;
+    top: 26%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 1.6rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
     opacity: 0.2;
+    letter-spacing: 5vw;
+    line-height: 10vh;
     animation: fairyMagic 14s ease-in-out infinite;
     animation-delay: -5s;
     pointer-events: none;
     z-index: 0;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 @keyframes unicornDream {
@@ -907,42 +915,42 @@
     overflow: hidden;
 }
 
-/* 🌺 热带花园 - 超级热带花朵效果 */
+/* 🌺 热带花园 - 分散热带花朵效果 */
 [data-theme="theme7"] .view-container::before {
-    content: '🌺🌸🌻🏵️🌷🌼🌹💐🌺🌸🌻🏵️🌷🌼🌹💐🌺🌸🌻🏵️🌷🌼🌹💐🌺🌸🌻🏵️🌷🌼🌹💐';
+    content: '🌺   🌸      🌻   🏵️       🌷  🌼     🌹   💐     🌺   🌸';
     position: absolute;
-    top: 0;
+    top: 3%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 2.8rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: space-around;
-    justify-content: space-around;
     opacity: 0.2;
+    letter-spacing: 3vw;
+    line-height: 10vh;
     animation: tropicalBloom 12s ease-in-out infinite;
     pointer-events: none;
     z-index: 1;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 [data-theme="theme7"] .view-container::after {
-    content: '🌿🍃🌱🌾🦋🐝🌿🍃🌱🌾🦋🐝🌿🍃🌱🌾🦋🐝🌿🍃🌱🌾🦋🐝';
+    content: '      🌿  🍃      🌱    🌾      🦋   🐝    🌿     🍃  🌱     🌾';
     position: absolute;
-    top: 0;
+    top: 23%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 1.8rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
     opacity: 0.15;
+    letter-spacing: 4vw;
+    line-height: 8vh;
     animation: tropicalBreeze 16s ease-in-out infinite;
     animation-delay: -6s;
     pointer-events: none;
     z-index: 0;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 @keyframes tropicalBloom {
@@ -1059,42 +1067,42 @@
     overflow: hidden;
 }
 
-/* 💎 钻石闪耀 - 超级钻石闪烁效果 */
+/* 💎 钻石闪耀 - 分散钻石闪烁效果 */
 [data-theme="theme8"] .view-container::before {
-    content: '💎✨⭐🌟💫💍💎✨⭐🌟💫💍💎✨⭐🌟💫💍💎✨⭐🌟💫💍💎✨⭐🌟💫💍';
+    content: '💎    ✨       ⭐    🌟        💫  💍     💎   ✨      ⭐   🌟';
     position: absolute;
-    top: 0;
+    top: 8%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 2.2rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: space-around;
-    justify-content: space-around;
     opacity: 0.3;
+    letter-spacing: 5vw;
+    line-height: 15vh;
     animation: diamondDazzle 6s ease-in-out infinite;
     pointer-events: none;
     z-index: 1;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 [data-theme="theme8"] .view-container::after {
-    content: '🔮✨💠🔸🔹⚡🔮✨💠🔸🔹⚡🔮✨💠🔸🔹⚡🔮✨💠🔸🔹⚡';
+    content: '      🔮  ✨       💠   🔸      🔹    ⚡  🔮      ✨  💠      🔸';
     position: absolute;
-    top: 0;
+    top: 28%;
     left: 0;
-    right: 0;
-    bottom: 0;
+    width: 100%;
+    height: 100%;
     font-size: 1.8rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
     opacity: 0.25;
+    letter-spacing: 6vw;
+    line-height: 12vh;
     animation: jewelGlow 8s ease-in-out infinite;
     animation-delay: -3s;
     pointer-events: none;
     z-index: 0;
+    white-space: pre-wrap;
+    overflow: hidden;
 }
 
 @keyframes diamondDazzle {
