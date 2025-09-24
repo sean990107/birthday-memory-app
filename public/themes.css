@@ -1,6 +1,6 @@
-/* 🚀 革命性主题系统 - 完全不同的布局和视觉体验 */
+/* 💝 生日浪漫主题系统 - 为女朋友精心设计的8种美丽主题 */
 
-/* 基础紫色变量 */
+/* 基础紫色变量 - 保持温馨浪漫基调 */
 :root {
     --base-purple: #8B5CF6;
     --base-purple-light: #A855F7;
@@ -8,642 +8,900 @@
     --base-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-/* 主题1: 📱 手机式卡片 - 像社交媒体一样 */
+/* 主题1: 🌸 浪漫樱花 - 温馨粉嫩，樱花飘落 */
 [data-theme="theme1"] {
-    --theme-name: "社交卡片";
-    --emoji: "📱";
+    --theme-name: "浪漫樱花";
+    --emoji: "🌸";
+}
+
+[data-theme="theme1"] .view-container {
+    background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 50%, #e0e7ff 100%);
 }
 
 [data-theme="theme1"] .memory-viewer {
-    max-width: 400px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(236, 72, 153, 0.2);
+    box-shadow: 
+        0 20px 40px rgba(236, 72, 153, 0.15),
+        0 0 0 1px rgba(255, 255, 255, 0.8);
     border-radius: 25px;
-    background: white;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    position: relative;
     overflow: hidden;
-    transform: none;
-    animation: none;
-}
-
-[data-theme="theme1"] .memory-header {
-    background: linear-gradient(135deg, var(--base-purple), var(--base-purple-light));
-    color: white;
-    padding: 20px;
-    text-align: left;
-    margin-bottom: 0;
-}
-
-[data-theme="theme1"] .memory-title-view {
-    color: white;
-    font-size: 1.3rem;
-    margin: 0;
-    font-weight: 600;
-}
-
-[data-theme="theme1"] .memory-content {
-    padding: 0;
-    margin: 0;
-}
-
-[data-theme="theme1"] .memory-actions-view {
-    padding: 20px;
-    background: #f8f9fa;
-    gap: 8px;
-}
-
-[data-theme="theme1"] .btn-action {
-    flex: 1;
-    font-size: 0.9rem;
-    padding: 10px 15px;
-}
-
-/* 主题2: 🖼️ 杂志风格 - 大图配小字 */
-[data-theme="theme2"] {
-    --theme-name: "时尚杂志";
-    --emoji: "🖼️";
-}
-
-[data-theme="theme2"] .view-container {
-    padding: 0;
-    min-height: 100vh;
-}
-
-[data-theme="theme2"] .memory-viewer {
-    max-width: none;
-    width: 100vw;
-    height: 100vh;
-    border-radius: 0;
-    display: flex;
-    flex-direction: column;
-    background: white;
-    box-shadow: none;
-}
-
-[data-theme="theme2"] .memory-content {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #000;
-    margin: 0;
-}
-
-[data-theme="theme2"] .memory-content img,
-[data-theme="theme2"] .image-swiper {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-[data-theme="theme2"] .memory-header {
-    position: absolute;
-    bottom: 120px;
-    left: 30px;
-    right: 30px;
-    z-index: 10;
-    background: rgba(0,0,0,0.7);
-    padding: 25px;
-    border-radius: 15px;
     backdrop-filter: blur(20px);
 }
 
-[data-theme="theme2"] .memory-title-view {
-    color: white;
-    font-size: 2.5rem;
-    font-weight: 300;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin: 0;
-}
-
-[data-theme="theme2"] .memory-actions-view {
+[data-theme="theme1"] .memory-viewer::before {
+    content: '🌸';
     position: absolute;
-    bottom: 30px;
-    left: 30px;
-    right: 30px;
-    z-index: 10;
-}
-
-/* 主题3: 💌 信件风格 - 复古怀旧 */
-[data-theme="theme3"] {
-    --theme-name: "复古信件";
-    --emoji: "💌";
-}
-
-[data-theme="theme3"] .memory-viewer {
-    background: #f9f7f4;
-    border: none;
-    box-shadow: 
-        0 0 0 8px #e8e6e1,
-        0 0 0 16px #d4d1cc,
-        0 15px 50px rgba(0,0,0,0.2);
-    border-radius: 0;
-    position: relative;
-    font-family: 'Dancing Script', cursive;
-}
-
-[data-theme="theme3"] .memory-viewer::before {
-    content: '📮';
-    position: absolute;
-    top: -20px;
+    top: -10px;
     right: 20px;
     font-size: 2rem;
-    transform: rotate(15deg);
+    animation: sakuraFloat 4s ease-in-out infinite alternate;
     z-index: 10;
 }
 
-[data-theme="theme3"] .memory-title-view {
-    color: #8B5CF6;
-    font-family: 'Dancing Script', cursive;
-    font-size: 2.8rem;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 10px;
-    position: relative;
-}
-
-[data-theme="theme3"] .memory-title-view::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 2px;
-    background: #8B5CF6;
-}
-
-[data-theme="theme3"] .memory-content {
-    padding: 20px;
-    border: 2px dashed #8B5CF6;
-    margin: 20px;
-    border-radius: 10px;
-    background: rgba(139, 92, 246, 0.05);
-}
-
-[data-theme="theme3"] .memory-actions-view {
-    justify-content: space-around;
-    padding: 30px;
-}
-
-[data-theme="theme3"] .btn-action {
-    background: #8B5CF6;
-    color: white;
-    border: none;
-    border-radius: 20px;
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.1rem;
-    font-weight: 600;
-    min-width: 120px;
-}
-
-/* 主题4: 🌟 极简主义 - 留白美学 */
-[data-theme="theme4"] {
-    --theme-name: "极简留白";
-    --emoji: "🌟";
-}
-
-[data-theme="theme4"] .memory-viewer {
-    background: white;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    padding: 60px;
-    max-width: 600px;
-}
-
-[data-theme="theme4"] .memory-header {
-    margin-bottom: 60px;
-    padding: 0;
-}
-
-[data-theme="theme4"] .memory-title-view {
-    color: #333;
-    font-size: 1.8rem;
-    font-weight: 300;
-    letter-spacing: 3px;
-    text-align: left;
-    margin: 0;
-    position: relative;
-}
-
-[data-theme="theme4"] .memory-title-view::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: -15px;
-    width: 30px;
-    height: 2px;
-    background: #8B5CF6;
-}
-
-[data-theme="theme4"] .memory-content {
-    margin: 60px 0;
-    position: relative;
-}
-
-[data-theme="theme4"] .memory-content img,
-[data-theme="theme4"] .image-swiper {
-    border-radius: 0;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-}
-
-[data-theme="theme4"] .memory-actions-view {
-    justify-content: flex-start;
-    gap: 30px;
-}
-
-[data-theme="theme4"] .btn-action {
-    background: none;
-    border: 1px solid #333;
-    color: #333;
-    border-radius: 0;
-    padding: 15px 30px;
-    font-weight: 300;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    font-size: 0.8rem;
-    transition: all 0.3s ease;
-}
-
-[data-theme="theme4"] .btn-action:hover {
-    background: #333;
-    color: white;
-    transform: none;
-    box-shadow: none;
-}
-
-/* 主题5: 🎬 电影海报风 - 戏剧化呈现 */
-[data-theme="theme5"] {
-    --theme-name: "电影海报";
-    --emoji: "🎬";
-}
-
-[data-theme="theme5"] .view-container {
-    background: #1a1a1a;
-    padding: 0;
-}
-
-[data-theme="theme5"] .memory-viewer {
-    background: #000;
-    border-radius: 0;
-    max-width: none;
-    width: 100%;
-    min-height: 100vh;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-}
-
-[data-theme="theme5"] .memory-content {
-    flex: 1;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-[data-theme="theme5"] .memory-content::before {
+[data-theme="theme1"] .memory-viewer::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.8) 70%);
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(252, 165, 165, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(244, 114, 182, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(196, 181, 253, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes sakuraFloat {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(-8px) rotate(10deg); }
+}
+
+[data-theme="theme1"] .memory-title-view {
+    color: #ec4899;
+    font-weight: 600;
+    position: relative;
     z-index: 2;
 }
 
-[data-theme="theme5"] .memory-content img,
-[data-theme="theme5"] .image-swiper {
-    width: 100%;
-    height: 100vh;
-    object-fit: cover;
-    filter: contrast(1.2) saturate(1.3);
+[data-theme="theme1"] .memory-content,
+[data-theme="theme1"] .memory-actions-view,
+[data-theme="theme1"] .memory-header {
+    position: relative;
+    z-index: 2;
 }
 
-[data-theme="theme5"] .memory-header {
+[data-theme="theme1"] .btn-action {
+    background: linear-gradient(135deg, #ec4899, #f472b6);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+}
+
+[data-theme="theme1"] .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.4);
+}
+
+/* 主题2: 💕 甜蜜爱心 - 爱心飘动，粉紫渐变 */
+[data-theme="theme2"] {
+    --theme-name: "甜蜜爱心";
+    --emoji: "💕";
+}
+
+[data-theme="theme2"] .view-container {
+    background: linear-gradient(135deg, #fce7f3 0%, #f3e8ff 50%, #ddd6fe 100%);
+}
+
+[data-theme="theme2"] .memory-viewer {
+    background: rgba(255, 255, 255, 0.98);
+    border: 3px solid rgba(219, 39, 119, 0.2);
+    box-shadow: 
+        0 25px 50px rgba(219, 39, 119, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-radius: 30px;
+    position: relative;
+    overflow: hidden;
+    animation: gentleHeartbeat 3s ease-in-out infinite;
+}
+
+@keyframes gentleHeartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+[data-theme="theme2"] .memory-viewer::before {
+    content: '';
     position: absolute;
-    bottom: 150px;
+    top: 0;
     left: 0;
     right: 0;
-    text-align: center;
-    z-index: 10;
-    padding: 0 40px;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 15% 15%, rgba(236, 72, 153, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 85% 25%, rgba(219, 39, 119, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 70% 85%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 25% 75%, rgba(244, 114, 182, 0.1) 0%, transparent 40%);
+    pointer-events: none;
+    z-index: 1;
 }
 
-[data-theme="theme5"] .memory-title-view {
-    color: #fff;
-    font-size: 4rem;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 5px;
-    text-shadow: 
-        0 0 10px rgba(139, 92, 246, 0.8),
-        0 0 20px rgba(139, 92, 246, 0.6),
-        0 0 40px rgba(139, 92, 246, 0.4);
-    margin: 0;
-    animation: neonGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes neonGlow {
-    0% { text-shadow: 0 0 10px rgba(139, 92, 246, 0.8), 0 0 20px rgba(139, 92, 246, 0.6), 0 0 40px rgba(139, 92, 246, 0.4); }
-    100% { text-shadow: 0 0 20px rgba(139, 92, 246, 1), 0 0 40px rgba(139, 92, 246, 0.8), 0 0 80px rgba(139, 92, 246, 0.6); }
-}
-
-[data-theme="theme5"] .memory-actions-view {
+[data-theme="theme2"] .memory-viewer::after {
+    content: '💕';
     position: absolute;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 15px;
+    right: 25px;
+    font-size: 1.8rem;
+    animation: heartFloat 2s ease-in-out infinite alternate;
     z-index: 10;
 }
 
-[data-theme="theme5"] .btn-action {
-    background: rgba(139, 92, 246, 0.8);
-    border: 2px solid #8B5CF6;
+@keyframes heartFloat {
+    0% { transform: translateY(0) scale(1); }
+    100% { transform: translateY(-5px) scale(1.1); }
+}
+
+[data-theme="theme2"] .memory-title-view {
+    color: #db2777;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(219, 39, 119, 0.2);
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme2"] .memory-content,
+[data-theme="theme2"] .memory-actions-view,
+[data-theme="theme2"] .memory-header {
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme2"] .btn-action {
+    background: linear-gradient(135deg, #db2777, #ec4899);
     color: white;
-    border-radius: 0;
-    padding: 15px 25px;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 5px 15px rgba(219, 39, 119, 0.3);
+}
+
+[data-theme="theme2"] .btn-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(219, 39, 119, 0.4);
+}
+
+/* 主题3: 🌹 优雅玫瑰 - 经典浪漫，玫瑰装饰 */
+[data-theme="theme3"] {
+    --theme-name: "优雅玫瑰";
+    --emoji: "🌹";
+}
+
+[data-theme="theme3"] .view-container {
+    background: linear-gradient(135deg, #fef3f2 0%, #fdf2f8 50%, #f5f3ff 100%);
+}
+
+[data-theme="theme3"] .memory-viewer {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(190, 18, 60, 0.2);
+    box-shadow: 
+        0 20px 40px rgba(190, 18, 60, 0.12),
+        0 0 0 1px rgba(255, 255, 255, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="theme3"] .memory-viewer::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background: 
+        radial-gradient(circle at 10% 10%, rgba(190, 18, 60, 0.08) 0%, transparent 30%),
+        radial-gradient(circle at 90% 20%, rgba(157, 23, 77, 0.06) 0%, transparent 30%),
+        radial-gradient(circle at 80% 90%, rgba(168, 85, 247, 0.06) 0%, transparent 30%);
+    animation: roseGlow 8s ease-in-out infinite alternate;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes roseGlow {
+    0% { opacity: 0.6; transform: rotate(0deg); }
+    100% { opacity: 1; transform: rotate(1deg); }
+}
+
+[data-theme="theme3"] .memory-viewer::after {
+    content: '🌹';
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 1.8rem;
+    animation: roseFloat 3s ease-in-out infinite alternate;
+    z-index: 10;
+    filter: drop-shadow(0 2px 4px rgba(190, 18, 60, 0.3));
+}
+
+@keyframes roseFloat {
+    0% { transform: translateY(0) rotate(-3deg); }
+    100% { transform: translateY(-6px) rotate(3deg); }
+}
+
+[data-theme="theme3"] .memory-header {
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme3"] .memory-header::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    right: 20px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, #be123c 20%, #a21caf 80%, transparent 100%);
+    border-radius: 2px;
+}
+
+[data-theme="theme3"] .memory-title-view {
+    color: #be123c;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-family: 'Georgia', serif;
+    text-shadow: 0 1px 3px rgba(190, 18, 60, 0.2);
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme3"] .memory-content,
+[data-theme="theme3"] .memory-actions-view {
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme3"] .btn-action {
+    background: linear-gradient(135deg, #be123c, #a21caf);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(190, 18, 60, 0.3);
+    font-family: 'Georgia', serif;
+}
+
+[data-theme="theme3"] .btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(190, 18, 60, 0.4);
+}
+
+/* 主题4: ✨ 梦幻星光 - 闪烁星光，梦幻渐变 */
+[data-theme="theme4"] {
+    --theme-name: "梦幻星光";
+    --emoji: "✨";
+}
+
+[data-theme="theme4"] .view-container {
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="theme4"] .view-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.3) 1px, transparent 2px),
+        radial-gradient(circle at 60% 30%, rgba(255, 255, 255, 0.2) 1px, transparent 2px),
+        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.4) 1px, transparent 2px),
+        radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.2) 1px, transparent 2px),
+        radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.3) 1px, transparent 2px);
+    background-size: 100px 100px, 150px 150px, 200px 200px, 120px 120px, 80px 80px;
+    animation: starTwinkle 8s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes starTwinkle {
+    0% { transform: translate(0, 0); opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { transform: translate(-10px, -10px); opacity: 1; }
+}
+
+[data-theme="theme4"] .memory-viewer {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(139, 92, 246, 0.5);
+    box-shadow: 
+        0 25px 50px rgba(139, 92, 246, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+}
+
+[data-theme="theme4"] .memory-viewer::before {
+    content: '✨';
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 1.8rem;
+    animation: starGlow 2s ease-in-out infinite alternate;
+    z-index: 10;
+    filter: drop-shadow(0 0 5px #fff);
+}
+
+@keyframes starGlow {
+    0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 5px #fff); }
+    100% { transform: scale(1.1) rotate(10deg); filter: drop-shadow(0 0 10px #8B5CF6); }
+}
+
+[data-theme="theme4"] .memory-viewer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        linear-gradient(45deg, transparent 49%, rgba(255, 255, 255, 0.1) 50%, transparent 51%),
+        linear-gradient(-45deg, transparent 49%, rgba(255, 255, 255, 0.05) 50%, transparent 51%);
+    animation: starlight 4s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes starlight {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+[data-theme="theme4"] .memory-title-view {
+    color: #fff;
+    font-weight: 600;
+    text-shadow: 
+        0 0 10px rgba(255, 255, 255, 0.5),
+        0 0 20px rgba(139, 92, 246, 0.8);
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme4"] .memory-content,
+[data-theme="theme4"] .memory-actions-view,
+[data-theme="theme4"] .memory-header {
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme4"] .btn-action {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.8), rgba(168, 85, 247, 0.8));
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
     backdrop-filter: blur(10px);
 }
 
-/* 主题6: 🏛️ 博物馆展示风 - 艺术感 */
+[data-theme="theme4"] .btn-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.6);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* 主题5: 🎂 生日蛋糕 - 生日元素，庆祝氛围 */
+[data-theme="theme5"] {
+    --theme-name: "生日蛋糕";
+    --emoji: "🎂";
+}
+
+[data-theme="theme5"] .view-container {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 30%, #f59e0b 70%, #d97706 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="theme5"] .view-container::before {
+    content: '🎉🎁🎈🎂🍰🎊';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: space-around;
+    justify-content: space-around;
+    opacity: 0.1;
+    animation: celebration 10s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes celebration {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+[data-theme="theme5"] .memory-viewer {
+    background: rgba(255, 255, 255, 0.95);
+    border: 3px solid #f59e0b;
+    box-shadow: 
+        0 25px 50px rgba(245, 158, 11, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-radius: 25px;
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="theme5"] .memory-viewer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 15% 20%, rgba(245, 158, 11, 0.1) 0%, transparent 30%),
+        radial-gradient(circle at 85% 30%, rgba(249, 115, 22, 0.08) 0%, transparent 30%),
+        radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 30%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+[data-theme="theme5"] .memory-viewer::after {
+    content: '🎂';
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 2rem;
+    animation: cakeBounce 2s ease-in-out infinite;
+    z-index: 10;
+    filter: drop-shadow(0 2px 6px rgba(245, 158, 11, 0.4));
+}
+
+@keyframes cakeBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-8px) scale(1.1); }
+}
+
+[data-theme="theme5"] .memory-header {
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme5"] .memory-header::before {
+    content: '🎈🎉🎊';
+    position: absolute;
+    top: -25px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 1.5rem;
+    animation: partyFloat 3s ease-in-out infinite alternate;
+}
+
+@keyframes partyFloat {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-5px); }
+}
+
+[data-theme="theme5"] .memory-title-view {
+    color: #f59e0b;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme5"] .memory-content,
+[data-theme="theme5"] .memory-actions-view {
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme5"] .btn-action {
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+    font-weight: 600;
+}
+
+[data-theme="theme5"] .btn-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.6);
+}
+
+/* 主题6: 🦄 独角兽梦 - 彩虹渐变，少女心满满 */
 [data-theme="theme6"] {
-    --theme-name: "艺术展廊";
-    --emoji: "🏛️";
+    --theme-name: "独角兽梦";
+    --emoji: "🦄";
 }
 
 [data-theme="theme6"] .view-container {
-    background: #f5f5f5;
-    padding: 40px 20px;
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #a8edea 75%, #fed6e3 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="theme6"] .view-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 182, 193, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 30%, rgba(221, 160, 221, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 60% 80%, rgba(173, 216, 230, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 30% 70%, rgba(255, 240, 245, 0.4) 0%, transparent 50%);
+    animation: unicornMagic 12s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes unicornMagic {
+    0% { transform: rotate(0deg) scale(1); opacity: 0.8; }
+    50% { transform: rotate(180deg) scale(1.1); opacity: 1; }
+    100% { transform: rotate(360deg) scale(1); opacity: 0.8; }
 }
 
 [data-theme="theme6"] .memory-viewer {
-    background: white;
-    border-radius: 0;
-    max-width: 800px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 3px solid rgba(255, 182, 193, 0.5);
     box-shadow: 
-        0 0 0 1px #e0e0e0,
-        0 0 0 8px white,
-        0 0 0 9px #e0e0e0,
-        0 20px 40px rgba(0,0,0,0.1);
-    padding: 40px;
+        0 30px 60px rgba(255, 182, 193, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-radius: 30px;
     position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(15px);
 }
 
 [data-theme="theme6"] .memory-viewer::before {
     content: '';
     position: absolute;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 8px;
-    background: linear-gradient(90deg, #8B5CF6, #A855F7);
-    border-radius: 4px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, 
+        rgba(255, 182, 193, 0.1) 0%,
+        rgba(221, 160, 221, 0.1) 25%,
+        rgba(173, 216, 230, 0.1) 50%,
+        rgba(255, 240, 245, 0.1) 75%,
+        rgba(255, 182, 193, 0.1) 100%);
+    animation: rainbowShimmer 6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
 }
 
-[data-theme="theme6"] .memory-header {
-    margin-bottom: 40px;
-    text-align: center;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #e0e0e0;
+@keyframes rainbowShimmer {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+[data-theme="theme6"] .memory-viewer::after {
+    content: '🦄';
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 2rem;
+    animation: unicornFloat 3s ease-in-out infinite alternate;
+    z-index: 10;
+    filter: drop-shadow(0 2px 8px rgba(255, 182, 193, 0.6));
+}
+
+@keyframes unicornFloat {
+    0% { transform: translateY(0) rotate(-5deg) scale(1); }
+    100% { transform: translateY(-10px) rotate(5deg) scale(1.1); }
 }
 
 [data-theme="theme6"] .memory-title-view {
-    color: #2d2d2d;
-    font-size: 2.2rem;
-    font-weight: 400;
-    margin: 0;
-    font-family: 'Times New Roman', serif;
-    letter-spacing: 1px;
+    background: linear-gradient(135deg, #ff6b9d, #c44569, #6c5ce7, #00b894);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+    text-shadow: 0 2px 10px rgba(255, 182, 193, 0.3);
+    position: relative;
+    z-index: 2;
 }
 
-[data-theme="theme6"] .memory-date-simple {
-    color: #888;
-    font-size: 0.9rem;
-    margin-top: 8px;
-    font-style: italic;
-}
-
-[data-theme="theme6"] .memory-content {
-    text-align: center;
-    margin: 40px 0;
-}
-
-[data-theme="theme6"] .memory-content img,
-[data-theme="theme6"] .image-swiper {
-    max-width: 100%;
-    height: auto;
-    border: 10px solid white;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-}
-
-[data-theme="theme6"] .memory-actions-view {
-    justify-content: center;
-    gap: 20px;
-    padding-top: 30px;
-    border-top: 1px solid #e0e0e0;
+[data-theme="theme6"] .memory-content,
+[data-theme="theme6"] .memory-actions-view,
+[data-theme="theme6"] .memory-header {
+    position: relative;
+    z-index: 2;
 }
 
 [data-theme="theme6"] .btn-action {
-    background: white;
-    border: 2px solid #8B5CF6;
-    color: #8B5CF6;
-    border-radius: 0;
-    padding: 12px 24px;
-    font-weight: 500;
-    text-transform: uppercase;
-    font-size: 0.85rem;
-    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4, #a8edea, #fed6e3);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 5px 15px rgba(255, 182, 193, 0.4);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-/* 主题7: 💫 未来科幻风 - 赛博朋克 */
+[data-theme="theme6"] .btn-action:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 182, 193, 0.6);
+}
+
+/* 主题7: 🌺 热带花园 - 热带花朵，温暖明亮 */
 [data-theme="theme7"] {
-    --theme-name: "赛博未来";
-    --emoji: "💫";
+    --theme-name: "热带花园";
+    --emoji: "🌺";
 }
 
 [data-theme="theme7"] .view-container {
-    background: radial-gradient(ellipse at center, #0a0a0a 0%, #1a0033 100%);
-    padding: 20px;
+    background: linear-gradient(135deg, #ff6a88 0%, #ff9472 25%, #f9ca24 50%, #6c5ce7 75%, #a29bfe 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="theme7"] .view-container::before {
+    content: '🌺🌸🌻🏵️🌷🌺🌸🌻';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: space-around;
+    justify-content: space-around;
+    opacity: 0.15;
+    animation: tropicalSway 15s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes tropicalSway {
+    0% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(10px) rotate(2deg); }
+    50% { transform: translateX(0) rotate(0deg); }
+    75% { transform: translateX(-10px) rotate(-2deg); }
+    100% { transform: translateX(0) rotate(0deg); }
 }
 
 [data-theme="theme7"] .memory-viewer {
-    background: linear-gradient(145deg, #1a1a2e, #16213e);
-    border: 2px solid #8B5CF6;
-    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 3px solid rgba(255, 106, 136, 0.4);
     box-shadow: 
-        0 0 50px rgba(139, 92, 246, 0.3),
-        inset 0 0 50px rgba(139, 92, 246, 0.1);
+        0 25px 50px rgba(255, 106, 136, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-radius: 25px;
     position: relative;
     overflow: hidden;
-    animation: cyberGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes cyberGlow {
-    0% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.3), inset 0 0 30px rgba(139, 92, 246, 0.1); }
-    100% { box-shadow: 0 0 60px rgba(139, 92, 246, 0.6), inset 0 0 60px rgba(139, 92, 246, 0.2); }
+    backdrop-filter: blur(10px);
 }
 
 [data-theme="theme7"] .memory-viewer::before {
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.3), transparent);
-    animation: cyberScan 4s linear infinite;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(255, 106, 136, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 30%, rgba(255, 148, 114, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 60% 80%, rgba(249, 202, 36, 0.08) 0%, transparent 40%);
+    animation: tropicalGlow 10s ease-in-out infinite alternate;
+    pointer-events: none;
     z-index: 1;
 }
 
-@keyframes cyberScan {
-    0% { left: -100%; }
-    100% { left: 100%; }
+@keyframes tropicalGlow {
+    0% { opacity: 0.6; }
+    100% { opacity: 1; }
 }
 
-[data-theme="theme7"] .memory-title-view {
-    color: #00ff88;
-    font-family: 'Courier New', monospace;
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px #00ff88;
-    margin: 0;
-    position: relative;
-    z-index: 2;
-}
-
-[data-theme="theme7"] .memory-content {
-    position: relative;
-    z-index: 2;
-    margin: 30px 0;
-}
-
-[data-theme="theme7"] .memory-content img,
-[data-theme="theme7"] .image-swiper {
-    border: 2px solid #8B5CF6;
-    border-radius: 8px;
-    box-shadow: 0 0 30px rgba(139, 92, 246, 0.5);
-    filter: saturate(1.2) contrast(1.1);
-}
-
-[data-theme="theme7"] .btn-action {
-    background: linear-gradient(145deg, #8B5CF6, #A855F7);
-    border: 1px solid #00ff88;
-    color: white;
-    border-radius: 5px;
-    padding: 12px 20px;
-    font-family: 'Courier New', monospace;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-    letter-spacing: 1px;
-    position: relative;
-    overflow: hidden;
-    z-index: 2;
-}
-
-/* 主题8: 🌸 日式和风 - 禅意简约 */
-[data-theme="theme8"] {
-    --theme-name: "和风禅意";
-    --emoji: "🌸";
-}
-
-[data-theme="theme8"] .view-container {
-    background: linear-gradient(135deg, #f5f1eb 0%, #e8ddd4 100%);
-    padding: 30px;
-}
-
-[data-theme="theme8"] .memory-viewer {
-    background: #faf8f5;
-    border: none;
-    border-radius: 12px;
-    box-shadow: 
-        0 8px 25px rgba(139, 92, 246, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    position: relative;
-    max-width: 600px;
-    padding: 35px;
-}
-
-[data-theme="theme8"] .memory-viewer::after {
-    content: '🌸';
+[data-theme="theme7"] .memory-viewer::after {
+    content: '🌺';
     position: absolute;
     top: 20px;
     right: 25px;
-    font-size: 1.5rem;
-    opacity: 0.6;
-    animation: sakuraFloat 4s ease-in-out infinite alternate;
+    font-size: 2rem;
+    animation: flowerDance 4s ease-in-out infinite;
+    z-index: 10;
+    filter: drop-shadow(0 2px 6px rgba(255, 106, 136, 0.4));
 }
 
-@keyframes sakuraFloat {
-    0% { transform: translateY(0) rotate(0deg); }
-    100% { transform: translateY(-8px) rotate(5deg); }
+@keyframes flowerDance {
+    0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+    25% { transform: translateY(-5px) rotate(5deg) scale(1.05); }
+    50% { transform: translateY(-8px) rotate(-3deg) scale(1.1); }
+    75% { transform: translateY(-3px) rotate(3deg) scale(1.05); }
+}
+
+[data-theme="theme7"] .memory-title-view {
+    color: #ff6a88;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(255, 106, 136, 0.3);
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme7"] .memory-content,
+[data-theme="theme7"] .memory-actions-view,
+[data-theme="theme7"] .memory-header {
+    position: relative;
+    z-index: 2;
+}
+
+[data-theme="theme7"] .btn-action {
+    background: linear-gradient(135deg, #ff6a88, #ff9472);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    box-shadow: 0 5px 15px rgba(255, 106, 136, 0.4);
+    font-weight: 600;
+}
+
+[data-theme="theme7"] .btn-action:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(255, 106, 136, 0.6);
+}
+
+/* 主题8: 💎 钻石闪耀 - 钻石光效，奢华浪漫 */
+[data-theme="theme8"] {
+    --theme-name: "钻石闪耀";
+    --emoji: "💎";
+}
+
+[data-theme="theme8"] .view-container {
+    background: linear-gradient(135deg, #1e1e2e 0%, #2d1b69 50%, #11172b 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="theme8"] .view-container::before {
+    content: '✨💎✨💎✨💎✨💎';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: space-around;
+    justify-content: space-around;
+    opacity: 0.2;
+    animation: diamondSparkle 8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes diamondSparkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.1); }
+}
+
+[data-theme="theme8"] .memory-viewer {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(139, 92, 246, 0.6);
+    box-shadow: 
+        0 30px 60px rgba(139, 92, 246, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 0 4px rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(25px);
+    animation: diamondGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes diamondGlow {
+    0% { 
+        box-shadow: 
+            0 30px 60px rgba(139, 92, 246, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1),
+            0 0 0 4px rgba(255, 255, 255, 0.05);
+    }
+    100% { 
+        box-shadow: 
+            0 35px 70px rgba(139, 92, 246, 0.6),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2),
+            0 0 0 6px rgba(255, 255, 255, 0.1);
+    }
+}
+
+[data-theme="theme8"] .memory-viewer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        conic-gradient(from 0deg, 
+            rgba(139, 92, 246, 0.15) 0deg,
+            rgba(168, 85, 247, 0.1) 90deg,
+            rgba(236, 72, 153, 0.1) 180deg,
+            rgba(139, 92, 246, 0.15) 270deg,
+            rgba(139, 92, 246, 0.15) 360deg);
+    animation: diamondRotate 12s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+@keyframes diamondRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+[data-theme="theme8"] .memory-viewer::after {
+    content: '💎';
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    font-size: 2rem;
+    animation: diamondFloat 3s ease-in-out infinite alternate;
+    z-index: 10;
+    filter: drop-shadow(0 0 10px #8B5CF6);
+}
+
+@keyframes diamondFloat {
+    0% { 
+        transform: translateY(0) scale(1); 
+        filter: drop-shadow(0 0 10px #8B5CF6);
+    }
+    100% { 
+        transform: translateY(-8px) scale(1.1); 
+        filter: drop-shadow(0 0 15px #A855F7) drop-shadow(0 0 25px #8B5CF6);
+    }
 }
 
 [data-theme="theme8"] .memory-title-view {
-    color: #8B5CF6;
-    font-size: 2rem;
-    font-weight: 300;
-    text-align: center;
-    margin: 0 0 25px 0;
+    color: #fff;
+    font-weight: 700;
+    text-shadow: 
+        0 0 10px rgba(139, 92, 246, 0.8),
+        0 0 20px rgba(168, 85, 247, 0.6),
+        0 2px 4px rgba(0, 0, 0, 0.3);
     position: relative;
-    padding-bottom: 15px;
+    z-index: 2;
 }
 
-[data-theme="theme8"] .memory-title-view::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #8B5CF6, transparent);
-}
-
-[data-theme="theme8"] .memory-content {
-    margin: 35px 0;
-    text-align: center;
-}
-
-[data-theme="theme8"] .memory-content img,
-[data-theme="theme8"] .image-swiper {
-    border-radius: 8px;
-    box-shadow: 0 12px 35px rgba(0,0,0,0.08);
-    border: 1px solid rgba(139, 92, 246, 0.1);
-}
-
-[data-theme="theme8"] .memory-actions-view {
-    justify-content: center;
-    gap: 15px;
-    margin-top: 35px;
+[data-theme="theme8"] .memory-content,
+[data-theme="theme8"] .memory-actions-view,
+[data-theme="theme8"] .memory-header {
+    position: relative;
+    z-index: 2;
 }
 
 [data-theme="theme8"] .btn-action {
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1));
-    border: 1px solid rgba(139, 92, 246, 0.3);
-    color: #8B5CF6;
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-weight: 400;
-    font-size: 0.9rem;
+    background: linear-gradient(135deg, 
+        rgba(139, 92, 246, 0.8), 
+        rgba(168, 85, 247, 0.8), 
+        rgba(139, 92, 246, 0.8));
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
+    box-shadow: 
+        0 5px 15px rgba(139, 92, 246, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    font-weight: 600;
     backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="theme8"] .btn-action:hover {
-    background: linear-gradient(135deg, #8B5CF6, #A855F7);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.3);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 
+        0 8px 25px rgba(139, 92, 246, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.6);
 }
 
 /* 🎯 默认样式（当没有特殊主题时） */
