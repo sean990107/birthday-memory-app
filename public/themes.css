@@ -16,6 +16,51 @@
 
 [data-theme="theme1"] .view-container {
     background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 50%, #ddd6fe 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 🌸 浪漫樱花 - 多层飘落效果 */
+[data-theme="theme1"] .view-container::before {
+    content: '🌸🌺🌷💮🏵️🌸🌺🌷💮🏵️🌸🌺🌷💮🏵️🌸🌺🌷💮🏵️';
+    position: absolute;
+    top: -100px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 2.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-around;
+    opacity: 0.2;
+    animation: sakuraFall 12s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+[data-theme="theme1"] .view-container::after {
+    content: '🌸💐🌺🌷💮🌸💐🌺🌷💮🌸💐🌺🌷💮';
+    position: absolute;
+    top: -150px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    opacity: 0.15;
+    animation: sakuraFall 18s linear infinite;
+    animation-delay: -6s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes sakuraFall {
+    0% { transform: translateY(-100px) rotate(0deg); }
+    100% { transform: translateY(calc(100vh + 100px)) rotate(360deg); }
 }
 
 [data-theme="theme1"] .memory-viewer {
@@ -97,6 +142,58 @@
 
 [data-theme="theme2"] .view-container {
     background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 50%, #c7d2fe 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 💜 甜蜜爱心 - 多层跳动爱心效果 */
+[data-theme="theme2"] .view-container::before {
+    content: '💜❤️💖💕💝💜❤️💖💕💝💜❤️💖💕💝💜❤️💖💕💝';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: space-around;
+    justify-content: space-around;
+    opacity: 0.2;
+    animation: heartBounce 3s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+[data-theme="theme2"] .view-container::after {
+    content: '💗💘💓💞💜💗💘💓💞💜💗💘💓💞💜';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0.15;
+    animation: heartPulse 4s ease-in-out infinite;
+    animation-delay: -1.5s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes heartBounce {
+    0%, 100% { transform: translateY(0) scale(1); }
+    25% { transform: translateY(-10px) scale(1.1); }
+    50% { transform: translateY(0) scale(1); }
+    75% { transform: translateY(-5px) scale(1.05); }
+}
+
+@keyframes heartPulse {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.15; }
+    50% { transform: scale(1.2) rotate(180deg); opacity: 0.25; }
 }
 
 [data-theme="theme2"] .memory-viewer {
@@ -184,6 +281,59 @@
 
 [data-theme="theme3"] .view-container {
     background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 50%, #c7d2fe 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* 🌹 优雅玫瑰 - 多层玫瑰花园效果 */
+[data-theme="theme3"] .view-container::before {
+    content: '🌹🥀🌺🌷🌸🌹🥀🌺🌷🌸🌹🥀🌺🌷🌸🌹🥀🌺🌷🌸';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 2.2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: space-around;
+    justify-content: space-around;
+    opacity: 0.18;
+    animation: roseGarden 15s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+[data-theme="theme3"] .view-container::after {
+    content: '💐🌹🌺🏵️💮🌷💐🌹🌺🏵️💮🌷💐🌹🌺🏵️💮🌷';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0.12;
+    animation: roseBreeze 20s ease-in-out infinite;
+    animation-delay: -7s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes roseGarden {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-8px) rotate(2deg); }
+    50% { transform: translateY(0) rotate(0deg); }
+    75% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+@keyframes roseBreeze {
+    0%, 100% { transform: translateX(0) rotate(0deg) scale(1); }
+    33% { transform: translateX(5px) rotate(1deg) scale(1.02); }
+    66% { transform: translateX(-3px) rotate(-1deg) scale(0.98); }
 }
 
 [data-theme="theme3"] .memory-viewer {
@@ -294,22 +444,54 @@
     overflow: hidden;
 }
 
+/* 🌟 梦幻星光 - 多层星空闪烁效果 + emoji星星 */
 [data-theme="theme4"] .view-container::before {
-    content: '';
+    content: '✨⭐🌟💫⚡✨⭐🌟💫⚡✨⭐🌟💫⚡✨⭐🌟💫⚡✨⭐🌟💫⚡';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.3) 1px, transparent 2px),
-        radial-gradient(circle at 60% 30%, rgba(255, 255, 255, 0.2) 1px, transparent 2px),
-        radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.4) 1px, transparent 2px),
-        radial-gradient(circle at 30% 80%, rgba(255, 255, 255, 0.2) 1px, transparent 2px),
-        radial-gradient(circle at 90% 20%, rgba(255, 255, 255, 0.3) 1px, transparent 2px);
-    background-size: 100px 100px, 150px 150px, 200px 200px, 120px 120px, 80px 80px;
-    animation: starTwinkle 8s linear infinite;
+    font-size: 2rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: space-around;
+    justify-content: space-around;
+    opacity: 0.3;
+    animation: starSparkle 6s ease-in-out infinite;
     pointer-events: none;
+    z-index: 1;
+}
+
+[data-theme="theme4"] .view-container::after {
+    content: '🌠✨⭐🌟💫🌠✨⭐🌟💫🌠✨⭐🌟💫🌠✨⭐🌟💫';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0.2;
+    animation: starShower 8s ease-in-out infinite;
+    animation-delay: -3s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes starSparkle {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.3; }
+    25% { transform: scale(1.2) rotate(90deg); opacity: 0.5; }
+    50% { transform: scale(0.8) rotate(180deg); opacity: 0.2; }
+    75% { transform: scale(1.1) rotate(270deg); opacity: 0.4; }
+}
+
+@keyframes starShower {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.2; }
+    50% { transform: translateY(-20px) rotate(180deg); opacity: 0.4; }
 }
 
 @keyframes starTwinkle {
@@ -412,21 +594,55 @@
     overflow: hidden;
 }
 
+/* 🎂 生日蛋糕 - 超级庆祝派对效果 */
 [data-theme="theme5"] .view-container::before {
-    content: '🎉🎁🎈🎂🍰🎊';
+    content: '🎉🎊🎈🎁🎂🍰🧁🎉🎊🎈🎁🎂🍰🧁🎉🎊🎈🎁🎂🍰🧁🎉🎊🎈🎁🎂🍰🧁';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    font-size: 2rem;
+    font-size: 2.5rem;
     display: flex;
     flex-wrap: wrap;
     align-items: space-around;
     justify-content: space-around;
-    opacity: 0.1;
-    animation: celebration 10s linear infinite;
+    opacity: 0.2;
+    animation: partyExplosion 8s ease-in-out infinite;
     pointer-events: none;
+    z-index: 1;
+}
+
+[data-theme="theme5"] .view-container::after {
+    content: '🪩🎪🎨🎭🎵🎶🪩🎪🎨🎭🎵🎶🪩🎪🎨🎭🎵🎶🪩🎪🎨🎭🎵🎶';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0.15;
+    animation: partyVibes 12s ease-in-out infinite;
+    animation-delay: -4s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes partyExplosion {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.3) rotate(90deg); }
+    50% { transform: scale(0.8) rotate(180deg); }
+    75% { transform: scale(1.1) rotate(270deg); }
+}
+
+@keyframes partyVibes {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.15; }
+    33% { transform: translateY(-15px) scale(1.1); opacity: 0.25; }
+    66% { transform: translateY(10px) scale(0.9); opacity: 0.1; }
 }
 
 @keyframes celebration {
@@ -541,20 +757,54 @@
     overflow: hidden;
 }
 
+/* 🦄 独角兽梦 - 梦幻彩虹效果 */
 [data-theme="theme6"] .view-container::before {
-    content: '';
+    content: '🦄🌈✨💖🌟🦄🌈✨💖🌟🦄🌈✨💖🌟🦄🌈✨💖🌟🦄🌈✨💖🌟';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 20%, rgba(255, 182, 193, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 30%, rgba(221, 160, 221, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 60% 80%, rgba(173, 216, 230, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 30% 70%, rgba(255, 240, 245, 0.4) 0%, transparent 50%);
-    animation: unicornMagic 12s linear infinite;
+    font-size: 2.3rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: space-around;
+    justify-content: space-around;
+    opacity: 0.25;
+    animation: unicornDream 10s ease-in-out infinite;
     pointer-events: none;
+    z-index: 1;
+}
+
+[data-theme="theme6"] .view-container::after {
+    content: '🧚‍♀️💫🌙⭐🎀🧚‍♀️💫🌙⭐🎀🧚‍♀️💫🌙⭐🎀🧚‍♀️💫🌙⭐🎀';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 1.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0.2;
+    animation: fairyMagic 14s ease-in-out infinite;
+    animation-delay: -5s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes unicornDream {
+    0%, 100% { transform: scale(1) rotate(0deg); filter: hue-rotate(0deg); }
+    25% { transform: scale(1.1) rotate(90deg); filter: hue-rotate(90deg); }
+    50% { transform: scale(0.9) rotate(180deg); filter: hue-rotate(180deg); }
+    75% { transform: scale(1.05) rotate(270deg); filter: hue-rotate(270deg); }
+}
+
+@keyframes fairyMagic {
+    0%, 100% { transform: translateY(0) scale(1); opacity: 0.2; }
+    50% { transform: translateY(-10px) scale(1.15); opacity: 0.35; }
 }
 
 @keyframes unicornMagic {
@@ -657,21 +907,55 @@
     overflow: hidden;
 }
 
+/* 🌺 热带花园 - 超级热带花朵效果 */
 [data-theme="theme7"] .view-container::before {
-    content: '🌺🌸🌻🏵️🌷🌺🌸🌻';
+    content: '🌺🌸🌻🏵️🌷🌼🌹💐🌺🌸🌻🏵️🌷🌼🌹💐🌺🌸🌻🏵️🌷🌼🌹💐🌺🌸🌻🏵️🌷🌼🌹💐';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     display: flex;
     flex-wrap: wrap;
     align-items: space-around;
     justify-content: space-around;
-    opacity: 0.15;
-    animation: tropicalSway 15s linear infinite;
+    opacity: 0.2;
+    animation: tropicalBloom 12s ease-in-out infinite;
     pointer-events: none;
+    z-index: 1;
+}
+
+[data-theme="theme7"] .view-container::after {
+    content: '🌿🍃🌱🌾🦋🐝🌿🍃🌱🌾🦋🐝🌿🍃🌱🌾🦋🐝🌿🍃🌱🌾🦋🐝';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0.15;
+    animation: tropicalBreeze 16s ease-in-out infinite;
+    animation-delay: -6s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes tropicalBloom {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.15) rotate(5deg); }
+    50% { transform: scale(0.85) rotate(0deg); }
+    75% { transform: scale(1.05) rotate(-3deg); }
+}
+
+@keyframes tropicalBreeze {
+    0%, 100% { transform: translateX(0) rotate(0deg); opacity: 0.15; }
+    33% { transform: translateX(8px) rotate(2deg); opacity: 0.25; }
+    66% { transform: translateX(-5px) rotate(-1deg); opacity: 0.1; }
 }
 
 @keyframes tropicalSway {
@@ -775,21 +1059,54 @@
     overflow: hidden;
 }
 
+/* 💎 钻石闪耀 - 超级钻石闪烁效果 */
 [data-theme="theme8"] .view-container::before {
-    content: '✨💎✨💎✨💎✨💎';
+    content: '💎✨⭐🌟💫💍💎✨⭐🌟💫💍💎✨⭐🌟💫💍💎✨⭐🌟💫💍💎✨⭐🌟💫💍';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    font-size: 1.5rem;
+    font-size: 2.2rem;
     display: flex;
     flex-wrap: wrap;
     align-items: space-around;
     justify-content: space-around;
-    opacity: 0.2;
-    animation: diamondSparkle 8s ease-in-out infinite;
+    opacity: 0.3;
+    animation: diamondDazzle 6s ease-in-out infinite;
     pointer-events: none;
+    z-index: 1;
+}
+
+[data-theme="theme8"] .view-container::after {
+    content: '🔮✨💠🔸🔹⚡🔮✨💠🔸🔹⚡🔮✨💠🔸🔹⚡🔮✨💠🔸🔹⚡';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    font-size: 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    opacity: 0.25;
+    animation: jewelGlow 8s ease-in-out infinite;
+    animation-delay: -3s;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes diamondDazzle {
+    0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+    25% { transform: scale(1.2) rotate(90deg); filter: brightness(1.5); }
+    50% { transform: scale(0.8) rotate(180deg); filter: brightness(0.8); }
+    75% { transform: scale(1.1) rotate(270deg); filter: brightness(1.3); }
+}
+
+@keyframes jewelGlow {
+    0%, 100% { transform: scale(1); opacity: 0.25; filter: brightness(1); }
+    50% { transform: scale(1.15); opacity: 0.4; filter: brightness(1.5) hue-rotate(60deg); }
 }
 
 @keyframes diamondSparkle {
