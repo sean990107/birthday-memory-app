@@ -263,6 +263,17 @@
             color: var(--primary-purple);
             border: 2px solid var(--primary-purple);
         }
+        
+        .btn-refresh {
+            background: linear-gradient(135deg, #10B981, #34D399);
+            color: white;
+            border: none;
+        }
+        
+        .btn-refresh:hover {
+            background: linear-gradient(135deg, #059669, #10B981);
+            transform: translateY(-2px) scale(1.02);
+        }
 
         .btn-action:hover {
             transform: translateY(-2px);
@@ -608,43 +619,49 @@
                 { id: 'theme8', name: '梦幻气泡', emoji: '🫧' }
             ];
             
-            // 根据URL ID生成相对固定但看起来随机的主题选择
-            const memoryId = getUrlParameter('id') || 'default';
-            let hash = 0;
-            for (let i = 0; i < memoryId.length; i++) {
-                const char = memoryId.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash; // 转为32位整数
-            }
-            
-            // 使用时间因子增加随机性，但同一天内相同ID会显示相同主题
-            const dayOfYear = Math.floor((Date.now() / (1000 * 60 * 60 * 24)) % 365);
-            const themeIndex = Math.abs(hash + dayOfYear) % themes.length;
+            // 🎲 真正的随机主题选择 - 每次打开都不一样！
+            // 使用当前时间戳 + 随机数，确保每次打开都是不同主题
+            const now = Date.now();
+            const randomSeed = Math.random() * 1000000;
+            const timeBasedRandom = Math.sin(now * 0.001 + randomSeed) * 10000;
+            const themeIndex = Math.floor(Math.abs(timeBasedRandom)) % themes.length;
             const selectedTheme = themes[themeIndex];
             
-            console.log('🎨 选择主题:', selectedTheme.name, selectedTheme.emoji);
+            console.log('🎲 随机主题选择:', selectedTheme.name, selectedTheme.emoji, `(索引: ${themeIndex})`);
             
             // 应用主题到文档
             document.documentElement.setAttribute('data-theme', selectedTheme.id);
             document.body.classList.add('theme-transition');
             
-            // 显示主题标识
+            // 显示主题标识，并提醒这是随机的
             setTimeout(() => {
-                showThemeIndicator(selectedTheme);
+                showThemeIndicator(selectedTheme, true);
             }, 500);
             
             return selectedTheme;
         }
         
         // 显示主题标识
-        function showThemeIndicator(theme) {
+        function showThemeIndicator(theme, isRandom = false) {
             const indicator = document.createElement('div');
             indicator.className = 'theme-indicator';
-            indicator.innerHTML = `${theme.emoji} ${theme.name}`;
+            
+            // 如果是随机模式，显示更明显的提示
+            if (isRandom) {
+                indicator.innerHTML = `🎲 ${theme.emoji} ${theme.name} <small style="display:block;font-size:0.7rem;opacity:0.8;margin-top:2px;">随机主题惊喜</small>`;
+                indicator.style.background = 'linear-gradient(135deg, rgba(139, 92, 246, 0.95), rgba(168, 85, 247, 0.9))';
+                indicator.style.color = 'white';
+                indicator.style.border = '2px solid rgba(255, 255, 255, 0.3)';
+                indicator.style.boxShadow = '0 8px 25px rgba(139, 92, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)';
+            } else {
+                indicator.innerHTML = `${theme.emoji} ${theme.name}`;
+            }
             
             document.body.appendChild(indicator);
             
-            // 3秒后淡出
+            // 随机主题显示更久一点，让用户注意到
+            const displayDuration = isRandom ? 4000 : 3000;
+            
             setTimeout(() => {
                 indicator.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
                 indicator.style.opacity = '0';
@@ -654,7 +671,7 @@
                         indicator.parentNode.removeChild(indicator);
                     }
                 }, 500);
-            }, 3000);
+            }, displayDuration);
         }
 
         function setupViewEventListeners() {
@@ -846,6 +863,10 @@
                         <i class="fas fa-download"></i>
                         下载文件
                     </button>
+                    <button class="btn-action btn-refresh" onclick="refreshTheme()" title="刷新获得新主题">
+                        <i class="fas fa-palette"></i>
+                        换个主题
+                    </button>
                 </div>
             `;
 
@@ -918,6 +939,28 @@
             }, 1000);
         }
 
+        // 🎨 刷新主题功能
+        function refreshTheme() {
+            // 添加刷新动画
+            document.body.style.transition = 'filter 0.3s ease';
+            document.body.style.filter = 'blur(3px)';
+            
+            setTimeout(() => {
+                // 重新选择随机主题
+                selectRandomTheme();
+                
+                // 移除模糊效果
+                setTimeout(() => {
+                    document.body.style.filter = 'none';
+                    document.body.style.transition = '';
+                }, 100);
+                
+                // 显示提示
+                showNotification('🎲 已切换到新主题！刷新页面体验更多样式', 'success');
+                
+            }, 300);
+        }
+        
         function downloadMemory() {
             const memory = window.currentMemory;
             if (!memory) return;
