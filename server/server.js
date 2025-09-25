@@ -158,8 +158,12 @@ const upload = multer({
     },
     fileFilter: (req, file, cb) => {
         const allowedTypes = [
+            // 图片格式
             'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
-            'audio/mp3', 'audio/wav', 'audio/m4a', 'audio/mpeg', 'audio/ogg', 'audio/webm', 'audio/mp4'
+            // 音频格式
+            'audio/mp3', 'audio/wav', 'audio/m4a', 'audio/mpeg', 'audio/ogg', 'audio/webm', 'audio/mp4',
+            // 📹 视频格式
+            'video/mp4', 'video/webm', 'video/ogg', 'video/avi', 'video/mov', 'video/wmv', 'video/flv'
         ];
         
         if (allowedTypes.includes(file.mimetype)) {
@@ -250,7 +254,8 @@ app.post('/api/upload-files-only', uploadLimiter, upload.array('files', 10), asy
 
         for (const file of req.files) {
             const fileId = uuidv4();
-            const type = file.mimetype.startsWith('image/') ? 'image' : 'audio';
+            const type = file.mimetype.startsWith('image/') ? 'image' : 
+                         file.mimetype.startsWith('video/') ? 'video' : 'audio';
             
             let thumbnailPath = null;
             let metadata = {};
@@ -329,7 +334,8 @@ app.post('/api/upload', uploadLimiter, upload.array('files', 10), async (req, re
 
         for (const file of req.files) {
             const memoryId = uuidv4();
-            const type = file.mimetype.startsWith('image/') ? 'image' : 'audio';
+            const type = file.mimetype.startsWith('image/') ? 'image' : 
+                         file.mimetype.startsWith('video/') ? 'video' : 'audio';
             
             let thumbnailPath = null;
             let metadata = {};

@@ -175,47 +175,46 @@
             transform: scale(1.02);
         }
 
-        .swiper-button-prev,
-        .swiper-button-next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(139, 92, 246, 0.8);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 10;
-        }
-
-        .swiper-button-prev {
-            left: 20px;
-        }
-
-        .swiper-button-next {
-            right: 20px;
-        }
-
-        .swiper-button-prev:hover,
-        .swiper-button-next:hover {
-            background: rgba(139, 92, 246, 1);
-            transform: translateY(-50%) scale(1.1);
-        }
-
-        .swiper-pagination {
+        .swiper-controls {
             position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 10px;
-            z-index: 10;
+            align-items: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(5px);
+        }
+
+        .swiper-button-prev,
+        .swiper-button-next {
+            background: rgba(139, 92, 246, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+        }
+
+        .swiper-button-prev:hover,
+        .swiper-button-next:hover {
+            background: rgba(139, 92, 246, 1);
+            transform: scale(1.1);
+        }
+
+        .swiper-pagination {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         .swiper-pagination-bullet {
@@ -975,6 +974,21 @@
                         </audio>
                     </div>
                 `;
+            } else if (memory.type === 'video') {
+                // 📹 处理视频类型
+                contentHtml = `
+                    <div class="video-container">
+                        <div class="video-player">
+                            <video controls preload="metadata" style="width: 100%; max-height: 75vh; border-radius: 15px; object-fit: contain;">
+                                <source src="${fileURL}" type="${memory.mimeType || 'video/mp4'}">
+                                您的浏览器不支持视频播放。
+                            </video>
+                        </div>
+                        <div class="video-info">
+                            <h4>🎬 ${displayName}</h4>
+                        </div>
+                    </div>
+                `;
             }
 
             // 构建录音笔记HTML
@@ -1364,18 +1378,21 @@
                         `).join('')}
                         
                         ${images.length > 1 ? `
-                            <button class="swiper-button-prev" onclick="previousImage()">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button class="swiper-button-next" onclick="nextImage()">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
-                            
-                            <div class="swiper-pagination">
-                                ${images.map((_, index) => `
-                                    <button class="swiper-pagination-bullet ${index === 0 ? 'active' : ''}" 
-                                            onclick="goToImage(${index})" data-index="${index}"></button>
-                                `).join('')}
+                            <div class="swiper-controls">
+                                <button class="swiper-button-prev" onclick="previousImage()">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                
+                                <div class="swiper-pagination">
+                                    ${images.map((_, index) => `
+                                        <button class="swiper-pagination-bullet ${index === 0 ? 'active' : ''}" 
+                                                onclick="goToImage(${index})" data-index="${index}"></button>
+                                    `).join('')}
+                                </div>
+                                
+                                <button class="swiper-button-next" onclick="nextImage()">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
                             </div>
                         ` : ''}
                     </div>
@@ -1405,6 +1422,54 @@
             
             // 添加键盘支持
             document.addEventListener('keydown', handleSwiperKeyboard);
+            
+            // 🤏 添加触摸滑动支持
+            const swiperContainer = document.getElementById('imageSwiper');
+            if (swiperContainer) {
+                let startX = 0;
+                let startY = 0;
+                let isScrolling = false;
+                
+                swiperContainer.addEventListener('touchstart', (e) => {
+                    startX = e.touches[0].pageX;
+                    startY = e.touches[0].pageY;
+                    isScrolling = false;
+                }, { passive: true });
+                
+                swiperContainer.addEventListener('touchmove', (e) => {
+                    if (!startX || !startY) return;
+                    
+                    const diffX = e.touches[0].pageX - startX;
+                    const diffY = e.touches[0].pageY - startY;
+                    
+                    // 判断是水平滑动还是垂直滚动
+                    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 10) {
+                        isScrolling = false;
+                        e.preventDefault(); // 阻止垂直滚动
+                    } else if (Math.abs(diffY) > 10) {
+                        isScrolling = true;
+                    }
+                }, { passive: false });
+                
+                swiperContainer.addEventListener('touchend', (e) => {
+                    if (isScrolling || !startX) return;
+                    
+                    const diffX = (e.changedTouches[0] || e.touches[0]).pageX - startX;
+                    const threshold = 50; // 滑动阈值
+                    
+                    if (Math.abs(diffX) > threshold) {
+                        if (diffX > 0) {
+                            previousImage(); // 向右滑动，显示上一张
+                        } else {
+                            nextImage(); // 向左滑动，显示下一张
+                        }
+                    }
+                    
+                    startX = 0;
+                    startY = 0;
+                    isScrolling = false;
+                }, { passive: true });
+            }
             
             console.log('✅ 图片轮播初始化完成，共', images.length, '张图片');
         }
@@ -1551,6 +1616,8 @@
                 drawGalleryCard(ctx, memory, canvas.width, canvas.height);
             } else if (memory.type === 'audio') {
                 drawAudioCard(ctx, memory, canvas.width, canvas.height);
+            } else if (memory.type === 'video') {
+                drawVideoCard(ctx, memory, canvas.width, canvas.height);
             }
             
             // 添加底部信息
@@ -1669,6 +1736,44 @@
                 ctx.lineTo(x, 500 + height1);
                 ctx.stroke();
             }
+        }
+
+        // 📹 绘制视频卡片内容
+        function drawVideoCard(ctx, memory, width, height) {
+            // 为视频类型绘制特殊内容
+            ctx.fillStyle = '#8B5CF6';
+            ctx.font = '72px serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('🎬', width / 2, 380);
+            
+            ctx.font = '36px "Microsoft YaHei", sans-serif';
+            ctx.fillText('一段美好的视频回忆', width / 2, 450);
+            
+            // 绘制电影胶片边框
+            ctx.strokeStyle = '#A855F7';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(200, 480, 400, 80);
+            
+            // 绘制胶片孔
+            ctx.fillStyle = '#A855F7';
+            for (let i = 0; i < 8; i++) {
+                const x = 210 + i * 47;
+                ctx.fillRect(x, 485, 8, 15);
+                ctx.fillRect(x, 545, 8, 15);
+            }
+            
+            // 绘制播放按钮
+            ctx.fillStyle = 'rgba(139, 92, 246, 0.3)';
+            ctx.beginPath();
+            ctx.arc(width / 2, 520, 25, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.fillStyle = '#8B5CF6';
+            ctx.beginPath();
+            ctx.moveTo(width / 2 - 8, 505);
+            ctx.lineTo(width / 2 + 10, 520);
+            ctx.lineTo(width / 2 - 8, 535);
+            ctx.fill();
         }
 
         function drawCardFooter(ctx, memory, width, height) {

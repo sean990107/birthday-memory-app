@@ -206,9 +206,10 @@ async function handleFiles(files) {
 
     if (validFiles.length === 0) return;
 
-    // 🎨 分离图片和音频文件
+    // 🎨 分离图片、音频和视频文件
     const imageFiles = validFiles.filter(file => file.type.startsWith('image/'));
     const audioFiles = validFiles.filter(file => file.type.startsWith('audio/'));
+    const videoFiles = validFiles.filter(file => file.type.startsWith('video/'));
 
     showLoading();
 
@@ -226,6 +227,12 @@ async function handleFiles(files) {
                 if (audioFiles.length > 0) {
                     const audioMemories = await memoryAPI.uploadFiles(audioFiles);
                     memories.push(...audioMemories);
+                }
+                
+                // 📹 如果还有视频文件，单独上传
+                if (videoFiles.length > 0) {
+                    const videoMemories = await memoryAPI.uploadFiles(videoFiles);
+                    memories.push(...videoMemories);
                 }
             } else {
                 // 单文件上传（图片或音频）
@@ -259,8 +266,12 @@ async function handleFiles(files) {
 // 验证文件类型
 function isValidFile(file) {
     const validTypes = [
+        // 图片格式
         'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
-        'audio/mp3', 'audio/wav', 'audio/m4a', 'audio/mpeg', 'audio/ogg'
+        // 音频格式
+        'audio/mp3', 'audio/wav', 'audio/m4a', 'audio/mpeg', 'audio/ogg',
+        // 📹 视频格式
+        'video/mp4', 'video/webm', 'video/ogg', 'video/avi', 'video/mov', 'video/wmv', 'video/flv'
     ];
     return validTypes.includes(file.type);
 }
@@ -275,7 +286,8 @@ async function processFileLocally(file) {
                 id: generateId(),
                 name: file.name,
                 originalName: file.name,
-                type: file.type.startsWith('image/') ? 'image' : 'audio',
+                type: file.type.startsWith('image/') ? 'image' : 
+                      file.type.startsWith('video/') ? 'video' : 'audio',
                 mimeType: file.type,
                 data: e.target.result, // base64 data for local storage
                 uploadDate: new Date().toISOString(),
