@@ -398,54 +398,54 @@
             box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
         }
 
-        /* 悄悄话样式 - 彻底优化容器和字体大小 */
+        /* 悄悄话样式 - 调整为70%大小 */
         .whisper-section {
-            margin: 20px 0 25px 0; /* 大幅增加上下间距 */
-            padding: 15px 20px; /* 添加内边距 */
+            margin: 14px 0 18px 0; /* 70%大小 */
+            padding: 10px 14px; /* 70%大小 */
             text-align: center;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 60px; /* 设置最小高度 */
+            min-height: 42px; /* 70%大小 */
             width: 100%; /* 确保全宽 */
         }
 
         .whisper-text {
             color: #6D28D9;
-            font-size: 1.4rem !important; /* 进一步增大字体！ */
+            font-size: 1rem !important; /* 70%大小（1.4rem * 0.7） */
             font-style: italic;
             margin: 0;
-            padding: 15px 25px !important; /* 大幅增加内边距！ */
-            background: rgba(255, 255, 255, 0.95) !important; /* 增强背景 */
-            border-radius: 20px; /* 增大圆角 */
-            backdrop-filter: blur(12px); /* 增强模糊效果 */
-            display: block; /* 改为块级元素 */
+            padding: 10px 18px !important; /* 70%大小 */
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 14px; /* 70%大小 */
+            backdrop-filter: blur(8px); /* 稍微减少 */
+            display: block;
             width: auto;
-            max-width: 90%; /* 减少最大宽度限制 */
-            font-weight: 600 !important; /* 增加字重 */
-            min-height: 45px; /* 设置最小高度 */
-            line-height: 1.4 !important; /* 优化行高 */
-            white-space: normal; /* 允许换行 */
-            word-wrap: break-word; /* 允许单词换行 */
+            max-width: 90%;
+            font-weight: 600 !important;
+            min-height: 32px; /* 70%大小 */
+            line-height: 1.4 !important;
+            white-space: normal;
+            word-wrap: break-word;
             text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 20px rgba(109, 40, 217, 0.2) !important; /* 增强阴影 */
-            border: 2px solid rgba(255, 255, 255, 0.4); /* 增强边框 */
+            box-shadow: 0 4px 14px rgba(109, 40, 217, 0.2) !important; /* 70%大小 */
+            border: 1.5px solid rgba(255, 255, 255, 0.4); /* 70%大小 */
             transition: all 0.3s ease;
         }
 
         .whisper-text:hover {
-            transform: translateY(-2px) scale(1.02); /* 增强悬停效果 */
-            box-shadow: 0 8px 30px rgba(109, 40, 217, 0.35) !important;
+            transform: translateY(-1px) scale(1.01); /* 70%大小 */
+            box-shadow: 0 6px 21px rgba(109, 40, 217, 0.25) !important; /* 70%大小 */
             background: rgba(255, 255, 255, 0.98) !important;
         }
 
         .whisper-text i {
             color: #EC4899;
-            margin-right: 10px;
-            font-size: 1.5rem !important; /* 增大图标 */
+            margin-right: 7px; /* 70%大小 */
+            font-size: 1.1rem !important; /* 70%大小（1.5rem * 0.7） */
             vertical-align: middle;
             display: inline-block;
         }
@@ -517,22 +517,22 @@
         /* 响应式设计 - 移动端优化 */
         @media (max-width: 768px) {
             .whisper-section {
-                margin: 15px 0 20px 0;
-                padding: 10px 15px;
-                min-height: 50px;
+                margin: 10px 0 14px 0; /* 70%大小 */
+                padding: 7px 10px; /* 70%大小 */
+                min-height: 35px; /* 70%大小 */
             }
             
             .whisper-text {
-                font-size: 1.2rem !important; /* 移动端仍然保持较大字体 */
-                padding: 12px 18px !important;
+                font-size: 0.84rem !important; /* 70%大小（1.2rem * 0.7） */
+                padding: 8px 13px !important; /* 70%大小 */
                 max-width: 95%;
                 line-height: 1.4;
-                min-height: 40px;
+                min-height: 28px; /* 70%大小 */
             }
             
             .whisper-text i {
-                font-size: 1.3rem !important;
-                margin-right: 8px;
+                font-size: 0.9rem !important; /* 70%大小 */
+                margin-right: 6px; /* 70%大小 */
             }
             
             .audio-compact-header {
@@ -553,22 +553,22 @@
 
         @media (max-width: 480px) {
             .whisper-section {
-                margin: 12px 0 18px 0;
-                padding: 8px 10px;
-                min-height: 45px;
+                margin: 8px 0 13px 0; /* 70%大小 */
+                padding: 6px 7px; /* 70%大小 */
+                min-height: 32px; /* 70%大小 */
             }
             
             .whisper-text {
-                font-size: 1.1rem !important; /* 小屏幕仍然保持可读性 */
-                padding: 10px 15px !important;
-                border-radius: 16px;
-                min-height: 35px;
+                font-size: 0.77rem !important; /* 70%大小（1.1rem * 0.7） */
+                padding: 7px 11px !important; /* 70%大小 */
+                border-radius: 11px; /* 70%大小 */
+                min-height: 25px; /* 70%大小 */
                 max-width: 98%;
             }
             
             .whisper-text i {
-                font-size: 1.2rem !important;
-                margin-right: 6px;
+                font-size: 0.84rem !important; /* 70%大小 */
+                margin-right: 4px; /* 70%大小 */
             }
             
             .audio-compact-header {
@@ -585,21 +585,21 @@
         /* 大屏幕优化 */
         @media (min-width: 1200px) {
             .whisper-section {
-                margin: 25px 0 30px 0;
-                padding: 20px 25px;
-                min-height: 70px;
+                margin: 18px 0 21px 0; /* 70%大小 */
+                padding: 14px 18px; /* 70%大小 */
+                min-height: 49px; /* 70%大小 */
             }
             
             .whisper-text {
-                font-size: 1.6rem !important; /* 大屏幕更大字体 */
-                padding: 18px 30px !important;
-                border-radius: 22px;
-                min-height: 50px;
+                font-size: 1.12rem !important; /* 70%大小（1.6rem * 0.7） */
+                padding: 13px 21px !important; /* 70%大小 */
+                border-radius: 15px; /* 70%大小 */
+                min-height: 35px; /* 70%大小 */
             }
             
             .whisper-text i {
-                font-size: 1.7rem !important;
-                margin-right: 12px;
+                font-size: 1.19rem !important; /* 70%大小 */
+                margin-right: 8px; /* 70%大小 */
             }
             
             .audio-compact-header {
