@@ -153,7 +153,7 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 50 * 1024 * 1024, // 50MB限制
+        fileSize: 500 * 1024 * 1024, // 500MB限制，支持大视频文件
         files: 10 // 最多10个文件
     },
     fileFilter: (req, file, cb) => {

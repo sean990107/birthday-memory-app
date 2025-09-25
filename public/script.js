@@ -186,9 +186,9 @@ async function handleFiles(files) {
     
     // 检查文件大小（压缩后）
     for (let file of processedFiles) {
-        const maxSize = isConnected ? 50 * 1024 * 1024 : 10 * 1024 * 1024; // 服务器支持50MB，本地10MB
+        const maxSize = isConnected ? 500 * 1024 * 1024 : 50 * 1024 * 1024; // 服务器支持500MB，本地50MB
         if (file.size > maxSize) {
-            const sizeText = isConnected ? '50MB' : '10MB';
+            const sizeText = isConnected ? '500MB' : '50MB';
             showNotification(`文件 ${file.name} 过大（超过${sizeText}），请选择较小的文件`, 'error');
             return;
         }
