@@ -409,41 +409,53 @@ app.post('/api/upload', uploadLimiter, upload.array('files', 10), async (req, re
     }
 });
 
-// 更新回忆信息 - 简化版本
+// 更新回忆信息 - 完整功能保持不变  
 app.put('/api/memories/:id', async (req, res) => {
     try {
         const { displayName, description } = req.body;
         
-        // 直接使用 findOneAndUpdate，更简单可靠
-        const updatedMemory = await Memory.findOneAndUpdate(
-            { id: req.params.id },
-            {
-                $set: {
-                    displayName: displayName,
-                    description: description
-                }
-            },
-            { new: true }
-        );
+        // 基础数据验证
+        if (!req.params.id) {
+            return res.status(400).json({
+                success: false,
+                message: '缺少回忆ID'
+            });
+        }
         
-        if (!updatedMemory) {
+        const memory = await Memory.findOne({ id: req.params.id });
+        
+        if (!memory) {
             return res.status(404).json({
                 success: false,
                 message: '回忆不存在'
             });
         }
 
+        // 更新字段 - 保持原有逻辑，添加类型检查
+        if (displayName !== undefined && displayName !== null) {
+            memory.displayName = String(displayName);
+        }
+        if (description !== undefined && description !== null) {
+            memory.description = String(description);
+        }
+        
+        // 确保必需字段存在
+        if (!memory.name) memory.name = memory.originalName || 'untitled';
+        if (!memory.originalName) memory.originalName = memory.name || 'untitled';
+        
+        await memory.save();
+
         res.json({
             success: true,
             message: '回忆更新成功',
-            data: updatedMemory
+            data: memory
         });
 
     } catch (error) {
         console.error('更新回忆失败:', error);
         res.status(500).json({
             success: false,
-            message: '服务器内部错误',
+            message: '更新回忆失败',
             error: error.message
         });
     }
