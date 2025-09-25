@@ -416,9 +416,15 @@
             background: rgba(255, 255, 255, 0.8);
             border-radius: 12px;
             backdrop-filter: blur(3px);
-            display: inline-block;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
             max-width: 90%;
             font-weight: 400;
+            max-height: 3.5rem;
+            overflow: hidden;
+            line-height: 1.2;
+            text-overflow: ellipsis;
         }
 
         .whisper-text i {
