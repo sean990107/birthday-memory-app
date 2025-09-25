@@ -255,31 +255,19 @@ app.post('/api/upload-files-only', uploadLimiter, upload.array('files', 10), asy
             let thumbnailPath = null;
             let metadata = {};
 
-            // 为图片生成缩略图
+            // 🚫 客户端已压缩，跳过服务器端缩略图生成
             if (type === 'image') {
                 try {
-                    const thumbnailFilename = `thumb_${path.basename(file.path)}`;
-                    thumbnailPath = path.join(path.dirname(file.path), thumbnailFilename);
-                    
-                    await sharp(file.path)
-                        .resize(300, 300, { 
-                            fit: 'inside', 
-                            withoutEnlargement: true 
-                        })
-                        .jpeg({ quality: 85 })
-                        .toFile(thumbnailPath);
-                    
-                    console.log(`✅ 生成缩略图: ${thumbnailPath}`);
-                    
-                    // 获取图片元数据
+                    // 只获取图片元数据，不再生成缩略图
                     const imageMetadata = await sharp(file.path).metadata();
                     metadata = {
                         width: imageMetadata.width,
                         height: imageMetadata.height,
                         format: imageMetadata.format
                     };
+                    console.log(`📊 图片信息: ${imageMetadata.width}x${imageMetadata.height}, ${imageMetadata.format}`);
                 } catch (error) {
-                    console.error(`❌ 缩略图生成失败 ${file.path}:`, error);
+                    console.error(`❌ 读取图片信息失败 ${file.path}:`, error);
                 }
             }
 
@@ -346,24 +334,17 @@ app.post('/api/upload', uploadLimiter, upload.array('files', 10), async (req, re
             let thumbnailPath = null;
             let metadata = {};
 
-            // 为图片生成缩略图
+            // 🚫 客户端已压缩，跳过缩略图生成
             if (type === 'image') {
                 try {
-                    const thumbnailName = `thumb_${path.basename(file.filename)}`;
-                    thumbnailPath = path.join(path.dirname(file.path), thumbnailName);
-                    
-                    const imageInfo = await sharp(file.path)
-                        .resize(400, 400, { 
-                            fit: 'inside', 
-                            withoutEnlargement: true 
-                        })
-                        .jpeg({ quality: 80 })
-                        .toFile(thumbnailPath);
-                    
+                    // 只获取图片元数据，不再生成缩略图
+                    const imageInfo = await sharp(file.path).metadata();
                     metadata.width = imageInfo.width;
                     metadata.height = imageInfo.height;
+                    
+                    console.log(`📊 图片信息: ${imageInfo.width}x${imageInfo.height}`);
                 } catch (thumbError) {
-                    console.warn('缩略图生成失败:', thumbError);
+                    console.warn('图片信息读取失败:', thumbError);
                 }
             }
 
@@ -738,15 +719,9 @@ app.get('/api/file/:id', async (req, res) => {
             }
             filePath = audioNotePath;
             mimeType = 'audio/wav'; // 音频笔记默认为wav格式
-        } else if (req.query.thumb && fileRecord.thumbnailPath) {
-            // 检查缩略图是否存在，如果不存在则回退到原图
-            if (fs.existsSync(fileRecord.thumbnailPath)) {
-                filePath = fileRecord.thumbnailPath;
-                mimeType = 'image/jpeg'; // 缩略图为jpeg格式
-            } else {
-                console.log(`⚠️  缩略图不存在，回退到原图: ${fileRecord.thumbnailPath}`);
-                filePath = fileRecord.filePath;
-            }
+        } else if (req.query.thumb) {
+            // 🚫 不再使用服务器缩略图，直接返回客户端压缩的原图
+            filePath = fileRecord.filePath;
         } else {
             filePath = fileRecord.filePath;
         }

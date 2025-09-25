@@ -1023,13 +1023,15 @@ function editMemory(id) {
     
     // 显示编辑模态框
     document.getElementById('editModal').style.display = 'block';
-    document.body.style.overflow = 'hidden';
+    // ✅ 保持编辑界面可滚动，不禁用body滚动
+    // document.body.style.overflow = 'hidden';
 }
 
 // 关闭编辑模态框
 function closeEditModal() {
     document.getElementById('editModal').style.display = 'none';
-    document.body.style.overflow = 'auto';
+    // ✅ 编辑时没有禁用滚动，所以不需要恢复
+    // document.body.style.overflow = 'auto';
     currentEditingId = null;
     resetRecording();
     clearImageManager();
