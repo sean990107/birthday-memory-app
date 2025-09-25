@@ -655,24 +655,77 @@ app.delete('/api/memories/:id', async (req, res) => {
             });
         }
 
-        // 删除文件
-        await fs.remove(memory.filePath).catch(console.error);
-        if (memory.thumbnailPath) {
-            await fs.remove(memory.thumbnailPath).catch(console.error);
+        // 删除文件 - 根据回忆类型处理
+        if (memory.type === 'gallery' && memory.images && memory.images.length > 0) {
+            // 🖼️ 图片组合：删除所有组合中的图片文件
+            console.log(`🗑️ 删除图片组合，包含 ${memory.images.length} 个文件`);
+            
+            for (const image of memory.images) {
+                try {
+                    // 根据图片ID找到对应的文件记录
+                    const imageFile = await Memory.findOne({ id: image.id });
+                    if (imageFile && imageFile.filePath) {
+                        console.log(`🗑️ 删除图片文件: ${imageFile.filePath}`);
+                        await fs.remove(imageFile.filePath).catch(err => {
+                            console.error(`❌ 删除图片文件失败: ${imageFile.filePath}`, err);
+                        });
+                        
+                        // 删除缩略图
+                        if (imageFile.thumbnailPath) {
+                            console.log(`🗑️ 删除缩略图: ${imageFile.thumbnailPath}`);
+                            await fs.remove(imageFile.thumbnailPath).catch(err => {
+                                console.error(`❌ 删除缩略图失败: ${imageFile.thumbnailPath}`, err);
+                            });
+                        }
+                        
+                        // 删除对应的单独图片记录（如果存在）
+                        await Memory.deleteOne({ id: image.id }).catch(err => {
+                            console.error(`❌ 删除图片记录失败: ${image.id}`, err);
+                        });
+                    }
+                } catch (err) {
+                    console.error(`❌ 处理图片删除失败: ${image.id}`, err);
+                }
+            }
+        } else {
+            // 🎵 单个文件：删除主文件
+            if (memory.filePath) {
+                console.log(`🗑️ 删除主文件: ${memory.filePath}`);
+                await fs.remove(memory.filePath).catch(err => {
+                    console.error(`❌ 删除主文件失败: ${memory.filePath}`, err);
+                });
+            }
+            
+            // 删除缩略图
+            if (memory.thumbnailPath) {
+                console.log(`🗑️ 删除缩略图: ${memory.thumbnailPath}`);
+                await fs.remove(memory.thumbnailPath).catch(err => {
+                    console.error(`❌ 删除缩略图失败: ${memory.thumbnailPath}`, err);
+                });
+            }
         }
+        
+        // 删除语音笔记（所有类型通用）
         if (memory.audioNote) {
             const audioPath = path.isAbsolute(memory.audioNote) 
                 ? memory.audioNote  // 兼容旧的绝对路径
                 : path.join(uploadsDir, memory.audioNote);  // 新的相对路径
-            await fs.remove(audioPath).catch(console.error);
+            console.log(`🗑️ 删除语音笔记: ${audioPath}`);
+            await fs.remove(audioPath).catch(err => {
+                console.error(`❌ 删除语音笔记失败: ${audioPath}`, err);
+            });
         }
 
         // 删除数据库记录
         await Memory.deleteOne({ id: req.params.id });
 
+        console.log(`✅ 回忆删除完成: ${memory.name} (类型: ${memory.type})`);
+        
         res.json({
             success: true,
-            message: '回忆删除成功'
+            message: `回忆删除成功: ${memory.name}`,
+            deletedType: memory.type,
+            deletedCount: memory.type === 'gallery' ? memory.images?.length || 0 : 1
         });
 
     } catch (error) {
@@ -772,6 +825,88 @@ app.get('/api/file/:id', async (req, res) => {
         res.status(500).json({
             success: false,
             message: '文件访问失败',
+            error: error.message
+        });
+    }
+});
+
+// 🧹 清理孤儿文件 - 删除没有数据库记录的文件
+app.post('/api/cleanup-orphan-files', async (req, res) => {
+    try {
+        console.log('🧹 开始清理孤儿文件...');
+        
+        // 获取所有数据库中的文件路径
+        const memories = await Memory.find({});
+        const dbFilePaths = new Set();
+        
+        memories.forEach(memory => {
+            if (memory.filePath) {
+                dbFilePaths.add(path.resolve(memory.filePath));
+            }
+            if (memory.thumbnailPath) {
+                dbFilePaths.add(path.resolve(memory.thumbnailPath));
+            }
+            if (memory.audioNote) {
+                const audioPath = path.isAbsolute(memory.audioNote) 
+                    ? memory.audioNote 
+                    : path.join(uploadsDir, memory.audioNote);
+                dbFilePaths.add(path.resolve(audioPath));
+            }
+        });
+        
+        // 扫描uploads目录中的所有文件
+        const allFiles = [];
+        const scanDir = async (dirPath) => {
+            const items = await fs.readdir(dirPath);
+            for (const item of items) {
+                const fullPath = path.join(dirPath, item);
+                const stat = await fs.stat(fullPath);
+                if (stat.isDirectory()) {
+                    await scanDir(fullPath);
+                } else {
+                    allFiles.push(path.resolve(fullPath));
+                }
+            }
+        };
+        
+        await scanDir(uploadsDir);
+        
+        // 找出孤儿文件
+        const orphanFiles = allFiles.filter(filePath => !dbFilePaths.has(filePath));
+        
+        console.log(`📊 扫描结果: 数据库文件 ${dbFilePaths.size} 个，磁盘文件 ${allFiles.length} 个，孤儿文件 ${orphanFiles.length} 个`);
+        
+        // 删除孤儿文件
+        let deletedCount = 0;
+        let deletedSize = 0;
+        
+        for (const orphanFile of orphanFiles) {
+            try {
+                const stat = await fs.stat(orphanFile);
+                deletedSize += stat.size;
+                await fs.remove(orphanFile);
+                deletedCount++;
+                console.log(`🗑️ 删除孤儿文件: ${orphanFile}`);
+            } catch (err) {
+                console.error(`❌ 删除孤儿文件失败: ${orphanFile}`, err);
+            }
+        }
+        
+        console.log(`✅ 清理完成: 删除了 ${deletedCount} 个孤儿文件，释放了 ${(deletedSize / 1024 / 1024).toFixed(2)} MB 空间`);
+        
+        res.json({
+            success: true,
+            message: `清理完成: 删除了 ${deletedCount} 个孤儿文件`,
+            deletedCount,
+            deletedSize,
+            freedSpaceMB: Math.round(deletedSize / 1024 / 1024 * 100) / 100
+        });
+        
+    } catch (error) {
+        console.error('清理孤儿文件失败:', error);
+        res.status(500).json({
+            success: false,
+            message: '清理孤儿文件失败',
             error: error.message
         });
     }
