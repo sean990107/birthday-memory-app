@@ -100,7 +100,10 @@ class MemoryAPI {
             
             return data.data;
         } catch (error) {
-            console.error('更新失败详细:', error);
+            console.error('🔴 updateMemory API调用失败:', error);
+            console.error('🔴 请求URL:', `${this.apiURL}/memories/${id}`);
+            console.error('🔴 请求数据:', updates);
+            console.error('🔴 基础URL:', this.baseURL);
             throw error;
         }
     }
@@ -233,7 +236,10 @@ class MemoryAPI {
             
             return data.data;
         } catch (error) {
-            console.error('更新图片组合失败详细:', error);
+            console.error('🔴 updateGallery API调用失败:', error);
+            console.error('🔴 请求URL:', `${this.apiURL}/gallery/${galleryId}`);
+            console.error('🔴 请求数据:', galleryData);
+            console.error('🔴 基础URL:', this.baseURL);
             throw error;
         }
     }

@@ -1697,19 +1697,27 @@ async function saveMemoryEdit() {
         console.log('✅ 编辑内容已同步到云端: MongoDB数据库 + 服务器存储');
         
     } catch (error) {
-        console.error('保存失败详细错误:', error);
+        console.error('💥 保存失败详细错误:', error);
+        console.error('💥 错误堆栈:', error.stack);
+        console.error('💥 当前编辑ID:', currentEditingId);
+        console.error('💥 连接状态:', isConnected);
+        console.error('💥 API URL:', memoryAPI.apiURL);
+        
         let errorMessage = '保存失败：';
         
         if (error.message.includes('404')) {
             errorMessage += '回忆不存在，可能已被删除';
         } else if (error.message.includes('500')) {
             errorMessage += '服务器内部错误，请稍后重试';
-        } else if (error.message.includes('Network')) {
-            errorMessage += '网络连接异常，请检查网络';
+        } else if (error.message.includes('Network') || error.message.includes('fetch')) {
+            errorMessage += '网络连接异常，请检查网络连接';
+        } else if (error.message.includes('JSON')) {
+            errorMessage += '数据格式错误，请刷新页面重试';
         } else {
-            errorMessage += error.message;
+            errorMessage += `${error.message} (详见控制台)`;
         }
         
+        console.error('🚨 显示错误消息:', errorMessage);
         showNotification(errorMessage, 'error');
     } finally {
         hideLoading();
