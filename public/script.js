@@ -309,6 +309,17 @@ function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
+// 获取记忆类型对应的图标
+function getMemoryIcon(type) {
+    const iconMap = {
+        'image': 'image',
+        'video': 'video', 
+        'audio': 'music',
+        'gallery': 'images'
+    };
+    return iconMap[type] || 'file';
+}
+
 // 保存到本地存储（仅用于fallback）
 function saveMemoriesLocally() {
     const localMemories = memories.filter(m => m.isLocal);
@@ -424,11 +435,20 @@ function createMemoryCard(memory) {
     
     // 获取预览URL
     let previewSrc = '';
+    let videoPreviewSrc = '';
+    
     if (memory.type === 'image') {
         if (memory.isLocal && memory.data) {
             previewSrc = memory.data; // 本地base64数据
         } else if (memory.id && isConnected) {
             previewSrc = memoryAPI.getFileURL(memory.id, true); // 服务器缩略图
+        }
+    } else if (memory.type === 'video') {
+        // 视频预览处理
+        if (memory.isLocal && memory.data) {
+            videoPreviewSrc = memory.data; // 本地base64数据
+        } else if (memory.id && isConnected) {
+            videoPreviewSrc = memoryAPI.getFileURL(memory.id); // 视频文件URL
         }
     }
     
@@ -441,7 +461,16 @@ function createMemoryCard(memory) {
                 ${memory.type === 'image' && previewSrc
                     ? `<img src="${previewSrc}" alt="${displayName}" loading="lazy" 
                          onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\"fas fa-image audio-icon\" style=\"opacity:0.5\"></i>';">` 
-                    : `<i class="fas fa-${memory.type === 'image' ? 'image' : 'music'} audio-icon"></i>`
+                    : memory.type === 'video' && videoPreviewSrc
+                    ? `<video preload="metadata" muted playsinline style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" 
+                             onloadeddata="this.currentTime = 1;" 
+                             onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\"fas fa-video audio-icon\" style=\"opacity:0.7; color:#8B5CF6;\"></i>';">
+                         <source src="${videoPreviewSrc}" type="${memory.mimeType || 'video/mp4'}">
+                       </video>
+                       <div class="video-overlay">
+                         <i class="fas fa-play-circle"></i>
+                       </div>`
+                    : `<i class="fas fa-${getMemoryIcon(memory.type)} audio-icon ${memory.type === 'video' ? 'video-icon' : ''}"></i>`
                 }
                 ${hasAudioNote ? `<div class="audio-note-indicator"><i class="fas fa-microphone"></i></div>` : ''}
             </div>
