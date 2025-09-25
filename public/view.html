@@ -60,16 +60,20 @@
         .memory-viewer {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 25px;
-            padding: 40px;
+            padding: 30px;
             box-shadow: 0 20px 60px rgba(139, 92, 246, 0.3);
             backdrop-filter: blur(20px);
             border: 2px solid rgba(139, 92, 246, 0.2);
-            max-width: 800px;
+            max-width: 900px;
             width: 100%;
+            min-height: 80vh;
+            max-height: 90vh;
             text-align: center;
             animation: memoryFadeIn 1s ease-out;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .memory-viewer::before {
@@ -126,8 +130,114 @@
         }
 
         .memory-content {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             position: relative;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 图片轮播容器样式 */
+        .image-swiper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .swiper-container {
+            width: 100%;
+            height: 100%;
+            max-height: 70vh;
+            position: relative;
+            overflow: hidden;
+            border-radius: 15px;
+        }
+
+        .swiper-slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .swiper-slide.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .swiper-slide img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .swiper-slide img:hover {
+            transform: scale(1.02);
+        }
+
+        .swiper-button-prev,
+        .swiper-button-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(139, 92, 246, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .swiper-button-prev {
+            left: 20px;
+        }
+
+        .swiper-button-next {
+            right: 20px;
+        }
+
+        .swiper-button-prev:hover,
+        .swiper-button-next:hover {
+            background: rgba(139, 92, 246, 1);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .swiper-pagination {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .swiper-pagination-bullet {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .swiper-pagination-bullet.active {
+            background: rgba(139, 92, 246, 0.9);
+            transform: scale(1.2);
         }
 
         .image-container {
@@ -136,17 +246,19 @@
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+            width: 100%;
+            max-width: 100%;
         }
 
         .memory-image {
-            max-width: 100%;
-            max-height: 60vh;
-            width: auto;
+            width: 100%;
+            max-height: 75vh;
             height: auto;
             display: block;
             border-radius: 15px;
             transition: transform 0.3s ease;
             cursor: pointer;
+            object-fit: contain;
         }
 
         .memory-image:hover {
@@ -291,40 +403,80 @@
             box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
         }
 
-        /* 录音笔记和描述样式 */
-        .audio-note-section, .memory-description-section {
-            margin: 30px 0;
-            padding: 25px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        /* 悄悄话样式 */
+        .whisper-section {
+            margin: 10px 0 15px 0;
             text-align: center;
         }
 
-        .audio-note-section h3, .memory-description-section h3 {
+        .whisper-text {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-style: italic;
+            margin: 0;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            display: inline-block;
+            max-width: 80%;
+        }
+
+        .whisper-text i {
+            color: #EC4899;
+            margin-right: 6px;
+        }
+
+        /* 紧凑型录音播放器 */
+        .audio-note-compact {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .audio-compact-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
             color: var(--primary-purple);
-            font-size: 1.3rem;
-            margin-bottom: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .btn-play-compact {
+            background: linear-gradient(135deg, #EC4899, #8B5CF6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: auto;
+        }
+
+        .btn-play-compact:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
         }
 
         .audio-note-player {
-            width: 100%;
-            max-width: 400px;
+            width: 100% !important;
+            height: 30px !important;
             border-radius: 15px;
             background: rgba(255, 255, 255, 0.1);
-            margin: 0 auto;
         }
 
-        .audio-controls-view {
-            text-align: center;
-            margin-top: 15px;
+        /* 废弃的旧样式 */
+        .audio-note-section, .memory-description-section {
+            display: none;
         }
 
         .btn-auto-play {
@@ -781,12 +933,14 @@
             if (memory.type === 'gallery' && memory.images && memory.images.length > 0) {
                 contentHtml = createImageSwiper(memory.images);
             } else if (memory.type === 'image') {
+                // 使用缩略图快速加载，点击查看原图
+                const thumbnailURL = memory.isLocal ? fileURL : `${serverBase}/api/file/${memory.id}?thumb=true`;
                 contentHtml = `
                     <div class="image-container">
-                        <img src="${fileURL}" 
+                        <img src="${thumbnailURL}" 
                              alt="${displayName}" 
                              class="memory-image"
-                             onclick="openFullscreen(this.src)"
+                             onclick="openFullscreen('${fileURL}')"
                              onload="console.log('✅ 图片加载成功:', this.src)"
                              onerror="handleImageError(this, '${fileURL}')">
                     </div>
@@ -815,16 +969,23 @@
                     audioNote: memory.audioNote
                 });
                 audioNoteHtml = `
-                    <div class="audio-note-section">
-                        <h3><i class="fas fa-microphone"></i> 语音笔记</h3>
-                        <audio controls class="audio-note-player" preload="auto" 
+                    <div class="audio-note-compact">
+                        <div class="audio-compact-header">
+                            <i class="fas fa-microphone"></i>
+                            <span>悄悄话</span>
+                            <button class="btn-play-compact" onclick="playAudioNote(document.querySelector('.audio-note-player'))">
+                                <i class="fas fa-play"></i>
+                            </button>
+                        </div>
+                        <audio class="audio-note-player" preload="auto" 
                                onloadedmetadata="handleAudioReady(this)"
                                oncanplaythrough="console.log('🎵 音频完全加载完成'); tryAutoPlay(this);"
                                oncanplay="console.log('🎵 音频可以开始播放');"
                                onerror="console.error('❌ 音频加载失败:', this.error)"
                                onloadstart="console.log('🎵 开始加载音频:', this.src)"
                                muted="false"
-                               autoplay="false">
+                               autoplay="false"
+                               style="width: 100%; height: 30px;">
                             <source src="${audioNoteURL}" type="audio/wav">
                             <source src="${audioNoteURL}" type="audio/mpeg">
                             <source src="${audioNoteURL}" type="audio/ogg">
@@ -832,22 +993,16 @@
                             <source src="${audioNoteURL}" type="audio/mp4">
                             您的浏览器不支持音频播放。
                         </audio>
-                        <div class="audio-controls-view">
-                            <button class="btn-auto-play" onclick="playAudioNote(this.previousElementSibling)">
-                                <i class="fas fa-play"></i> 点击我听听悄悄话吧
-                            </button>
-                        </div>
                     </div>
                 `;
             }
 
-            // 构建描述HTML
+            // 构建描述HTML - 改为悄悄话样式
             let descriptionHtml = '';
             if (memory.description && memory.description.trim()) {
                 descriptionHtml = `
-                    <div class="memory-description-section">
-                        <h3><i class="fas fa-heart"></i> 回忆描述</h3>
-                        <p class="memory-description-text">${memory.description}</p>
+                    <div class="whisper-section">
+                        <p class="whisper-text"><i class="fas fa-heart"></i> ${memory.description}</p>
                     </div>
                 `;
             }
@@ -855,6 +1010,7 @@
             viewer.innerHTML = `
                 <div class="memory-header">
                     <h1 class="memory-title-view">${truncateText(displayName, 50)}</h1>
+                    ${descriptionHtml}
                     <div class="memory-date-simple">${date}</div>
                 </div>
                 
@@ -862,7 +1018,6 @@
                     ${contentHtml}
                 </div>
 
-                ${descriptionHtml}
                 ${audioNoteHtml}
                 
                 <div class="memory-actions-view">
@@ -1194,9 +1349,9 @@
                     <div class="swiper-container" id="imageSwiper">
                         ${images.map((img, index) => `
                             <div class="swiper-slide ${index === 0 ? 'active' : ''}" data-index="${index}">
-                                <img src="${img.url}" 
+                                <img src="${img.thumbnail || img.url}" 
                                      alt="${img.name}" 
-                                     onclick="openFullscreen(this.src)"
+                                     onclick="openFullscreen('${img.url}')"
                                      onload="console.log('✅ 轮播图片加载成功:', this.src)"
                                      onerror="handleImageError(this, '${img.url}')">
                             </div>
