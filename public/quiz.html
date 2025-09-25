@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💜 解锁美好回忆 💜</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            background: linear-gradient(135deg, 
+                #667eea 0%, 
+                #764ba2 25%, 
+                #8B5CF6 50%, 
+                #EC4899 75%, 
+                #F59E0B 100%);
+            animation: gradientShift 10s ease infinite;
+            background-size: 400% 400%;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        /* 🎨 飘动的emoji */
+        .floating-emoji {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 15s linear infinite;
+            opacity: 0.8;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 主容器 */
+        .quiz-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .quiz-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 
+                0 20px 60px rgba(139, 92, 246, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.2);
+            animation: cardEntrance 1s ease-out;
+            position: relative;
+        }
+
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .quiz-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8B5CF6, #EC4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+
+        .quiz-subtitle {
+            color: #6B7280;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .quiz-question {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .quiz-question::before {
+            content: "🤔";
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: white;
+            padding: 5px 10px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+        }
+
+        .quiz-question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #5B21B6;
+            line-height: 1.4;
+        }
+
+        .quiz-input-group {
+            margin-bottom: 30px;
+        }
+
+        .quiz-input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 3px solid rgba(139, 92, 246, 0.3);
+            border-radius: 16px;
+            font-size: 1.1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .quiz-input:focus {
+            outline: none;
+            border-color: #8B5CF6;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .quiz-input::placeholder {
+            color: #9CA3AF;
+            font-style: italic;
+        }
+
+        .quiz-submit-btn {
+            background: linear-gradient(135deg, #8B5CF6, #EC4899);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .quiz-submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4);
+        }
+
+        .quiz-submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .quiz-submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .quiz-submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .error-message {
+            color: #EF4444;
+            font-size: 1rem;
+            margin-top: 15px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .error-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .success-message {
+            color: #10B981;
+            font-size: 1rem;
+            margin-top: 15px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .quiz-card {
+                padding: 30px 20px;
+                margin: 20px;
+            }
+
+            .quiz-title {
+                font-size: 1.8rem;
+            }
+
+            .quiz-question-text {
+                font-size: 1.1rem;
+            }
+
+            .floating-emoji {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quiz-title {
+                font-size: 1.5rem;
+            }
+
+            .quiz-subtitle {
+                font-size: 1rem;
+            }
+
+            .quiz-question-text {
+                font-size: 1rem;
+            }
+
+            .quiz-input {
+                padding: 15px;
+                font-size: 1rem;
+            }
+
+            .quiz-submit-btn {
+                padding: 15px 30px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 飘动的emoji -->
+    <div id="emojiContainer"></div>
+
+    <!-- 问答卡片 -->
+    <div class="quiz-container">
+        <div class="quiz-card">
+            <h1 class="quiz-title" id="quizTitle">💜 解锁美好回忆 💜</h1>
+            <p class="quiz-subtitle">回答正确问题，开启这份珍贵的回忆</p>
+            
+            <div class="quiz-question">
+                <div class="quiz-question-text" id="quizQuestion">
+                    请稍等，正在加载问题...
+                </div>
+            </div>
+
+            <div class="quiz-input-group">
+                <input 
+                    type="text" 
+                    class="quiz-input" 
+                    id="userAnswer" 
+                    placeholder="请输入您的答案..."
+                    autocomplete="off"
+                >
+            </div>
+
+            <button class="quiz-submit-btn" onclick="submitAnswer()">
+                <i class="fas fa-key"></i> 解锁回忆
+            </button>
+
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+        </div>
+    </div>
+
+    <script>
+        // 🎨 生成飘动的emoji
+        function createFloatingEmoji() {
+            const emojis = ['💜', '🎉', '🎂', '🎈', '🌟', '✨', '🎁', '💖', '🦄', '🌈', '🎊', '💝', '🌸', '🦋', '🌺'];
+            const container = document.getElementById('emojiContainer');
+            
+            setInterval(() => {
+                const emoji = document.createElement('div');
+                emoji.className = 'floating-emoji';
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.left = Math.random() * 100 + '%';
+                emoji.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                emoji.style.animationDelay = Math.random() * 2 + 's';
+                
+                container.appendChild(emoji);
+                
+                // 15秒后移除emoji
+                setTimeout(() => {
+                    container.removeChild(emoji);
+                }, 15000);
+            }, 800);
+        }
+
+        // 🔍 获取URL参数
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 📝 加载问题信息
+        async function loadQuizData() {
+            const memoryId = getUrlParameter('id');
+            if (!memoryId) {
+                showError('缺少回忆ID参数');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/memories/${memoryId}`);
+                if (!response.ok) {
+                    throw new Error('获取回忆信息失败');
+                }
+
+                const result = await response.json();
+                if (!result.success) {
+                    throw new Error(result.message || '获取回忆信息失败');
+                }
+                
+                const memory = result.data;
+                
+                if (!memory.enableQuiz) {
+                    // 如果没有启用问答，直接跳转到查看页面
+                    window.location.href = `view.html?id=${memoryId}`;
+                    return;
+                }
+
+                // 设置标题和问题
+                document.getElementById('quizTitle').textContent = memory.quizTitle || '💜 解锁美好回忆 💜';
+                document.getElementById('quizQuestion').textContent = memory.quizQuestion || '请回答问题以解锁回忆';
+                
+                // 存储正确答案和回忆ID
+                window.correctAnswer = memory.quizAnswer;
+                window.memoryId = memoryId;
+
+            } catch (error) {
+                console.error('加载问题失败:', error);
+                showError('加载问题失败，请稍后重试');
+            }
+        }
+
+        // 🎯 提交答案
+        function submitAnswer() {
+            const userAnswer = document.getElementById('userAnswer').value.trim();
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            
+            // 清除之前的消息
+            errorDiv.classList.remove('show');
+            successDiv.classList.remove('show');
+            
+            if (!userAnswer) {
+                showError('请输入答案');
+                return;
+            }
+
+            if (!window.correctAnswer) {
+                showError('系统错误，请刷新页面重试');
+                return;
+            }
+
+            // 检查答案（不区分大小写，去除首尾空格）
+            if (userAnswer.toLowerCase().trim() === window.correctAnswer.toLowerCase().trim()) {
+                showSuccess('🎉 答案正确！正在跳转到回忆页面...');
+                
+                setTimeout(() => {
+                    window.location.href = `view.html?id=${window.memoryId}`;
+                }, 1500);
+            } else {
+                showError('答案不正确，请再试一次');
+                
+                // 清空输入框并重新聚焦
+                setTimeout(() => {
+                    document.getElementById('userAnswer').value = '';
+                    document.getElementById('userAnswer').focus();
+                }, 1000);
+            }
+        }
+
+        // 🚨 显示错误消息
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        // ✅ 显示成功消息
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.add('show');
+        }
+
+        // 🎹 回车键提交
+        document.addEventListener('DOMContentLoaded', function() {
+            createFloatingEmoji();
+            loadQuizData();
+            
+            document.getElementById('userAnswer').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    submitAnswer();
+                }
+            });
+            
+            // 自动聚焦输入框
+            setTimeout(() => {
+                document.getElementById('userAnswer').focus();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

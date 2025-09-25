@@ -576,8 +576,13 @@ function viewMemory(id) {
     const memory = memories.find(m => m.id === id);
     if (!memory) return;
 
-    // 创建查看URL并跳转
-    const viewUrl = `view.html?id=${id}`;
+    // 🎯 检查是否启用问答解锁功能
+    let viewUrl;
+    if (memory.enableQuiz && memory.quizQuestion && memory.quizAnswer) {
+        viewUrl = `quiz.html?id=${id}`;
+    } else {
+        viewUrl = `view.html?id=${id}`;
+    }
     
     // 在新窗口打开，提供更好的用户体验
     window.open(viewUrl, '_blank');
@@ -602,7 +607,14 @@ async function generateQR(id) {
         // 生成查看链接 - 使用配置的基础URL
         loadQRConfig(); // 确保加载最新配置
         const baseUrl = getQRBaseURL();
-        const viewUrl = `${baseUrl}/view.html?id=${id}`;
+        
+        // 🎯 检查是否启用问答解锁功能
+        let viewUrl;
+        if (memory.enableQuiz && memory.quizQuestion && memory.quizAnswer) {
+            viewUrl = `${baseUrl}/quiz.html?id=${id}`;
+        } else {
+            viewUrl = `${baseUrl}/view.html?id=${id}`;
+        }
         
         console.log('生成二维码URL:', viewUrl);
         console.log('QR配置模式:', qrConfig.mode, qrConfig.mode === 'custom' ? `自定义地址: ${qrConfig.customBaseURL}` : '自动模式');
@@ -1049,6 +1061,22 @@ function editMemory(id) {
     // 填充表单
     document.getElementById('editDisplayName').value = memory.displayName || memory.originalName || memory.name;
     document.getElementById('editDescription').value = memory.description || '';
+    
+    // 🎯 填充问答解锁设置
+    const enableQuizCheckbox = document.getElementById('enableQuiz');
+    const quizConfigPanel = document.getElementById('quizConfigPanel');
+    
+    enableQuizCheckbox.checked = memory.enableQuiz || false;
+    document.getElementById('quizTitle').value = memory.quizTitle || '';
+    document.getElementById('quizQuestion').value = memory.quizQuestion || '';
+    document.getElementById('quizAnswer').value = memory.quizAnswer || '';
+    
+    // 显示/隐藏配置面板
+    if (memory.enableQuiz) {
+        quizConfigPanel.style.display = 'block';
+    } else {
+        quizConfigPanel.style.display = 'none';
+    }
     
     // 🖼️ 处理图片组合编辑
     const imageManagement = document.getElementById('imageManagement');
@@ -1600,6 +1628,12 @@ async function saveMemoryEdit() {
     const displayName = document.getElementById('editDisplayName').value.trim();
     const description = document.getElementById('editDescription').value.trim();
     
+    // 🎯 获取问答解锁设置
+    const enableQuiz = document.getElementById('enableQuiz').checked;
+    const quizTitle = document.getElementById('quizTitle').value.trim();
+    const quizQuestion = document.getElementById('quizQuestion').value.trim();
+    const quizAnswer = document.getElementById('quizAnswer').value.trim();
+    
     console.log('开始保存编辑，ID:', currentEditingId, '连接状态:', isConnected);
     
     if (!isConnected) {
@@ -1614,6 +1648,19 @@ async function saveMemoryEdit() {
         const updates = {};
         if (displayName) updates.displayName = displayName;
         if (description) updates.description = description;
+        
+        // 🎯 问答解锁功能更新
+        updates.enableQuiz = enableQuiz;
+        if (enableQuiz) {
+            updates.quizTitle = quizTitle;
+            updates.quizQuestion = quizQuestion;
+            updates.quizAnswer = quizAnswer;
+        } else {
+            // 禁用时清空设置
+            updates.quizTitle = '';
+            updates.quizQuestion = '';
+            updates.quizAnswer = '';
+        }
         
         console.log('更新数据:', updates);
         
@@ -1745,6 +1792,24 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('recordingStatus').innerHTML = '<i class="fas fa-music"></i> 音频文件已选择: ' + file.name;
         }
     });
+    
+    // 🎯 问答解锁功能交互
+    const enableQuizCheckbox = document.getElementById('enableQuiz');
+    const quizConfigPanel = document.getElementById('quizConfigPanel');
+    
+    if (enableQuizCheckbox && quizConfigPanel) {
+        enableQuizCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                quizConfigPanel.style.display = 'block';
+            } else {
+                quizConfigPanel.style.display = 'none';
+                // 清空字段
+                document.getElementById('quizTitle').value = '';
+                document.getElementById('quizQuestion').value = '';
+                document.getElementById('quizAnswer').value = '';
+            }
+        });
+    }
     
     // 🖼️ 新图片上传处理
     document.getElementById('newImageUpload').addEventListener('change', async function(event) {

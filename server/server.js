@@ -88,6 +88,12 @@ const memorySchema = new mongoose.Schema({
     displayName: { type: String }, // 用户自定义显示名称
     description: { type: String, default: '' }, // 用户添加的文字描述
     audioNote: { type: String }, // 录音笔记文件路径
+    
+    // 🎯 问答解锁功能
+    quizTitle: { type: String, default: '' }, // 问答页面标题
+    quizQuestion: { type: String, default: '' }, // 解锁问题
+    quizAnswer: { type: String, default: '' }, // 正确答案
+    enableQuiz: { type: Boolean, default: false }, // 是否启用问答解锁
     type: { type: String, enum: ['image', 'audio', 'gallery'], required: true }, // 🖼️ 添加gallery类型
     mimeType: { type: String }, // gallery类型时为可选
     size: { type: Number }, // gallery类型时为可选
@@ -413,7 +419,7 @@ app.post('/api/upload', uploadLimiter, upload.array('files', 50), async (req, re
 app.put('/api/memories/:id', async (req, res) => {
     try {
         const memoryId = req.params.id;
-        const { displayName, description } = req.body;
+        const { displayName, description, quizTitle, quizQuestion, quizAnswer, enableQuiz } = req.body;
         
         console.log('🔄 编辑请求:', { id: memoryId, displayName, description });
         
@@ -424,6 +430,20 @@ app.put('/api/memories/:id', async (req, res) => {
         }
         if (description !== undefined) {
             updateDoc.description = description;
+        }
+        
+        // 🎯 问答解锁功能更新
+        if (quizTitle !== undefined) {
+            updateDoc.quizTitle = quizTitle;
+        }
+        if (quizQuestion !== undefined) {
+            updateDoc.quizQuestion = quizQuestion;
+        }
+        if (quizAnswer !== undefined) {
+            updateDoc.quizAnswer = quizAnswer;
+        }
+        if (enableQuiz !== undefined) {
+            updateDoc.enableQuiz = enableQuiz;
         }
         
         console.log('📝 更新数据:', updateDoc);

@@ -152,6 +152,45 @@
                     </div>
                 </div>
                 
+                <!-- 🎯 问答解锁功能设置 -->
+                <div class="form-group quiz-settings">
+                    <label class="quiz-label">
+                        <i class="fas fa-question-circle"></i> 问答解锁功能
+                        <span class="quiz-toggle">
+                            <input type="checkbox" id="enableQuiz" class="quiz-checkbox">
+                            <label for="enableQuiz" class="quiz-toggle-label">启用问答解锁</label>
+                        </span>
+                    </label>
+                    
+                    <div id="quizConfigPanel" class="quiz-config-panel" style="display: none;">
+                        <div class="quiz-field">
+                            <label for="quizTitle">
+                                <i class="fas fa-crown"></i> 解锁页面标题
+                            </label>
+                            <input type="text" id="quizTitle" placeholder="例如：祝你24岁生日快乐！" maxlength="50">
+                        </div>
+                        
+                        <div class="quiz-field">
+                            <label for="quizQuestion">
+                                <i class="fas fa-question"></i> 解锁问题
+                            </label>
+                            <input type="text" id="quizQuestion" placeholder="例如：我们第一次见面是什么时候？" maxlength="100">
+                        </div>
+                        
+                        <div class="quiz-field">
+                            <label for="quizAnswer">
+                                <i class="fas fa-key"></i> 正确答案
+                            </label>
+                            <input type="text" id="quizAnswer" placeholder="例如：2023年春天" maxlength="50">
+                        </div>
+                        
+                        <div class="quiz-tip">
+                            <i class="fas fa-lightbulb"></i>
+                            <small>💡 启用后，查看者需要回答正确问题才能查看这份回忆</small>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="form-group">
                     <label>
                         <i class="fas fa-microphone"></i> 语音笔记

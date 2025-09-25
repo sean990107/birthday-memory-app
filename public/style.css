@@ -1500,6 +1500,127 @@ body {
     opacity: 0.8;
 }
 
+/* 🎯 问答解锁功能样式 */
+.quiz-settings {
+    border: 2px solid rgba(139, 92, 246, 0.3);
+    border-radius: 12px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(236, 72, 153, 0.05));
+    margin: 20px 0;
+    transition: all 0.3s ease;
+}
+
+.quiz-settings:hover {
+    border-color: rgba(139, 92, 246, 0.5);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(236, 72, 153, 0.08));
+}
+
+.quiz-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    color: #6366f1;
+    margin-bottom: 15px;
+}
+
+.quiz-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quiz-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #8B5CF6;
+    cursor: pointer;
+}
+
+.quiz-toggle-label {
+    font-size: 0.9rem;
+    color: #6366f1;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.quiz-config-panel {
+    animation: slideDown 0.3s ease;
+    padding-top: 15px;
+    border-top: 1px solid rgba(139, 92, 246, 0.2);
+    margin-top: 15px;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.quiz-field {
+    margin-bottom: 15px;
+}
+
+.quiz-field label {
+    display: block;
+    font-weight: 500;
+    color: #5b21b6;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+}
+
+.quiz-field label i {
+    margin-right: 8px;
+    color: #8B5CF6;
+}
+
+.quiz-field input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid rgba(139, 92, 246, 0.2);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.quiz-field input:focus {
+    outline: none;
+    border-color: #8B5CF6;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.quiz-field input::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.quiz-tip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(99, 102, 241, 0.1);
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.quiz-tip i {
+    color: #fbbf24;
+    font-size: 1.1rem;
+}
+
+.quiz-tip small {
+    color: #5b21b6;
+    font-weight: 500;
+}
+
 /* 🖼️ 图片管理器样式 */
 .image-manager {
     border: 2px dashed var(--light-purple);
