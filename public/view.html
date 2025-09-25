@@ -66,12 +66,9 @@
             border: 2px solid rgba(139, 92, 246, 0.2);
             max-width: 900px;
             width: 100%;
-            min-height: 80vh;
-            max-height: 90vh;
             text-align: center;
             animation: memoryFadeIn 1s ease-out;
             position: relative;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
         }
@@ -130,9 +127,8 @@
         }
 
         .memory-content {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             position: relative;
-            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -141,14 +137,13 @@
         /* 图片轮播容器样式 */
         .image-swiper {
             width: 100%;
-            height: 100%;
             position: relative;
         }
 
         .swiper-container {
             width: 100%;
-            height: 100%;
-            max-height: 70vh;
+            max-height: 60vh;
+            min-height: 300px;
             position: relative;
             overflow: hidden;
             border-radius: 15px;
@@ -251,8 +246,9 @@
         }
 
         .memory-image {
-            width: 100%;
-            max-height: 75vh;
+            max-width: 100%;
+            max-height: 60vh;
+            width: auto;
             height: auto;
             display: block;
             border-radius: 15px;

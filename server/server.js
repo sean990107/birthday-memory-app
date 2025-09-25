@@ -176,9 +176,21 @@ const upload = multer({
 app.get('/api/memories', async (req, res) => {
     try {
         const memories = await Memory.find().sort({ uploadDate: -1 });
+        
+        // 为老数据动态添加缩略图字段
+        const processedMemories = memories.map(memory => {
+            if (memory.type === 'gallery' && memory.images && memory.images.length > 0) {
+                memory.images = memory.images.map(img => ({
+                    ...img.toObject(),
+                    thumbnail: img.thumbnail || `/api/file/${img.id}?thumb=true`
+                }));
+            }
+            return memory;
+        });
+        
         res.json({
             success: true,
-            data: memories
+            data: processedMemories
         });
     } catch (error) {
         console.error('获取回忆失败:', error);
@@ -200,6 +212,15 @@ app.get('/api/memories/:id', async (req, res) => {
                 message: '回忆不存在'
             });
         }
+        
+        // 为老数据动态添加缩略图字段
+        if (memory.type === 'gallery' && memory.images && memory.images.length > 0) {
+            memory.images = memory.images.map(img => ({
+                ...img.toObject(),
+                thumbnail: img.thumbnail || `/api/file/${img.id}?thumb=true`
+            }));
+        }
+        
         res.json({
             success: true,
             data: memory
@@ -718,8 +739,14 @@ app.get('/api/file/:id', async (req, res) => {
             filePath = audioNotePath;
             mimeType = 'audio/wav'; // 音频笔记默认为wav格式
         } else if (req.query.thumb && fileRecord.thumbnailPath) {
-            filePath = fileRecord.thumbnailPath;
-            mimeType = 'image/jpeg'; // 缩略图为jpeg格式
+            // 检查缩略图是否存在，如果不存在则回退到原图
+            if (fs.existsSync(fileRecord.thumbnailPath)) {
+                filePath = fileRecord.thumbnailPath;
+                mimeType = 'image/jpeg'; // 缩略图为jpeg格式
+            } else {
+                console.log(`⚠️  缩略图不存在，回退到原图: ${fileRecord.thumbnailPath}`);
+                filePath = fileRecord.filePath;
+            }
         } else {
             filePath = fileRecord.filePath;
         }
