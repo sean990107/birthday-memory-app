@@ -412,8 +412,17 @@ app.post('/api/upload', uploadLimiter, upload.array('files', 10), async (req, re
 // 更新回忆信息
 app.put('/api/memories/:id', async (req, res) => {
     try {
+        console.log('🔄 编辑回忆请求:', {
+            id: req.params.id,
+            body: req.body,
+            timestamp: new Date().toISOString()
+        });
+        
         const { displayName, description } = req.body;
+        console.log('📝 解析的数据:', { displayName, description });
+        
         const memory = await Memory.findOne({ id: req.params.id });
+        console.log('🔍 查找到的回忆:', memory ? `存在 (${memory.name})` : '不存在');
         
         if (!memory) {
             return res.status(404).json({
@@ -423,10 +432,18 @@ app.put('/api/memories/:id', async (req, res) => {
         }
 
         // 更新字段
-        if (displayName !== undefined) memory.displayName = displayName;
-        if (description !== undefined) memory.description = description;
+        if (displayName !== undefined) {
+            console.log('📝 更新显示名称:', displayName);
+            memory.displayName = displayName;
+        }
+        if (description !== undefined) {
+            console.log('📝 更新描述:', description);
+            memory.description = description;
+        }
         
+        console.log('💾 保存到数据库...');
         await memory.save();
+        console.log('✅ 回忆更新成功:', memory.id);
 
         res.json({
             success: true,
@@ -435,7 +452,11 @@ app.put('/api/memories/:id', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('更新回忆失败:', error);
+        console.error('💥 更新回忆失败 - 详细错误:', error);
+        console.error('💥 错误堆栈:', error.stack);
+        console.error('💥 请求ID:', req.params.id);
+        console.error('💥 请求体:', req.body);
+        
         res.status(500).json({
             success: false,
             message: '更新回忆失败',
