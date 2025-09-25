@@ -409,53 +409,62 @@ app.post('/api/upload', uploadLimiter, upload.array('files', 10), async (req, re
     }
 });
 
-// 更新回忆信息 - 完整功能保持不变  
+// 更新回忆信息 - 使用更可靠的updateOne方法
 app.put('/api/memories/:id', async (req, res) => {
     try {
+        const memoryId = req.params.id;
         const { displayName, description } = req.body;
         
-        // 基础数据验证
-        if (!req.params.id) {
-            return res.status(400).json({
-                success: false,
-                message: '缺少回忆ID'
-            });
+        console.log('🔄 编辑请求:', { id: memoryId, displayName, description });
+        
+        // 构建更新对象
+        const updateDoc = {};
+        if (displayName !== undefined) {
+            updateDoc.displayName = displayName;
+        }
+        if (description !== undefined) {
+            updateDoc.description = description;
         }
         
-        const memory = await Memory.findOne({ id: req.params.id });
+        console.log('📝 更新数据:', updateDoc);
         
-        if (!memory) {
+        // 使用updateOne，更稳定
+        const updateResult = await Memory.updateOne(
+            { id: memoryId },
+            { $set: updateDoc }
+        );
+        
+        console.log('🔍 更新结果:', updateResult);
+        
+        if (updateResult.matchedCount === 0) {
             return res.status(404).json({
                 success: false,
                 message: '回忆不存在'
             });
         }
-
-        // 更新字段 - 保持原有逻辑，添加类型检查
-        if (displayName !== undefined && displayName !== null) {
-            memory.displayName = String(displayName);
-        }
-        if (description !== undefined && description !== null) {
-            memory.description = String(description);
-        }
         
-        // 确保必需字段存在
-        if (!memory.name) memory.name = memory.originalName || 'untitled';
-        if (!memory.originalName) memory.originalName = memory.name || 'untitled';
+        // 获取更新后的完整数据
+        const updatedMemory = await Memory.findOne({ id: memoryId });
+        console.log('✅ 获取更新后数据成功');
         
-        await memory.save();
-
         res.json({
             success: true,
             message: '回忆更新成功',
-            data: memory
+            data: updatedMemory
         });
 
     } catch (error) {
-        console.error('更新回忆失败:', error);
+        console.error('💥 编辑API错误:', error);
+        console.error('💥 错误详情:', {
+            message: error.message,
+            stack: error.stack,
+            id: req.params.id,
+            body: req.body
+        });
+        
         res.status(500).json({
             success: false,
-            message: '更新回忆失败',
+            message: '服务器内部错误',
             error: error.message
         });
     }
