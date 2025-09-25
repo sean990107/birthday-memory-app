@@ -137,15 +137,28 @@ const fileSchema = new mongoose.Schema({
 
 const File = mongoose.model('File', fileSchema);
 
-// 文件上传配置
+// 文件上传配置 - 按类型分目录存储
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadPath = path.join(uploadsDir, req.body.type || 'misc');
+        // 🎯 根据文件类型确定存储目录
+        let subDir = 'misc'; // 默认目录
+        
+        if (file.mimetype.startsWith('image/')) {
+            subDir = 'images';
+        } else if (file.mimetype.startsWith('video/')) {
+            subDir = 'videos';  // 📹 视频专用目录
+        } else if (file.mimetype.startsWith('audio/')) {
+            subDir = 'audio';
+        }
+        
+        const uploadPath = path.join(uploadsDir, subDir);
         fs.ensureDirSync(uploadPath);
+        console.log(`📁 文件存储目录: ${uploadPath}`);
         cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
         const uniqueName = uuidv4() + path.extname(file.originalname);
+        console.log(`📄 文件名生成: ${uniqueName} (${file.mimetype})`);
         cb(null, uniqueName);
     }
 });
