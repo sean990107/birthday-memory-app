@@ -237,7 +237,9 @@
 
         .image-container {
             position: relative;
-            display: inline-block;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
@@ -342,24 +344,23 @@
         .memory-actions-view {
             display: flex;
             justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 15px;
+            gap: 20px;
+            margin-top: 10px;
         }
 
         .btn-action {
-            padding: 8px 16px;
+            padding: 8px;
             border: none;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 500;
+            border-radius: 50%;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
-            min-width: 120px;
             justify-content: center;
+            width: 40px;
+            height: 40px;
+            min-width: unset;
         }
 
         .btn-home {
@@ -402,22 +403,22 @@
 
         /* 悄悄话样式 */
         .whisper-section {
-            margin: 10px 0 15px 0;
+            margin: 5px 0;
             text-align: center;
         }
 
         .whisper-text {
             color: #6D28D9;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             font-style: italic;
             margin: 0;
-            padding: 8px 15px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            backdrop-filter: blur(3px);
             display: inline-block;
-            max-width: 80%;
-            font-weight: 500;
+            max-width: 90%;
+            font-weight: 400;
         }
 
         .whisper-text i {
@@ -607,15 +608,14 @@
             }
 
             .memory-actions-view {
-                gap: 6px;
-                margin-top: 12px;
+                gap: 15px;
+                margin-top: 8px;
             }
 
             .btn-action {
-                padding: 6px 12px;
-                font-size: 0.8rem;
-                min-width: 80px;
-                flex: 1;
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
             }
 
             .audio-container {
@@ -637,15 +637,14 @@
             }
 
             .memory-actions-view {
-                gap: 4px;
-                margin-top: 10px;
+                gap: 12px;
+                margin-top: 6px;
             }
 
             .btn-action {
-                padding: 5px 10px;
-                font-size: 0.75rem;
-                min-width: 70px;
-                gap: 4px;
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
             }
 
             .audio-icon-large {
@@ -1033,21 +1032,11 @@
                 ${audioNoteHtml}
                 
                 <div class="memory-actions-view">
-                    <button class="btn-action btn-home" onclick="goHome()">
+                    <button class="btn-action btn-home" onclick="goHome()" title="返回主页">
                         <i class="fas fa-home"></i>
-                        返回主页
                     </button>
-                    <button class="btn-action btn-download" onclick="downloadMemory()">
-                        <i class="fas fa-download"></i>
-                        下载文件
-                    </button>
-                    <button class="btn-action btn-share-card" onclick="generateShareCard()" title="生成精美分享卡片">
+                    <button class="btn-action btn-share-card" onclick="generateShareCard()" title="生成分享卡片">
                         <i class="fas fa-share-alt"></i>
-                        生成卡片
-                    </button>
-                    <button class="btn-action btn-refresh" onclick="refreshTheme()" title="刷新获得新主题">
-                        <i class="fas fa-palette"></i>
-                        换个主题
                     </button>
                 </div>
             `;
@@ -1066,10 +1055,9 @@
                     <div class="error-icon">💔</div>
                     <h3>${message}</h3>
                     <p>可能是链接已过期或文件不存在</p>
-                    <div style="margin-top: 30px;">
-                        <button class="btn-action btn-home" onclick="goHome()">
+                    <div style="margin-top: 20px;">
+                        <button class="btn-action btn-home" onclick="goHome()" title="返回主页">
                             <i class="fas fa-home"></i>
-                            返回主页
                         </button>
                     </div>
                 </div>
