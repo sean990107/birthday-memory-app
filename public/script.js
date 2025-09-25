@@ -116,12 +116,76 @@ function handleFileSelect(event) {
     handleFiles(files);
 }
 
+// 🖼️ 智能压缩图片
+async function compressImage(file, maxWidth = 1920, maxHeight = 1080, quality = 0.85) {
+    return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        img.onload = () => {
+            // 计算压缩后的尺寸
+            let { width, height } = img;
+            
+            if (width > maxWidth || height > maxHeight) {
+                const ratio = Math.min(maxWidth / width, maxHeight / height);
+                width = Math.floor(width * ratio);
+                height = Math.floor(height * ratio);
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // 绘制压缩后的图片
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // 转换为Blob
+            canvas.toBlob((blob) => {
+                if (blob) {
+                    // 创建新的File对象，保持原文件名
+                    const compressedFile = new File([blob], file.name, {
+                        type: 'image/jpeg',
+                        lastModified: Date.now()
+                    });
+                    console.log(`✅ 图片压缩：${file.name} (${(file.size/1024/1024).toFixed(2)}MB → ${(compressedFile.size/1024/1024).toFixed(2)}MB)`);
+                    resolve(compressedFile);
+                } else {
+                    resolve(file); // 压缩失败时返回原文件
+                }
+            }, 'image/jpeg', quality);
+        };
+        
+        img.onerror = () => resolve(file); // 加载失败时返回原文件
+        img.src = URL.createObjectURL(file);
+    });
+}
+
+// 🚀 批量压缩图片
+async function compressImages(files) {
+    const compressedFiles = [];
+    
+    for (const file of files) {
+        if (file.type.startsWith('image/')) {
+            const compressed = await compressImage(file);
+            compressedFiles.push(compressed);
+        } else {
+            compressedFiles.push(file); // 非图片文件直接添加
+        }
+    }
+    
+    return compressedFiles;
+}
+
 // 处理文件上传
 async function handleFiles(files) {
     if (files.length === 0) return;
 
-    // 检查文件大小
-    for (let file of files) {
+    // 🎯 先压缩所有图片
+    console.log('🖼️ 开始压缩图片...');
+    const processedFiles = await compressImages(Array.from(files));
+    
+    // 检查文件大小（压缩后）
+    for (let file of processedFiles) {
         const maxSize = isConnected ? 50 * 1024 * 1024 : 10 * 1024 * 1024; // 服务器支持50MB，本地10MB
         if (file.size > maxSize) {
             const sizeText = isConnected ? '50MB' : '10MB';
@@ -131,7 +195,7 @@ async function handleFiles(files) {
     }
 
     // 验证文件类型并分组
-    const validFiles = Array.from(files).filter(file => {
+    const validFiles = processedFiles.filter(file => {
         if (isValidFile(file)) {
             return true;
         } else {
