@@ -683,6 +683,8 @@ body {
 .edit-modal-content {
     max-width: 600px;
     width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .edit-form {
@@ -876,6 +878,8 @@ body {
     .edit-modal-content {
         width: 95%;
         margin: 5% auto;
+        max-height: 90vh;
+        overflow-y: auto;
     }
     
     .audio-controls {
