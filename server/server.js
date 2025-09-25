@@ -167,7 +167,7 @@ const upload = multer({
     storage: storage,
     limits: {
         fileSize: 500 * 1024 * 1024, // 500MB限制，支持大视频文件
-        files: 10 // 最多10个文件
+        files: 50 // 增加到最多50个文件
     },
     fileFilter: (req, file, cb) => {
         const allowedTypes = [
@@ -254,7 +254,7 @@ app.get('/api/memories/:id', async (req, res) => {
 
 // 文件上传接口
 // 🆕 只上传文件，不创建记忆（用于图片组合）
-app.post('/api/upload-files-only', uploadLimiter, upload.array('files', 10), async (req, res) => {
+app.post('/api/upload-files-only', uploadLimiter, upload.array('files', 50), async (req, res) => {
     try {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({
@@ -334,7 +334,7 @@ app.post('/api/upload-files-only', uploadLimiter, upload.array('files', 10), asy
     }
 });
 
-app.post('/api/upload', uploadLimiter, upload.array('files', 10), async (req, res) => {
+app.post('/api/upload', uploadLimiter, upload.array('files', 50), async (req, res) => {
     try {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({
@@ -851,6 +851,114 @@ app.get('/api/file/:id', async (req, res) => {
         res.status(500).json({
             success: false,
             message: '文件访问失败',
+            error: error.message
+        });
+    }
+});
+
+// 🔍 恢复孤儿图片 - 将未记录的图片文件重新创建为记忆
+app.post('/api/recover-orphan-images', async (req, res) => {
+    try {
+        console.log('🔍 开始查找可恢复的孤儿图片...');
+        
+        // 获取所有数据库中的文件路径
+        const memories = await Memory.find({});
+        const dbFilePaths = new Set();
+        
+        memories.forEach(memory => {
+            if (memory.filePath) {
+                dbFilePaths.add(path.resolve(memory.filePath));
+            }
+        });
+        
+        // 扫描uploads目录中的图片文件
+        const imageFiles = [];
+        const scanDir = async (dirPath) => {
+            const items = await fs.readdir(dirPath);
+            for (const item of items) {
+                const fullPath = path.join(dirPath, item);
+                const stat = await fs.stat(fullPath);
+                if (stat.isDirectory()) {
+                    await scanDir(fullPath);
+                } else if (/\.(jpg|jpeg|png|gif|webp)$/i.test(item)) {
+                    imageFiles.push({
+                        fullPath: path.resolve(fullPath),
+                        fileName: item,
+                        relativePath: path.relative(uploadsDir, fullPath),
+                        mtime: stat.mtime
+                    });
+                }
+            }
+        };
+        
+        await scanDir(uploadsDir);
+        
+        // 找出孤儿图片文件（最近24小时内的）
+        const now = new Date();
+        const orphanImages = imageFiles.filter(file => {
+            const isOrphan = !dbFilePaths.has(file.fullPath);
+            const isRecent = (now - file.mtime) < 24 * 60 * 60 * 1000; // 24小时内
+            return isOrphan && isRecent;
+        });
+        
+        console.log(`📊 发现 ${orphanImages.length} 个可恢复的图片文件`);
+        
+        // 为每个孤儿图片创建记忆记录
+        const recoveredMemories = [];
+        
+        for (const imageFile of orphanImages) {
+            try {
+                const memoryId = uuidv4();
+                const originalName = imageFile.fileName;
+                const displayName = `恢复的图片 - ${originalName}`;
+                
+                // 获取图片信息
+                let metadata = {};
+                try {
+                    const imageInfo = await sharp(imageFile.fullPath).metadata();
+                    metadata.width = imageInfo.width;
+                    metadata.height = imageInfo.height;
+                } catch (err) {
+                    console.warn('获取图片信息失败:', err);
+                }
+                
+                const memory = new Memory({
+                    id: memoryId,
+                    name: path.parse(originalName).name,
+                    originalName: originalName,
+                    displayName: displayName,
+                    description: '从服务器文件恢复的图片',
+                    type: 'image',
+                    mimeType: 'image/' + path.extname(originalName).slice(1).toLowerCase(),
+                    size: (await fs.stat(imageFile.fullPath)).size,
+                    filePath: imageFile.fullPath,
+                    metadata: metadata,
+                    uploadDate: imageFile.mtime
+                });
+                
+                await memory.save();
+                recoveredMemories.push(memory);
+                console.log(`✅ 恢复图片: ${originalName}`);
+                
+            } catch (err) {
+                console.error(`❌ 恢复图片失败: ${imageFile.fileName}`, err);
+            }
+        }
+        
+        console.log(`✅ 成功恢复 ${recoveredMemories.length} 张图片`);
+        
+        res.json({
+            success: true,
+            message: `成功恢复 ${recoveredMemories.length} 张图片`,
+            recoveredCount: recoveredMemories.length,
+            recoveredMemories: recoveredMemories
+        });
+        
+    } catch (error) {
+        console.error('恢复孤儿图片失败:', error);
+        res.status(500).json({
+            success: false,
+            message: '恢复孤儿图片失败',
             error: error.message
         });
     }
