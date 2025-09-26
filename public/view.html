@@ -220,6 +220,14 @@
             white-space: nowrap;
         }
 
+        /* 🚀 音频独占模式状态 */
+        .load-status.audio-exclusive {
+            color: #EC4899;
+            background: rgba(236, 72, 153, 0.15);
+            border-color: rgba(236, 72, 153, 0.3);
+            animation: audioExclusivePulse 1.5s ease-in-out infinite;
+        }
+
         @keyframes statusPulse {
             0%, 100% {
                 opacity: 0.8;
@@ -228,6 +236,19 @@
             50% {
                 opacity: 1;
                 transform: scale(1.02);
+            }
+        }
+
+        @keyframes audioExclusivePulse {
+            0%, 100% {
+                opacity: 0.9;
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+                box-shadow: 0 0 15px 0 rgba(236, 72, 153, 0.6);
             }
         }
 
@@ -2063,70 +2084,155 @@
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-        // 🎯 音频优先加载策略
+        // 🚀 激进的音频独占加载策略
         function priorityLoadAudio() {
             if (isAudioPriorityLoading) return;
             
-            console.log('🎵 开始音频优先加载策略');
+            console.log('🎵 开始音频独占加载策略');
             isAudioPriorityLoading = true;
             
             // 检查音频元素状态
             const audioElement = document.querySelector('.audio-note-player');
             if (audioElement && audioElement.src) {
-                console.log('🎯 音频获得优先级，检查缓存状态');
+                console.log('🚀 音频获得独占优先级，暂停所有图片请求');
+                
+                // 🎯 强制暂停所有图片加载
+                blockAllImageLoading();
                 
                 // 更新状态
-                updateLoadStatus('🎵 音频优先加载中...');
+                updateLoadStatus('🎵 音频独占加载中，暂停图片...', true);
                 
                 // 检查音频是否已缓存
                 const isCached = isAudioCached(audioElement.src);
                 if (isCached) {
                     console.log('⚡ 音频已有缓存记录，应该快速加载');
                     updateCacheStatus(true, isMobile);
+                    // 已缓存的音频，快速检测后立即启动图片加载
+                    setTimeout(() => {
+                        if (isAudioPriorityLoading) {
+                            console.log('⚡ 缓存音频检测完成，恢复图片加载');
+                            isAudioPriorityLoading = false;
+                            resumeAllImageLoading();
+                            startLazyImageLoading();
+                        }
+                    }, 200);
+                } else {
+                    console.log('📥 首次加载音频，完全暂停图片直到音频就绪');
+                    // 显示加载进度
+                    showAudioLoadingProgress(audioElement);
                 }
                 
-                // 启动音频加载状态检查
-                checkAudioLoadStatus(audioElement);
-                
-                // 音频加载完成后（或快速检测后），启动其余图片的懒加载
+                // 音频加载完成后，恢复图片加载
                 const onAudioReady = () => {
-                    console.log('✅ 音频优先加载完成，开始背景加载剩余图片');
+                    console.log('✅ 音频独占加载完成，恢复图片加载');
                     isAudioPriorityLoading = false;
-                    updateLoadStatus('📸 背景加载剩余图片...');
+                    resumeAllImageLoading();
+                    updateLoadStatus('📸 恢复图片加载...');
                     startLazyImageLoading();
                 };
                 
-                // 🚀 优化等待时间 - 大幅减少延迟
-                const waitTime = isCached ? 300 : 1500; // 已缓存300ms，未缓存1.5s
-                
+                // 🎯 监听多个音频就绪事件
                 audioElement.addEventListener('canplaythrough', onAudioReady, { once: true });
+                audioElement.addEventListener('canplay', () => {
+                    if (isAudioPriorityLoading && !isCached) {
+                        console.log('🎵 音频可播放，但继续等待完全加载');
+                        // 对于大音频文件，等待更多缓冲
+                        if (audioElement.duration > 30) { // 超过30秒的音频
+                            console.log('📊 大音频文件，等待更多缓冲...');
+                        } else {
+                            onAudioReady();
+                        }
+                    }
+                }, { once: true });
+                
                 audioElement.addEventListener('error', () => {
-                    console.log('⚠️ 音频加载失败，继续加载剩余图片');
+                    console.log('⚠️ 音频加载失败，恢复图片加载');
                     isAudioPriorityLoading = false;
+                    resumeAllImageLoading();
                     startLazyImageLoading();
                 }, { once: true });
                 
-                // 添加更早的触发条件
-                audioElement.addEventListener('canplay', () => {
-                    if (isAudioPriorityLoading) {
-                        console.log('🎵 音频可播放，提前开始图片加载');
-                        isAudioPriorityLoading = false;
-                        startLazyImageLoading();
-                    }
-                }, { once: true });
-                
-                // 超时保护（大幅缩短）
+                // 超时保护 - 最大3秒独占
                 setTimeout(() => {
                     if (isAudioPriorityLoading) {
-                        console.log(`⏰ 音频等待超时 (${waitTime}ms)，继续加载剩余图片`);
+                        console.log('⏰ 音频独占超时 (3秒)，强制恢复图片加载');
                         isAudioPriorityLoading = false;
+                        resumeAllImageLoading();
                         startLazyImageLoading();
                     }
-                }, waitTime);
+                }, 3000); // 最多独占3秒
             } else {
                 // 没有音频，直接加载剩余图片
                 console.log('📸 无音频文件，直接加载剩余图片');
                 startLazyImageLoading();
+            }
+        }
+
+        // 🚫 阻止所有图片加载
+        function blockAllImageLoading() {
+            console.log('🚫 阻止所有新的图片请求');
+            
+            // 暂停所有img元素的加载
+            const allImages = document.querySelectorAll('img');
+            allImages.forEach(img => {
+                if (!img.complete && img.src) {
+                    img._originalSrc = img.src;
+                    img.src = ''; // 暂停加载
+                }
+            });
+            
+            // 标记为阻止状态
+            window._imageLoadingBlocked = true;
+        }
+
+        // ✅ 恢复所有图片加载
+        function resumeAllImageLoading() {
+            console.log('✅ 恢复所有图片加载');
+            
+            // 恢复所有被暂停的img元素
+            const allImages = document.querySelectorAll('img');
+            allImages.forEach(img => {
+                if (img._originalSrc) {
+                    img.src = img._originalSrc;
+                    delete img._originalSrc;
+                }
+            });
+            
+            // 标记为允许状态
+            window._imageLoadingBlocked = false;
+        }
+
+        // 📊 显示音频加载进度
+        function showAudioLoadingProgress(audioElement) {
+            const duration = audioElement.duration;
+            if (duration && duration > 10) {
+                console.log(`📊 音频时长: ${duration.toFixed(1)}秒，预计需要加载时间较长`);
+                updateLoadStatus(`🚀 独占加载 ${duration.toFixed(0)}秒音频，请稍候...`, true);
+                
+                // 定期更新进度
+                const progressInterval = setInterval(() => {
+                    if (!isAudioPriorityLoading) {
+                        clearInterval(progressInterval);
+                        return;
+                    }
+                    
+                    if (audioElement.buffered.length > 0) {
+                        const buffered = audioElement.buffered.end(0);
+                        const percent = Math.round((buffered / duration) * 100);
+                        updateLoadStatus(`🎵 独占缓冲: ${percent}%`, true);
+                        
+                        if (percent >= 25 && duration > 60) {
+                            // 超长音频，25%后允许图片加载
+                            console.log('🎵 超长音频25%缓冲完成，允许图片加载');
+                            clearInterval(progressInterval);
+                            if (isAudioPriorityLoading) {
+                                isAudioPriorityLoading = false;
+                                resumeAllImageLoading();
+                                startLazyImageLoading();
+                            }
+                        }
+                    }
+                }, 500);
             }
         }
 
@@ -2159,8 +2265,15 @@
             loadNextImageInQueue();
         }
 
-        // 📥 修复的图片队列加载函数
-        function loadNextImageInQueue(delay = 100) { // 减少延迟到100ms
+        // 📥 智能图片队列加载函数（支持独占模式）
+        function loadNextImageInQueue(delay = 50) { // 进一步减少延迟
+            // 检查是否被阻止
+            if (window._imageLoadingBlocked) {
+                console.log('🚫 图片加载被阻止，等待音频完成');
+                setTimeout(() => loadNextImageInQueue(delay), 100);
+                return;
+            }
+            
             if (priorityLoadingQueue.length === 0) {
                 updateLoadStatus('✅ 所有图片加载完成');
                 console.log('🎉 优先级加载策略完成！');
@@ -2193,7 +2306,6 @@
                 
                 // 创建img元素
                 const img = document.createElement('img');
-                img.src = src;
                 img.alt = name;
                 img.onclick = () => openFullscreen(fullSrc);
                 
@@ -2208,8 +2320,10 @@
                     // 继续加载下一张（移除当前图片从队列）
                     priorityLoadingQueue.shift();
                     
-                    // 立即加载下一张，不延迟
-                    loadNextImageInQueue(delay);
+                    // 检查是否被阻止，如果没有则立即加载下一张
+                    if (!window._imageLoadingBlocked) {
+                        setTimeout(() => loadNextImageInQueue(delay), delay);
+                    }
                 };
                 
                 img.onerror = () => {
@@ -2225,21 +2339,44 @@
                     
                     // 继续加载下一张
                     priorityLoadingQueue.shift();
-                    setTimeout(() => loadNextImageInQueue(delay), delay);
+                    if (!window._imageLoadingBlocked) {
+                        setTimeout(() => loadNextImageInQueue(delay), delay);
+                    }
                 };
+                
+                // 🚀 最后设置src，确保在ready状态后开始加载
+                if (!window._imageLoadingBlocked) {
+                    img.src = src;
+                } else {
+                    // 如果在设置src时被阻止，则延迟加载
+                    setTimeout(() => {
+                        if (!window._imageLoadingBlocked) {
+                            img.src = src;
+                        }
+                    }, 100);
+                }
             } else {
                 console.log(`⚠️ 未找到index=${currentLoadingIndex}的占位符，跳过`);
                 // 跳过这张，继续下一张
                 priorityLoadingQueue.shift();
-                loadNextImageInQueue(delay);
+                if (!window._imageLoadingBlocked) {
+                    loadNextImageInQueue(delay);
+                }
             }
         }
 
-        // 📊 更新加载状态显示
-        function updateLoadStatus(status) {
+        // 📊 更新加载状态显示（支持独占模式）
+        function updateLoadStatus(status, isExclusive = false) {
             const loadStatus = document.querySelector('.load-status');
             if (loadStatus) {
                 loadStatus.textContent = status;
+                
+                // 🚀 独占模式特殊样式
+                if (isExclusive) {
+                    loadStatus.classList.add('audio-exclusive');
+                } else {
+                    loadStatus.classList.remove('audio-exclusive');
+                }
             }
         }
 
@@ -2478,7 +2615,7 @@
                                         <img src="${img.thumbnail || img.url}" 
                                              alt="${img.name}" 
                                              onclick="openFullscreen('${img.url}')"
-                                             onload="console.log('✅ 首张图片加载完成，开始音频优先加载'); priorityLoadAudio();"
+                                             onload="console.log('✅ 首张图片加载完成，启动音频独占模式'); setTimeout(() => priorityLoadAudio(), 100);"
                                              onerror="handleImageError(this, '${img.url}')">
                                     </div>
                                 `;

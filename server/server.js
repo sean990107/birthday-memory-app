@@ -854,19 +854,31 @@ app.get('/api/file/:id', async (req, res) => {
 
         console.log(`✅ 发送文件: ${filePath}, MIME: ${mimeType}`);
 
-        // 🚀 优化的缓存和性能设置
+        // 🚀 超级优化的缓存和性能设置
+        const stats = fs.statSync(filePath);
+        const fileSize = stats.size;
+        const isAudio = req.query.type === 'audioNote' || mimeType.startsWith('audio/');
+        
         res.setHeader('Content-Type', mimeType);
         res.setHeader('Cache-Control', 'public, max-age=31536000, immutable'); // 1年缓存 + immutable
         res.setHeader('Access-Control-Allow-Origin', '*'); // 允许跨域访问
         res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
-        res.setHeader('Access-Control-Allow-Headers', 'Range');
+        res.setHeader('Access-Control-Allow-Headers', 'Range, If-Range');
         
-        // 支持断点续传和范围请求
-        res.setHeader('Accept-Ranges', 'bytes');
+        // 🎵 音频文件特殊优化
+        if (isAudio) {
+            // 强制启用压缩（如果服务器支持）
+            res.setHeader('Content-Encoding', 'identity'); // 确保不会重复压缩
+            
+            // 音频流式传输优化
+            res.setHeader('Accept-Ranges', 'bytes');
+            res.setHeader('Connection', 'keep-alive');
+            
+            console.log(`🎵 优化音频传输: ${filePath}, 大小: ${(fileSize / 1024).toFixed(1)}KB`);
+        }
         
         // 添加ETag和Last-Modified用于更好的缓存
-        const stats = fs.statSync(filePath);
-        const etag = `"${stats.size}-${stats.mtime.getTime()}"`;
+        const etag = `"${fileSize}-${stats.mtime.getTime()}"`;
         res.setHeader('ETag', etag);
         res.setHeader('Last-Modified', stats.mtime.toUTCString());
         
@@ -879,13 +891,51 @@ app.get('/api/file/:id', async (req, res) => {
             return res.status(304).end();
         }
         
+        // 🚀 处理范围请求（支持音频快速预加载）
+        const range = req.headers.range;
+        if (range && isAudio) {
+            console.log('📊 音频范围请求:', range);
+            
+            const parts = range.replace(/bytes=/, "").split("-");
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+            const chunksize = (end - start) + 1;
+            
+            res.status(206);
+            res.setHeader('Content-Range', `bytes ${start}-${end}/${fileSize}`);
+            res.setHeader('Content-Length', chunksize);
+            
+            const stream = fs.createReadStream(filePath, { start, end });
+            stream.pipe(res);
+            
+            console.log(`📊 音频分片传输: ${start}-${end}/${fileSize} (${(chunksize/1024).toFixed(1)}KB)`);
+            return;
+        }
+        
         // 为音频笔记设置合适的文件名
         if (req.query.type === 'audioNote') {
             res.setHeader('Content-Disposition', `inline; filename="audio-note-${fileRecord.id}.wav"`);
         }
         
-        console.log(`✅ 发送文件: ${filePath}, 大小: ${(stats.size / 1024).toFixed(1)}KB`);
-        res.sendFile(path.resolve(filePath));
+        // 🚀 音频大文件流式传输
+        if (isAudio && fileSize > 1024 * 1024) { // 大于1MB的音频文件
+            console.log(`🎵 大音频文件流式传输: ${filePath}, 大小: ${(fileSize / 1024 / 1024).toFixed(1)}MB`);
+            
+            res.setHeader('Content-Length', fileSize);
+            const stream = fs.createReadStream(filePath);
+            
+            stream.on('error', (err) => {
+                console.error('音频流传输错误:', err);
+                if (!res.headersSent) {
+                    res.status(500).end();
+                }
+            });
+            
+            stream.pipe(res);
+        } else {
+            console.log(`✅ 发送文件: ${filePath}, 大小: ${(fileSize / 1024).toFixed(1)}KB`);
+            res.sendFile(path.resolve(filePath));
+        }
 
     } catch (error) {
         console.error('文件访问失败:', error);
