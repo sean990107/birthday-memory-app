@@ -1087,6 +1087,9 @@ function editMemory(id) {
         imageManagement.style.display = 'none';
     }
     
+    // 🎵 检查并显示现有音频笔记
+    checkAndDisplayExistingAudio(memory);
+    
     // 重置录音状态
     resetRecording();
     
@@ -1152,6 +1155,108 @@ function clearImageManager() {
     const newImageUpload = document.getElementById('newImageUpload');
     if (newImageUpload) {
         newImageUpload.value = '';
+    }
+}
+
+// 🎵 检查并显示现有音频笔记
+function checkAndDisplayExistingAudio(memory) {
+    const existingAudioSection = document.getElementById('existingAudioSection');
+    const existingAudioPlayer = document.getElementById('existingAudioPlayer');
+    const recordBtnText = document.getElementById('recordBtnText');
+    const uploadBtnText = document.getElementById('uploadBtnText');
+    
+    // 检查是否有音频笔记
+    if (memory.audioNote && !memory.isLocal) {
+        console.log('🎵 检测到现有音频笔记，显示管理界面');
+        
+        // 显示现有音频区域
+        existingAudioSection.style.display = 'block';
+        
+        // 设置音频播放器源
+        const audioNoteURL = memoryAPI.getAudioNoteURL(memory.id);
+        existingAudioPlayer.src = audioNoteURL;
+        
+        // 修改按钮文字为替换模式
+        if (recordBtnText) recordBtnText.textContent = '重新录音';
+        if (uploadBtnText) uploadBtnText.textContent = '替换音频';
+        
+        console.log('🎵 音频源设置完成:', audioNoteURL);
+    } else {
+        console.log('🎵 没有检测到现有音频笔记');
+        
+        // 隐藏现有音频区域
+        existingAudioSection.style.display = 'none';
+        
+        // 重置按钮文字为添加模式
+        if (recordBtnText) recordBtnText.textContent = '开始录音';
+        if (uploadBtnText) uploadBtnText.textContent = '上传音频';
+    }
+}
+
+// 🎵 播放现有音频笔记
+function playExistingAudio() {
+    const existingAudioPlayer = document.getElementById('existingAudioPlayer');
+    const playBtn = document.getElementById('playExistingAudio');
+    
+    if (!existingAudioPlayer.src) {
+        showNotification('音频文件未找到', 'error');
+        return;
+    }
+    
+    if (existingAudioPlayer.paused) {
+        console.log('🎵 播放现有音频笔记');
+        existingAudioPlayer.play().then(() => {
+            playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            showNotification('🎵 正在播放悄悄话...', 'info');
+        }).catch(error => {
+            console.error('播放失败:', error);
+            showNotification('音频播放失败，请检查网络连接', 'error');
+        });
+    } else {
+        console.log('🎵 暂停现有音频笔记');
+        existingAudioPlayer.pause();
+        playBtn.innerHTML = '<i class="fas fa-play"></i>';
+        showNotification('⏸️ 播放已暂停', 'info');
+    }
+}
+
+// 🎵 删除现有音频笔记
+async function deleteExistingAudio() {
+    if (!currentEditingId) {
+        showNotification('编辑ID丢失', 'error');
+        return;
+    }
+    
+    if (!confirm('确定要删除现有的悄悄话录音吗？此操作不可撤销。')) {
+        return;
+    }
+    
+    showLoading();
+    
+    try {
+        console.log('🗑️ 删除现有音频笔记...');
+        
+        // 调用API删除音频笔记
+        await memoryAPI.deleteAudioNote(currentEditingId);
+        
+        // 隐藏现有音频区域
+        const existingAudioSection = document.getElementById('existingAudioSection');
+        existingAudioSection.style.display = 'none';
+        
+        // 重置按钮文字
+        const recordBtnText = document.getElementById('recordBtnText');
+        const uploadBtnText = document.getElementById('uploadBtnText');
+        if (recordBtnText) recordBtnText.textContent = '开始录音';
+        if (uploadBtnText) uploadBtnText.textContent = '上传音频';
+        
+        showNotification('✅ 悄悄话录音已删除', 'success');
+        console.log('✅ 音频笔记删除成功');
+        
+    } catch (error) {
+        console.error('删除音频笔记失败:', error);
+        showNotification('删除失败：' + (error.message || '未知错误'), 'error');
+    } finally {
+        hideLoading();
     }
 }
 
@@ -1779,6 +1884,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('recordBtn').addEventListener('click', startRecording);
     document.getElementById('stopRecordBtn').addEventListener('click', stopRecording);
     document.getElementById('playRecordBtn').addEventListener('click', playRecording);
+    
+    // 🎵 现有音频笔记按钮事件
+    document.getElementById('playExistingAudio').addEventListener('click', playExistingAudio);
+    document.getElementById('deleteExistingAudio').addEventListener('click', deleteExistingAudio);
     
     // 音频文件上传处理
     document.getElementById('audioUpload').addEventListener('change', function(event) {

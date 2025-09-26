@@ -195,9 +195,29 @@
                     <label>
                         <i class="fas fa-microphone"></i> 语音笔记
                     </label>
+                    
+                    <!-- 显示现有音频笔记 -->
+                    <div id="existingAudioSection" class="existing-audio-section" style="display: none;">
+                        <div class="existing-audio-info">
+                            <div class="audio-preview">
+                                <i class="fas fa-music"></i>
+                                <span>当前已有悄悄话录音</span>
+                                <button id="playExistingAudio" class="btn-play-existing" title="试听现有录音">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                            </div>
+                            <div class="audio-actions">
+                                <button id="deleteExistingAudio" class="btn-delete-audio" title="删除现有录音">
+                                    <i class="fas fa-trash"></i> 删除
+                                </button>
+                            </div>
+                        </div>
+                        <audio id="existingAudioPlayer" style="width: 100%; margin-top: 10px;" controls></audio>
+                    </div>
+                    
                     <div class="audio-controls">
                         <button id="recordBtn" class="btn-record">
-                            <i class="fas fa-microphone"></i> 开始录音
+                            <i class="fas fa-microphone"></i> <span id="recordBtnText">开始录音</span>
                         </button>
                         <button id="stopRecordBtn" class="btn-stop" style="display: none;">
                             <i class="fas fa-stop"></i> 停止录音
@@ -207,7 +227,7 @@
                         </button>
                         <input type="file" id="audioUpload" accept="audio/*" style="display: none;">
                         <button onclick="document.getElementById('audioUpload').click()" class="btn-upload">
-                            <i class="fas fa-upload"></i> 上传音频
+                            <i class="fas fa-upload"></i> <span id="uploadBtnText">上传音频</span>
                         </button>
                     </div>
                     <div id="recordingStatus" class="recording-status"></div>

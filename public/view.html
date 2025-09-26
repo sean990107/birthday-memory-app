@@ -232,6 +232,66 @@
             transform: scale(1.2);
         }
 
+        /* 🎠 自动翻页指示器样式 */
+        .auto-slide-indicator {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 15;
+            transition: all 0.3s ease;
+            max-width: 200px;
+        }
+
+        .auto-slide-indicator:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.02);
+        }
+
+        .auto-slide-progress {
+            width: 60px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .auto-slide-toggle {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-size: 10px;
+        }
+
+        .auto-slide-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.1);
+        }
+
+        .auto-slide-text {
+            color: white;
+            font-size: 11px;
+            font-weight: 500;
+            opacity: 0.9;
+            white-space: nowrap;
+        }
+
         .image-container {
             position: relative;
             display: flex;
@@ -631,6 +691,137 @@
             background: rgba(255, 255, 255, 0.1);
         }
 
+        /* 自定义音频控制器样式 */
+        .custom-audio-controls {
+            margin-top: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .audio-progress-container {
+            margin-bottom: 8px;
+        }
+
+        .audio-progress-bar {
+            position: relative;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            cursor: pointer;
+            overflow: visible;
+        }
+
+        .audio-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #EC4899, #8B5CF6);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s ease;
+            position: relative;
+        }
+
+        .audio-progress-handle {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translate(50%, -50%);
+            width: 14px;
+            height: 14px;
+            background: #FFFFFF;
+            border: 2px solid #EC4899;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .audio-progress-bar:hover .audio-progress-handle,
+        .audio-progress-bar.dragging .audio-progress-handle {
+            opacity: 1;
+        }
+
+        .audio-time-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .audio-loading-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+        }
+
+        .audio-loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid #EC4899;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 音频播放状态样式 */
+        .btn-play-compact.playing {
+            background: linear-gradient(135deg, #10B981, #059669);
+            animation: audioPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes audioPulse {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 2px 8px rgba(236, 72, 153, 0.25);
+            }
+            50% { 
+                transform: scale(1.05);
+                box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+            }
+        }
+
+        .btn-play-compact.loading {
+            background: linear-gradient(135deg, #6B7280, #9CA3AF);
+            cursor: not-allowed;
+        }
+
+        /* 呼吸动画 */
+        @keyframes breathe {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+            50% {
+                transform: scale(1.02);
+                opacity: 1;
+            }
+        }
+
+        /* 脉冲动画增强 */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 0 10px rgba(236, 72, 153, 0);
+            }
+        }
+
         /* 废弃的旧样式 */
         .audio-note-section, .memory-description-section {
             display: none;
@@ -930,6 +1121,9 @@
         }
         
         document.addEventListener('DOMContentLoaded', function() {
+            // 🚀 初始化缓存系统
+            initializeCacheSystem();
+            
             // 随机选择主题，创造惊喜
             selectRandomTheme();
             
@@ -1159,24 +1353,47 @@
                         <div class="audio-compact-header">
                             <i class="fas fa-microphone"></i>
                             <span>悄悄话</span>
-                            <button class="btn-play-compact" onclick="playAudioNote(document.querySelector('.audio-note-player'))">
+                            <button class="btn-play-compact" onclick="toggleAudioNote()" id="audioPlayBtn">
                                 <i class="fas fa-play"></i>
                             </button>
                         </div>
-                        <audio class="audio-note-player" preload="auto" 
+                        
+                        <!-- 自定义音频控制器 -->
+                        <div class="custom-audio-controls">
+                            <div class="audio-progress-container">
+                                <div class="audio-progress-bar">
+                                    <div class="audio-progress-fill" id="audioProgressFill"></div>
+                                    <div class="audio-progress-handle" id="audioProgressHandle"></div>
+                                </div>
+                            </div>
+                            <div class="audio-time-display">
+                                <span id="audioCurrentTime">0:00</span>
+                                <span id="audioDuration">--:--</span>
+                            </div>
+                        </div>
+                        
+                        <!-- 🚀 智能缓存音频元素 -->
+                        <audio class="audio-note-player" 
+                               preload="metadata"
+                               crossorigin="anonymous"
                                onloadedmetadata="handleAudioReady(this)"
                                oncanplaythrough="console.log('🎵 音频完全加载完成'); tryAutoPlay(this);"
                                oncanplay="console.log('🎵 音频可以开始播放');"
                                onerror="console.error('❌ 音频加载失败:', this.error)"
                                onloadstart="console.log('🎵 开始加载音频:', this.src)"
+                               ontimeupdate="updateAudioProgress(this)"
+                               onended="onAudioEnded()"
+                               onpause="onAudioPause()"
+                               onplay="onAudioPlay()"
+                               onprogress="console.log('📥 音频缓冲中...', this.buffered)"
                                muted="false"
                                autoplay="false"
-                               style="width: 100%; height: 30px;">
+                               style="display: none;">
+                            <source src="${audioNoteURL}" type="audio/webm; codecs=opus">
+                            <source src="${audioNoteURL}" type="audio/mp4">
                             <source src="${audioNoteURL}" type="audio/wav">
                             <source src="${audioNoteURL}" type="audio/mpeg">
                             <source src="${audioNoteURL}" type="audio/ogg">
-                            <source src="${audioNoteURL}" type="audio/webm">
-                            <source src="${audioNoteURL}" type="audio/mp4">
                             您的浏览器不支持音频播放。
                         </audio>
                     </div>
@@ -1338,175 +1555,781 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        // 处理音频准备就绪
+        // 🚀 处理音频准备就绪（增强版）
         function handleAudioReady(audioElement) {
             const duration = audioElement.duration;
             console.log('🎵 音频元数据已加载:', duration, 'seconds');
             
+            // 设置当前音频元素
+            currentAudioElement = audioElement;
+            
+            // 立即开始预加载音频数据
+            triggerAudioPreload(audioElement);
+            
+            // 更新总时长显示
+            const durationSpan = document.getElementById('audioDuration');
+            if (durationSpan && duration && duration > 0) {
+                durationSpan.textContent = formatTime(duration);
+                console.log('🎵 音频时长:', formatTime(duration));
+            }
+            
+            // 设置进度条交互事件
+            setupProgressBarEvents();
+            
             // 如果音频时长正常，显示友好提示
             if (duration && duration > 0) {
-                const formatTime = (seconds) => {
-                    const min = Math.floor(seconds / 60);
-                    const sec = Math.floor(seconds % 60);
-                    return `${min}:${sec.toString().padStart(2, '0')}`;
-                };
-                
-                console.log('🎵 音频时长:', formatTime(duration));
-                
-                        // 更新按钮文字显示时长
-                        const playBtn = audioElement.nextElementSibling.querySelector('.btn-auto-play');
-                        if (playBtn) {
-                            playBtn.innerHTML = `<i class="fas fa-play"></i> 点击我听听悄悄话吧 (${formatTime(duration)})`;
-                        }
+                console.log('✅ 音频就绪，总时长:', formatTime(duration));
+                showNotification('🎵 悄悄话已准备就绪，正在后台缓存...', 'success');
             }
         }
 
-        // 尝试自动播放（考虑浏览器限制）
-        function tryAutoPlay(audioElement) {
-            console.log('🎵 音频准备就绪，尝试自动播放');
+        // 🚀 触发音频预加载（移动优化版）
+        function triggerAudioPreload(audioElement) {
+            const src = audioElement.src;
+            if (!src) return;
             
-            // 设置音频属性以提高自动播放成功率
-            audioElement.muted = false;
-            audioElement.volume = 0.8;
+            console.log(`🚀 触发音频预加载: ${src} ${isMobile ? '(移动设备)' : ''}`);
             
-            // 多次尝试自动播放
-            let attemptCount = 0;
-            const maxAttempts = 3;
+            // 移动设备预加载策略
+            if (isMobile) {
+                // 移动设备延迟预加载，优先保证页面响应
+                setTimeout(() => {
+                    startMobilePreload(src);
+                }, isIOS ? 2000 : 1000); // iOS设备延迟更久
+            } else {
+                // 桌面设备立即预加载
+                startDesktopPreload(src);
+            }
+        }
+
+        // 📱 移动设备预加载
+        function startMobilePreload(src) {
+            console.log('📱 开始移动设备预加载策略');
             
-            function attemptAutoPlay() {
-                attemptCount++;
-                console.log(`🎵 第${attemptCount}次尝试自动播放`);
+            preloadAudio(src).then(() => {
+                console.log('✅ 移动设备音频预加载完成！');
+                showNotification(`🎯 悄悄话已缓存 ${isIOS ? '(iOS优化)' : '(移动优化)'}`, 'success');
+                updateCacheStatus(true, true);
+            }).catch(error => {
+                console.log('⚠️ 移动设备音频预加载失败，但不影响播放:', error);
+                // 移动设备预加载失败时，显示友好提示
+                if (isMobile) {
+                    showNotification('💡 首次播放可能需要加载，请稍候', 'info');
+                }
+            });
+        }
+
+        // 💻 桌面设备预加载
+        function startDesktopPreload(src) {
+            console.log('💻 开始桌面设备预加载策略');
+            
+            preloadAudio(src).then(() => {
+                console.log('✅ 桌面设备音频预加载完成！');
+                showNotification('🎯 悄悄话已缓存，播放将更快！', 'success');
+                updateCacheStatus(true, false);
+            }).catch(error => {
+                console.log('⚠️ 桌面设备音频预加载失败，但不影响播放:', error);
+            });
+        }
+
+        // 🎯 更新缓存状态显示（移动优化版）
+        function updateCacheStatus(isCached, isMobileDevice = false) {
+            const audioHeader = document.querySelector('.audio-compact-header span');
+            if (audioHeader && isCached) {
+                const cacheIcon = isMobileDevice ? '📱⚡' : '⚡';
+                const cacheText = isMobileDevice ? '已缓存' : '已缓存';
+                audioHeader.innerHTML = `悄悄话 <small style="color: #10B981;">${cacheIcon}${cacheText}</small>`;
+            }
+        }
+
+        // 设置进度条交互事件
+        function setupProgressBarEvents() {
+            const progressBar = document.querySelector('.audio-progress-bar');
+            const progressContainer = document.querySelector('.audio-progress-container');
+            
+            if (!progressBar || !currentAudioElement) return;
+            
+            // 点击进度条跳转
+            progressBar.addEventListener('click', (e) => {
+                if (isDragging) return;
                 
+                const rect = progressBar.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                const percentage = clickX / rect.width;
+                
+                if (currentAudioElement.duration) {
+                    const newTime = percentage * currentAudioElement.duration;
+                    currentAudioElement.currentTime = newTime;
+                    
+                    console.log('🎯 跳转到:', formatTime(newTime));
+                    showNotification(`⏭️ 跳转到 ${formatTime(newTime)}`, 'info');
+                }
+            });
+            
+            // 触摸设备支持
+            progressBar.addEventListener('touchstart', handleProgressStart, { passive: false });
+            progressBar.addEventListener('mousedown', handleProgressStart);
+            
+            document.addEventListener('touchmove', handleProgressMove, { passive: false });
+            document.addEventListener('mousemove', handleProgressMove);
+            
+            document.addEventListener('touchend', handleProgressEnd);
+            document.addEventListener('mouseup', handleProgressEnd);
+        }
+
+        // 进度条拖拽开始
+        function handleProgressStart(e) {
+            e.preventDefault();
+            isDragging = true;
+            
+            const progressBar = document.querySelector('.audio-progress-bar');
+            if (progressBar) {
+                progressBar.classList.add('dragging');
+            }
+        }
+
+        // 进度条拖拽中
+        function handleProgressMove(e) {
+            if (!isDragging || !currentAudioElement) return;
+            
+            e.preventDefault();
+            
+            const progressBar = document.querySelector('.audio-progress-bar');
+            const rect = progressBar.getBoundingClientRect();
+            
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const moveX = Math.max(0, Math.min(clientX - rect.left, rect.width));
+            const percentage = moveX / rect.width;
+            
+            // 实时更新进度条显示
+            const progressFill = document.getElementById('audioProgressFill');
+            if (progressFill) {
+                progressFill.style.width = (percentage * 100) + '%';
+            }
+            
+            // 实时更新时间显示
+            if (currentAudioElement.duration) {
+                const previewTime = percentage * currentAudioElement.duration;
+                const currentTimeSpan = document.getElementById('audioCurrentTime');
+                if (currentTimeSpan) {
+                    currentTimeSpan.textContent = formatTime(previewTime);
+                }
+            }
+        }
+
+        // 进度条拖拽结束
+        function handleProgressEnd(e) {
+            if (!isDragging || !currentAudioElement) return;
+            
+            const progressBar = document.querySelector('.audio-progress-bar');
+            if (progressBar) {
+                progressBar.classList.remove('dragging');
+                
+                const rect = progressBar.getBoundingClientRect();
+                const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+                const endX = Math.max(0, Math.min(clientX - rect.left, rect.width));
+                const percentage = endX / rect.width;
+                
+                if (currentAudioElement.duration) {
+                    const newTime = percentage * currentAudioElement.duration;
+                    currentAudioElement.currentTime = newTime;
+                    
+                    console.log('🎯 拖拽结束，跳转到:', formatTime(newTime));
+                    showNotification(`⏭️ 跳转到 ${formatTime(newTime)}`, 'info');
+                }
+            }
+            
+            isDragging = false;
+        }
+
+        // 🎵 优化的自动播放功能（移动设备优化版）
+        function tryAutoPlay(audioElement) {
+            console.log(`🎵 音频准备就绪，尝试智能自动播放 ${isMobile ? '(移动设备)' : '(桌面设备)'}`);
+            
+            // 设置当前音频元素
+            currentAudioElement = audioElement;
+            
+            // 移动设备特殊音频属性设置
+            if (isMobile) {
+                audioElement.muted = false;
+                audioElement.volume = isIOS ? 1.0 : 0.8; // iOS设备使用满音量
+                audioElement.preload = 'auto';
+                
+                // iOS设备特殊处理
+                if (isIOS) {
+                    console.log('🍎 iOS设备自动播放特殊配置');
+                    // iOS需要更保守的策略
+                }
+            } else {
+                // 桌面设备设置
+                audioElement.muted = false;
+                audioElement.volume = 0.8;
+            }
+            
+            // 移动设备延迟更长，给用户时间适应
+            const delay = isMobile ? (isIOS ? 3000 : 2000) : 1000;
+            console.log(`⏰ 自动播放延迟设置: ${delay}ms ${isMobile ? '(移动优化)' : ''}`);
+            
+            setTimeout(() => {
+                attemptSmartAutoPlay();
+            }, delay);
+        }
+
+        // 智能自动播放尝试
+        function attemptSmartAutoPlay() {
+            const audioElement = currentAudioElement;
+            if (!audioElement) return;
+            
+            console.log('🎵 开始智能自动播放尝试...');
+            
+            // 首先尝试直接播放
                 const playPromise = audioElement.play();
                 
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
-                        console.log('✅ 音频自动播放成功！');
-                        showNotification('🎵 悄悄话开始播放', 'success');
-                        
-                        // 更新播放按钮状态
-                        const playBtn = audioElement.nextElementSibling?.querySelector('.btn-auto-play');
+                    console.log('✅ 自动播放成功！');
+                    showNotification('🎵 悄悄话自动开始播放', 'success');
+                    
+                    // 显示播放状态指示器
+                    showAutoPlaySuccess();
+                    
+                }).catch(error => {
+                    console.log('❌ 自动播放被阻止:', error.message);
+                    
+                    // 显示友好的提示，引导用户手动播放
+                    showAutoPlayPrompt();
+                    
+                    // 监听用户交互
+                    setupAutoPlayOnInteraction();
+                });
+            }
+        }
+
+        // 显示自动播放成功状态
+        function showAutoPlaySuccess() {
+            const playBtn = document.getElementById('audioPlayBtn');
                         if (playBtn) {
-                            playBtn.innerHTML = '<i class="fas fa-pause"></i> 正在播放悄悄话...';
-                            playBtn.style.animation = 'none';
-                            playBtn.style.backgroundColor = '#10B981';
-                        }
-                    }).catch(error => {
-                        console.log(`❌ 第${attemptCount}次自动播放失败:`, error.message);
-                        
-                        if (attemptCount < maxAttempts) {
-                            // 继续尝试，延长等待时间
-                            setTimeout(attemptAutoPlay, 1000 * attemptCount);
-                        } else {
-                            // 所有尝试都失败，显示手动播放按钮
-                            console.log('🔇 浏览器阻止自动播放，显示手动播放按钮');
-                            
-                            const playBtn = audioElement.nextElementSibling?.querySelector('.btn-auto-play');
+                playBtn.classList.add('playing');
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                
+                // 添加脉动效果
+                playBtn.style.animation = 'audioPulse 2s ease-in-out infinite';
+            }
+        }
+
+        // 显示自动播放提示
+        function showAutoPlayPrompt() {
+            console.log('🔔 显示手动播放提示');
+            
+            const playBtn = document.getElementById('audioPlayBtn');
                             if (playBtn) {
-                                playBtn.style.display = 'block';
+                // 添加吸引注意的动画
                                 playBtn.style.animation = 'pulse 2s infinite';
-                                playBtn.style.backgroundColor = '#FF6B6B';
-                                playBtn.innerHTML = '<i class="fas fa-play"></i> 点击我听听悄悄话吧 💜';
-                            }
-                            
-                            showNotification('👆 点击按钮听听悄悄话', 'info');
-                        }
-                    });
-                }
+                playBtn.style.boxShadow = '0 0 20px rgba(236, 72, 153, 0.5)';
             }
             
-            // 立即尝试第一次
-            attemptAutoPlay();
+            // 显示友好的提示（移动设备优化）
+            setTimeout(() => {
+                const message = isMobile 
+                    ? (isIOS ? '🍎 轻触播放按钮听听悄悄话吧 💜' : '📱 轻触播放按钮听听悄悄话吧 💜')
+                    : '👆 点击播放按钮听听悄悄话吧 💜';
+                    
+                showNotification(message, 'info', isMobile ? 10000 : 8000);
+            }, isMobile ? 1000 : 1500);
             
-            // 监听页面交互，一旦用户有任何交互就尝试播放
-            const onUserInteraction = () => {
-                if (audioElement.paused) {
+            // 添加呼吸效果到整个音频控制器
+            const audioControls = document.querySelector('.custom-audio-controls');
+            if (audioControls) {
+                audioControls.style.animation = 'breathe 3s ease-in-out infinite';
+            }
+        }
+
+        // 设置交互触发的自动播放
+        function setupAutoPlayOnInteraction() {
+            const autoPlayOnUserAction = (e) => {
+                // 避免重复触发
+                if (!currentAudioElement || !currentAudioElement.paused) return;
+                
                     console.log('👆 检测到用户交互，尝试播放音频');
-                    audioElement.play().then(() => {
+                
+                const playPromise = currentAudioElement.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
                         console.log('✅ 交互触发播放成功');
                         showNotification('🎵 悄悄话开始播放', 'success');
                         
-                        const playBtn = audioElement.nextElementSibling?.querySelector('.btn-auto-play');
+                        // 移除提示动画
+                        const playBtn = document.getElementById('audioPlayBtn');
                         if (playBtn) {
-                            playBtn.innerHTML = '<i class="fas fa-pause"></i> 正在播放悄悄话...';
-                            playBtn.style.animation = 'none';
-                            playBtn.style.backgroundColor = '#10B981';
+                            playBtn.style.animation = '';
+                            playBtn.style.boxShadow = '';
+                        }
+                        
+                        const audioControls = document.querySelector('.custom-audio-controls');
+                        if (audioControls) {
+                            audioControls.style.animation = '';
                         }
                         
                         // 移除事件监听器
-                        document.removeEventListener('click', onUserInteraction);
-                        document.removeEventListener('touchstart', onUserInteraction);
-                        document.removeEventListener('keydown', onUserInteraction);
+                        removeInteractionListeners();
+                        
                     }).catch(err => {
-                        console.log('❌ 交互触发播放失败:', err);
+                        console.log('❌ 交互触发播放仍然失败:', err);
                     });
                 }
             };
             
-            // 添加多种用户交互监听
-            document.addEventListener('click', onUserInteraction, { once: true, passive: true });
-            document.addEventListener('touchstart', onUserInteraction, { once: true, passive: true });
-            document.addEventListener('keydown', onUserInteraction, { once: true, passive: true });
+            // 添加各种交互事件监听
+            const events = ['click', 'touchstart', 'keydown', 'scroll'];
+            events.forEach(event => {
+                document.addEventListener(event, autoPlayOnUserAction, { 
+                    once: true, 
+                    passive: true,
+                    capture: true 
+                });
+            });
+            
+            // 保存监听器引用以便移除
+            window.autoPlayListeners = { autoPlayOnUserAction, events };
         }
 
-        // 手动播放音频笔记
-        function playAudioNote(audioElement) {
-            console.log('🎵 手动播放音频笔记', audioElement);
-            
-            const controls = audioElement.nextElementSibling;
-            const playBtn = controls?.querySelector('.btn-auto-play');
+        // 移除交互监听器
+        function removeInteractionListeners() {
+            if (window.autoPlayListeners) {
+                const { autoPlayOnUserAction, events } = window.autoPlayListeners;
+                events.forEach(event => {
+                    document.removeEventListener(event, autoPlayOnUserAction, { 
+                        passive: true,
+                        capture: true 
+                    });
+                });
+                delete window.autoPlayListeners;
+            }
+        }
+
+        // 🎵 自定义音频控制器功能
+        let currentAudioElement = null;
+        let isDragging = false;
+
+        // 切换音频播放/暂停
+        function toggleAudioNote() {
+            const audioElement = document.querySelector('.audio-note-player');
+            const playBtn = document.getElementById('audioPlayBtn');
             
             if (!audioElement) {
                 console.error('❌ 音频元素未找到');
                 return;
             }
+
+            currentAudioElement = audioElement;
             
             if (audioElement.paused) {
-                // 重新加载音频以确保能播放
-                audioElement.load();
+                playAudio();
+            } else {
+                pauseAudio();
+            }
+        }
+
+        // 🚀 智能缓存音频播放系统
+        let audioCache = new Map(); // 内存音频缓存
+        let preloadQueue = []; // 预加载队列
+        let cacheStorage = null; // 浏览器缓存存储
+
+        // 📱 移动设备检测
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+        // 🎯 初始化缓存系统（移动优化版）
+        async function initializeCacheSystem() {
+            console.log('🚀 初始化智能音频缓存系统...');
+            console.log(`📱 设备类型: ${isMobile ? '移动设备' : '桌面设备'} ${isIOS ? '(iOS)' : ''} ${isSafari ? '(Safari)' : ''}`);
+            
+            // 移动设备特殊处理
+            if (isMobile) {
+                console.log('📱 启用移动设备缓存优化...');
                 
-                // 等待一会儿再播放
-                setTimeout(() => {
+                // iOS设备的特殊限制
+                if (isIOS) {
+                    console.log('🍎 检测到iOS设备，应用Safari缓存策略...');
+                }
+            }
+            
+            // 检查Cache API支持（移动设备可能有限制）
+            if ('caches' in window && !isIOS) { // iOS Safari的Cache API有限制
+                try {
+                    cacheStorage = await caches.open('birthday-audio-cache-v1');
+                    console.log('✅ 浏览器Cache API可用');
+                } catch (error) {
+                    console.log('⚠️ Cache API不可用，使用localStorage缓存');
+                    cacheStorage = null;
+                }
+            } else {
+                console.log(`📱 ${isIOS ? 'iOS设备' : '移动设备'}使用localStorage缓存策略`);
+                cacheStorage = null;
+            }
+            
+            // 清理过期缓存（移动设备缩短为3天）
+            const expireDays = isMobile ? 3 : 7;
+            cleanExpiredCache(expireDays);
+            
+            // 移动设备内存优化
+            if (isMobile) {
+                optimizeForMobile();
+            }
+        }
+
+        // 📱 移动设备优化
+        function optimizeForMobile() {
+            // 限制内存缓存大小（移动设备内存有限）
+            const maxCacheSize = isMobile ? 3 : 10; // 移动设备最多缓存3个音频
+            
+            // 定期清理内存缓存
+            setInterval(() => {
+                if (audioCache.size > maxCacheSize) {
+                    const keys = Array.from(audioCache.keys());
+                    const oldestKey = keys[0];
+                    audioCache.delete(oldestKey);
+                    console.log('📱 清理旧音频缓存:', oldestKey);
+                }
+            }, 30000); // 30秒检查一次
+            
+            console.log(`📱 移动设备优化完成，最大缓存数量: ${maxCacheSize}`);
+        }
+
+        // 🧹 清理过期缓存（支持移动设备优化）
+        function cleanExpiredCache(expireDays = 7) {
+            const cacheKeys = Object.keys(localStorage).filter(key => key.startsWith('audio_cache_'));
+            const expireTime = expireDays * 24 * 60 * 60 * 1000; // 可配置天数
+            const now = Date.now();
+            let cleanedCount = 0;
+            
+            cacheKeys.forEach(key => {
+                try {
+                    const data = JSON.parse(localStorage.getItem(key));
+                    if (data && data.timestamp && (now - data.timestamp > expireTime)) {
+                        localStorage.removeItem(key);
+                        cleanedCount++;
+                        console.log('🧹 清理过期缓存:', key);
+                    }
+                } catch (error) {
+                    // 清理损坏的缓存项
+                    localStorage.removeItem(key);
+                    cleanedCount++;
+                }
+            });
+            
+            if (cleanedCount > 0) {
+                console.log(`🧹 清理完成，删除了 ${cleanedCount} 个过期缓存项`);
+            }
+        }
+
+        // 播放音频
+        async function playAudio() {
+            const audioElement = currentAudioElement;
+            const playBtn = document.getElementById('audioPlayBtn');
+            
+            if (!audioElement) return;
+
+            playBtn.classList.add('loading');
+            playBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            
+            try {
+                // 🎯 智能缓存策略 - 不破坏浏览器缓存
+                await ensureAudioReady(audioElement);
+                
                     const playPromise = audioElement.play();
                     
                     if (playPromise !== undefined) {
                         playPromise.then(() => {
-                            console.log('▶️ 用户点击播放音频成功');
-                            showNotification('🎵 悄悄话播放中...', 'success');
-                            
-                            if (playBtn) {
-                                playBtn.innerHTML = '<i class="fas fa-pause"></i> 暂停播放';
-                                playBtn.style.animation = 'none';
-                                playBtn.style.backgroundColor = '#10B981';
-                            }
+                        console.log('▶️ 音频播放成功');
+                        showNotification('🎵 悄悄话开始播放...', 'success');
                         }).catch(error => {
                             console.error('❌ 音频播放失败:', error);
                             showNotification('播放失败，请检查网络连接', 'error');
                             
-                            if (playBtn) {
-                                playBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> 播放失败，点击重试';
-                                playBtn.style.backgroundColor = '#EF4444';
-                            }
-                        });
-                    }
-                }, 200);
-            } else {
-                audioElement.pause();
-                console.log('⏸️ 用户暂停播放音频');
-                showNotification('⏸️ 悄悄话已暂停', 'info');
+                        playBtn.classList.remove('loading', 'playing');
+                        playBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                    });
+                }
+            } catch (error) {
+                console.error('❌ 音频准备失败:', error);
+                playBtn.classList.remove('loading', 'playing');
+                playBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                showNotification('音频加载失败', 'error');
+            }
+        }
+
+        // 🎯 确保音频就绪（智能缓存和预加载）
+        async function ensureAudioReady(audioElement) {
+            const src = audioElement.src;
+            
+            console.log('🎵 确保音频就绪:', src);
+            
+            // 检查浏览器缓存状态
+            if (audioElement.readyState >= 2) {
+                console.log('✅ 音频已缓存，直接播放');
+                return Promise.resolve();
+            }
+            
+            // 如果音频未就绪，重新加载（不破坏缓存）
+            return new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    reject(new Error('音频加载超时'));
+                }, 15000); // 15秒超时
                 
+                const onReady = () => {
+                    clearTimeout(timeout);
+                    audioElement.removeEventListener('canplaythrough', onReady);
+                    audioElement.removeEventListener('error', onError);
+                    console.log('✅ 音频加载完成，可以播放');
+                    resolve();
+                };
+                
+                const onError = (error) => {
+                    clearTimeout(timeout);
+                    audioElement.removeEventListener('canplaythrough', onReady);
+                    audioElement.removeEventListener('error', onError);
+                    console.error('❌ 音频加载失败:', error);
+                    reject(error);
+                };
+                
+                audioElement.addEventListener('canplaythrough', onReady);
+                audioElement.addEventListener('error', onError);
+                
+                // 重新加载音频（保持缓存友好）
+                audioElement.load();
+            });
+        }
+
+        // 🚀 多层级智能预加载音频系统（移动优化版）
+        async function preloadAudio(src) {
+            console.log(`🚀 开始智能预加载音频: ${src} ${isMobile ? '(移动设备)' : '(桌面设备)'}`);
+            
+            // 第一层：检查内存缓存
+            if (audioCache.has(src)) {
+                console.log('⚡ 音频已在内存缓存中:', src);
+                return audioCache.get(src);
+            }
+            
+            // 第二层：检查localStorage缓存信息（移动设备优先）
+            const cacheKey = `audio_cache_${btoa(src).replace(/[+/=]/g, '')}`;
+            const localCacheInfo = localStorage.getItem(cacheKey);
+            if (localCacheInfo && isMobile) {
+                try {
+                    const cacheData = JSON.parse(localCacheInfo);
+                    const expireTime = (isMobile ? 3 : 7) * 24 * 60 * 60 * 1000;
+                    if (Date.now() - cacheData.timestamp < expireTime) {
+                        console.log('📱 移动设备使用localStorage缓存记录');
+                    }
+                } catch (error) {
+                    localStorage.removeItem(cacheKey);
+                }
+            }
+            
+            // 第三层：检查浏览器缓存（非iOS设备）
+            if (cacheStorage && !isIOS) {
+                try {
+                    const cachedResponse = await cacheStorage.match(src);
+                    if (cachedResponse) {
+                        console.log('⚡ 音频已在浏览器缓存中:', src);
+                        const audio = new Audio();
+                        audio.src = src;
+                        audioCache.set(src, audio);
+                        return audio;
+                    }
+                } catch (error) {
+                    console.log('⚠️ 检查浏览器缓存失败:', error);
+                }
+            }
+            
+            // 第四层：网络下载并缓存（移动优化）
+            return new Promise((resolve, reject) => {
+                console.log(`📥 开始下载并缓存音频: ${src} ${isMobile ? '(移动网络优化)' : ''}`);
+                
+                const audio = new Audio();
+                
+                // 移动设备优化设置
+                if (isMobile) {
+                    audio.preload = 'metadata'; // 移动设备先加载元数据
+                    
+                    // iOS特殊处理
+                    if (isIOS) {
+                        // iOS不设置crossOrigin，避免CORS问题
+                        console.log('🍎 iOS设备，跳过crossOrigin设置');
+                    } else {
+                        audio.crossOrigin = 'anonymous';
+                    }
+                } else {
+                    audio.preload = 'auto';
+                    audio.crossOrigin = 'anonymous';
+                }
+                
+                const startTime = Date.now();
+                let progressCount = 0;
+                
+                const onReady = async () => {
+                    const loadTime = Date.now() - startTime;
+                    const estimatedSize = audio.duration ? (audio.duration * 32000 / 8 / 1024).toFixed(1) : 'Unknown';
+                    console.log(`✅ 音频下载完成! 用时: ${loadTime}ms, 大小约: ${estimatedSize}KB ${isMobile ? '(移动设备)' : ''}`);
+                    
+                    // 存储到内存缓存
+                    audioCache.set(src, audio);
+                    
+                    // 存储到浏览器缓存（非iOS）
+                    if (cacheStorage && !isIOS) {
+                        try {
+                            await cacheStorage.add(src);
+                            console.log('✅ 音频已存储到浏览器缓存');
+                        } catch (error) {
+                            console.log('⚠️ 存储到浏览器缓存失败:', error);
+                        }
+                    }
+                    
+                    // 记录缓存信息到localStorage（移动设备重点依赖）
+                    try {
+                        localStorage.setItem(cacheKey, JSON.stringify({
+                            url: src,
+                            timestamp: Date.now(),
+                            size: audio.duration ? audio.duration * 32000 / 8 : 0,
+                            loadTime: loadTime,
+                            device: isMobile ? 'mobile' : 'desktop',
+                            platform: isIOS ? 'iOS' : (isMobile ? 'mobile' : 'desktop')
+                        }));
+                        console.log(`💾 缓存信息已记录 ${isMobile ? '(移动优化)' : ''}`);
+                    } catch (error) {
+                        console.log('⚠️ 记录缓存信息失败:', error);
+                    }
+                    
+                    resolve(audio);
+                };
+                
+                const onError = (error) => {
+                    const loadTime = Date.now() - startTime;
+                    console.error(`❌ 音频下载失败! 用时: ${loadTime}ms ${isMobile ? '(移动网络)' : ''}`, error);
+                    reject(error);
+                };
+                
+                // 移动设备超时时间更长（考虑网络不稳定）
+                const timeout = setTimeout(() => {
+                    console.error(`⏰ 音频加载超时 ${isMobile ? '(移动网络)' : ''}`);
+                    reject(new Error('音频加载超时'));
+                }, isMobile ? 30000 : 15000);
+                
+                const cleanup = () => {
+                    clearTimeout(timeout);
+                    audio.removeEventListener('canplaythrough', onReady);
+                    audio.removeEventListener('error', onError);
+                };
+                
+                audio.addEventListener('canplaythrough', () => {
+                    cleanup();
+                    onReady();
+                });
+                
+                audio.addEventListener('error', (error) => {
+                    cleanup();
+                    onError(error);
+                });
+                
+                // 移动设备加载进度监控（减少频率）
+                audio.addEventListener('progress', () => {
+                    if (progressCount++ % (isMobile ? 5 : 2) === 0) { // 移动设备减少日志频率
+                        if (audio.buffered.length > 0) {
+                            const buffered = audio.buffered.end(0);
+                            const duration = audio.duration || 1;
+                            const percent = Math.round((buffered / duration) * 100);
+                            console.log(`📥 音频加载进度: ${percent}% ${isMobile ? '📱' : '💻'}`);
+                        }
+                    }
+                });
+                
+                audio.src = src;
+            });
+        }
+
+        // 暂停音频
+        function pauseAudio() {
+            const audioElement = currentAudioElement;
+            if (!audioElement) return;
+            
+                audioElement.pause();
+            console.log('⏸️ 音频暂停');
+                showNotification('⏸️ 悄悄话已暂停', 'info');
+        }
+
+        // 更新音频进度
+        function updateAudioProgress(audioElement) {
+            if (isDragging) return;
+            
+            const progressFill = document.getElementById('audioProgressFill');
+            const progressHandle = document.getElementById('audioProgressHandle');
+            const currentTimeSpan = document.getElementById('audioCurrentTime');
+            
+            if (!progressFill || !currentTimeSpan) return;
+            
+            const currentTime = audioElement.currentTime;
+            const duration = audioElement.duration;
+            
+            if (duration && duration > 0) {
+                const progress = (currentTime / duration) * 100;
+                progressFill.style.width = progress + '%';
+                
+                // 更新时间显示
+                currentTimeSpan.textContent = formatTime(currentTime);
+            }
+        }
+
+        // 音频播放事件
+        function onAudioPlay() {
+            const playBtn = document.getElementById('audioPlayBtn');
                 if (playBtn) {
-                    const formatTime = (seconds) => {
+                playBtn.classList.remove('loading');
+                playBtn.classList.add('playing');
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+        }
+
+        // 音频暂停事件
+        function onAudioPause() {
+            const playBtn = document.getElementById('audioPlayBtn');
+            if (playBtn) {
+                playBtn.classList.remove('loading', 'playing');
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        }
+
+        // 音频结束事件
+        function onAudioEnded() {
+            const playBtn = document.getElementById('audioPlayBtn');
+            const progressFill = document.getElementById('audioProgressFill');
+            
+            if (playBtn) {
+                playBtn.classList.remove('loading', 'playing');
+                playBtn.innerHTML = '<i class="fas fa-replay"></i>';
+            }
+            
+            if (progressFill) {
+                progressFill.style.width = '0%';
+            }
+            
+            console.log('🎵 音频播放完毕');
+            showNotification('🎵 悄悄话播放完毕', 'success');
+        }
+
+        // 格式化时间
+        function formatTime(seconds) {
+            if (!seconds || seconds === Infinity || isNaN(seconds)) return '0:00';
+            
                         const min = Math.floor(seconds / 60);
                         const sec = Math.floor(seconds % 60);
                         return `${min}:${sec.toString().padStart(2, '0')}`;
-                    };
-                    
-                    const duration = audioElement.duration;
-                    playBtn.innerHTML = `<i class="fas fa-play"></i> 继续听悄悄话${duration ? ` (${formatTime(duration)})` : ''}`;
-                    playBtn.style.backgroundColor = '#8B5CF6';
-                }
-            }
+        }
+
+        // 手动播放音频笔记（保持向后兼容）
+        function playAudioNote(audioElement) {
+            currentAudioElement = audioElement;
+            toggleAudioNote();
         }
 
         // 截断文本（复用主页面的函数）
@@ -1570,6 +2393,9 @@
         // 🎠 初始化轮播组件
         let currentImageIndex = 0;
         let swiperImages = [];
+        let autoSlideTimer = null;
+        let autoSlideInterval = 10000; // 10秒自动翻页
+        let isAutoSlideEnabled = true;
 
         function initializeSwiper(images) {
             swiperImages = images;
@@ -1586,6 +2412,9 @@
                 let isScrolling = false;
                 
                 swiperContainer.addEventListener('touchstart', (e) => {
+                    // 触摸开始时暂停自动播放
+                    pauseAutoSlide();
+                    
                     startX = e.touches[0].pageX;
                     startY = e.touches[0].pageY;
                     isScrolling = false;
@@ -1618,36 +2447,159 @@
                         } else {
                             nextImage(); // 向左滑动，显示下一张
                         }
+                    } else {
+                        // 如果没有实际滑动，恢复自动播放
+                        startAutoSlide();
                     }
                     
                     startX = 0;
                     startY = 0;
                     isScrolling = false;
                 }, { passive: true });
+
+                // 鼠标悬停时暂停自动播放
+                swiperContainer.addEventListener('mouseenter', pauseAutoSlide);
+                swiperContainer.addEventListener('mouseleave', startAutoSlide);
             }
             
-            console.log('✅ 图片轮播初始化完成，共', images.length, '张图片');
+            // 🎠 启动自动翻页（仅当有多张图片时）
+            if (images.length > 1) {
+                startAutoSlide();
+                addAutoSlideIndicator();
+                console.log('✅ 图片轮播初始化完成，共', images.length, '张图片，已启动10秒自动翻页');
+            } else {
+                console.log('✅ 图片轮播初始化完成，单张图片，不启用自动翻页');
+            }
+        }
+
+        // 🎠 启动自动翻页
+        function startAutoSlide() {
+            if (!isAutoSlideEnabled || swiperImages.length <= 1) return;
+            
+            // 清除现有计时器
+            pauseAutoSlide();
+            
+            autoSlideTimer = setTimeout(() => {
+                console.log('🎠 自动翻页：显示下一张图片');
+                nextImage(true); // 传递true表示这是自动翻页
+                startAutoSlide(); // 递归调用以继续自动翻页
+            }, autoSlideInterval);
+            
+            // 更新指示器
+            updateAutoSlideIndicator();
+        }
+
+        // 🛑 暂停自动翻页
+        function pauseAutoSlide() {
+            if (autoSlideTimer) {
+                clearTimeout(autoSlideTimer);
+                autoSlideTimer = null;
+            }
+        }
+
+        // 🔄 重置自动翻页（用于手动翻页后）
+        function resetAutoSlide() {
+            pauseAutoSlide();
+            if (isAutoSlideEnabled && swiperImages.length > 1) {
+                console.log('🔄 手动翻页后重置自动翻页计时器');
+                startAutoSlide();
+            }
+        }
+
+        // 📊 添加自动翻页指示器
+        function addAutoSlideIndicator() {
+            const swiperContainer = document.getElementById('imageSwiper');
+            if (!swiperContainer) return;
+            
+            const indicator = document.createElement('div');
+            indicator.className = 'auto-slide-indicator';
+            indicator.id = 'autoSlideIndicator';
+            indicator.innerHTML = `
+                <div class="auto-slide-progress" id="autoSlideProgress"></div>
+                <button class="auto-slide-toggle" id="autoSlideToggle" onclick="toggleAutoSlide()" title="切换自动播放">
+                    <i class="fas fa-pause"></i>
+                </button>
+                <span class="auto-slide-text">10s自动翻页</span>
+            `;
+            
+            swiperContainer.appendChild(indicator);
+        }
+
+        // 📊 更新自动翻页进度
+        function updateAutoSlideIndicator() {
+            const progress = document.getElementById('autoSlideProgress');
+            if (!progress || !autoSlideTimer) return;
+            
+            // 重置进度条
+            progress.style.width = '0%';
+            progress.style.transition = 'none';
+            
+            // 开始进度动画
+            requestAnimationFrame(() => {
+                progress.style.transition = `width ${autoSlideInterval}ms linear`;
+                progress.style.width = '100%';
+            });
+        }
+
+        // 🔘 切换自动翻页开关
+        function toggleAutoSlide() {
+            isAutoSlideEnabled = !isAutoSlideEnabled;
+            const toggleBtn = document.getElementById('autoSlideToggle');
+            const indicatorText = document.querySelector('.auto-slide-text');
+            
+            if (isAutoSlideEnabled) {
+                startAutoSlide();
+                if (toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                if (indicatorText) indicatorText.textContent = '10s自动翻页';
+                showNotification('🎠 自动翻页已开启', 'success');
+                console.log('✅ 自动翻页已开启');
+            } else {
+                pauseAutoSlide();
+                if (toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-play"></i>';
+                if (indicatorText) indicatorText.textContent = '手动翻页';
+                showNotification('⏸️ 自动翻页已暂停', 'info');
+                console.log('⏸️ 自动翻页已暂停');
+            }
         }
 
         // 🎯 轮播控制函数
-        function nextImage() {
+        function nextImage(isAuto = false) {
             if (swiperImages.length <= 1) return;
             
             currentImageIndex = (currentImageIndex + 1) % swiperImages.length;
             updateSwiperDisplay();
+            
+            // 如果是手动翻页，重置自动翻页计时器
+            if (!isAuto) {
+                console.log('👆 手动翻页：下一张');
+                resetAutoSlide();
+                showNotification(`📸 第 ${currentImageIndex + 1} 张图片`, 'info');
+            }
         }
 
-        function previousImage() {
+        function previousImage(isAuto = false) {
             if (swiperImages.length <= 1) return;
             
             currentImageIndex = currentImageIndex === 0 ? swiperImages.length - 1 : currentImageIndex - 1;
             updateSwiperDisplay();
+            
+            // 如果是手动翻页，重置自动翻页计时器
+            if (!isAuto) {
+                console.log('👆 手动翻页：上一张');
+                resetAutoSlide();
+                showNotification(`📸 第 ${currentImageIndex + 1} 张图片`, 'info');
+            }
         }
 
         function goToImage(index) {
-            if (index >= 0 && index < swiperImages.length) {
+            if (index >= 0 && index < swiperImages.length && index !== currentImageIndex) {
+                console.log('👆 手动跳转到第', index + 1, '张图片');
                 currentImageIndex = index;
                 updateSwiperDisplay();
+                
+                // 手动跳转也要重置自动翻页计时器
+                resetAutoSlide();
+                showNotification(`📸 第 ${currentImageIndex + 1} 张图片`, 'info');
             }
         }
 
@@ -1698,11 +2650,16 @@
             switch(e.key) {
                 case 'ArrowLeft':
                     e.preventDefault();
-                    previousImage();
+                    previousImage(); // 手动翻页，会自动重置计时器
                     break;
                 case 'ArrowRight':
                     e.preventDefault();
-                    nextImage();
+                    nextImage(); // 手动翻页，会自动重置计时器
+                    break;
+                case ' ':
+                case 'Spacebar':
+                    e.preventDefault();
+                    toggleAutoSlide(); // 空格键切换自动播放
                     break;
                 case 'Escape':
                     e.preventDefault();

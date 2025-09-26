@@ -132,6 +132,26 @@ class MemoryAPI {
         }
     }
 
+    // 删除音频笔记
+    async deleteAudioNote(memoryId) {
+        try {
+            const response = await fetch(`${this.apiURL}/memories/${memoryId}/audio-note`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error(data.message || '音频删除失败');
+            }
+            
+            return data.data;
+        } catch (error) {
+            console.error('音频删除失败:', error);
+            throw error;
+        }
+    }
+
     // 删除回忆
     async deleteMemory(id) {
         try {
