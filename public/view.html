@@ -1372,12 +1372,12 @@
                             </div>
                         </div>
                         
-                        <!-- 🚀 智能缓存音频元素 -->
+                        <!-- 🚀 优化缓存音频元素 -->
                         <audio class="audio-note-player" 
-                               preload="metadata"
+                               preload="auto"
                                crossorigin="anonymous"
                                onloadedmetadata="handleAudioReady(this)"
-                               oncanplaythrough="console.log('🎵 音频完全加载完成'); tryAutoPlay(this);"
+                               oncanplaythrough="console.log('✅ 音频完全缓存完成，可立即播放'); tryAutoPlay(this);"
                                oncanplay="console.log('🎵 音频可以开始播放');"
                                onerror="console.error('❌ 音频加载失败:', this.error)"
                                onloadstart="console.log('🎵 开始加载音频:', this.src)"
@@ -1385,7 +1385,10 @@
                                onended="onAudioEnded()"
                                onpause="onAudioPause()"
                                onplay="onAudioPlay()"
-                               onprogress="console.log('📥 音频缓冲中...', this.buffered)"
+                               onprogress="trackAudioBuffering(this)"
+                               onloadeddata="console.log('📦 音频数据加载完成，缓存就绪');"
+                               onsuspend="console.log('⏸️ 音频加载暂停');"
+                               onstalled="console.log('⚠️ 音频加载停滞');"
                                muted="false"
                                autoplay="false"
                                style="display: none;">
@@ -1555,7 +1558,7 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
-        // 🚀 处理音频准备就绪（增强版）
+        // 🚀 处理音频准备就绪（缓存优化版）
         function handleAudioReady(audioElement) {
             const duration = audioElement.duration;
             console.log('🎵 音频元数据已加载:', duration, 'seconds');
@@ -1563,8 +1566,8 @@
             // 设置当前音频元素
             currentAudioElement = audioElement;
             
-            // 立即开始预加载音频数据
-            triggerAudioPreload(audioElement);
+            // 检查缓存状态
+            checkAudioCacheStatus(audioElement);
             
             // 更新总时长显示
             const durationSpan = document.getElementById('audioDuration');
@@ -1576,11 +1579,47 @@
             // 设置进度条交互事件
             setupProgressBarEvents();
             
-            // 如果音频时长正常，显示友好提示
+            // 显示缓存友好提示
             if (duration && duration > 0) {
                 console.log('✅ 音频就绪，总时长:', formatTime(duration));
-                showNotification('🎵 悄悄话已准备就绪，正在后台缓存...', 'success');
+                showNotification('🎵 悄悄话准备中，浏览器正在缓存...', 'success');
             }
+        }
+
+        // 🔍 检查音频缓存状态
+        function checkAudioCacheStatus(audioElement) {
+            const src = audioElement.src;
+            const readyState = audioElement.readyState;
+            const duration = audioElement.duration;
+            
+            console.log(`🔍 音频缓存状态检查:`);
+            console.log(`   📁 文件: ${src}`);
+            console.log(`   📊 就绪状态: ${readyState} (${getReadyStateDescription(readyState)})`);
+            console.log(`   ⏱️ 时长: ${duration ? duration.toFixed(1) + 's' : '未知'}`);
+            console.log(`   🌐 设备: ${isMobile ? '移动设备' : '桌面设备'}`);
+            
+            // 如果已经完全加载，说明缓存生效
+            if (readyState >= 4) {
+                console.log('🎯 音频已完全缓存，下次访问将秒开！');
+                updateCacheStatus(true, isMobile);
+                showNotification('⚡ 音频已缓存，播放将很快！', 'success');
+            } else if (readyState >= 2) {
+                console.log('📊 音频部分缓存，正在继续加载...');
+            } else {
+                console.log('📥 音频开始缓存，首次访问需要时间...');
+            }
+        }
+
+        // 📊 获取就绪状态描述
+        function getReadyStateDescription(readyState) {
+            const states = {
+                0: '无数据',
+                1: '元数据已加载',
+                2: '当前位置数据已加载',
+                3: '当前和未来数据已加载',
+                4: '全部数据已加载'
+            };
+            return states[readyState] || '未知状态';
         }
 
         // 🚀 触发音频预加载（移动优化版）
@@ -1749,21 +1788,18 @@
             // 设置当前音频元素
             currentAudioElement = audioElement;
             
-            // 移动设备特殊音频属性设置
-            if (isMobile) {
-                audioElement.muted = false;
-                audioElement.volume = isIOS ? 1.0 : 0.8; // iOS设备使用满音量
-                audioElement.preload = 'auto';
-                
-                // iOS设备特殊处理
-                if (isIOS) {
-                    console.log('🍎 iOS设备自动播放特殊配置');
-                    // iOS需要更保守的策略
-                }
+            // 🔧 统一音频设置，确保缓存正常工作
+            audioElement.muted = false;
+            audioElement.volume = 0.8;
+            audioElement.preload = 'auto'; // 确保预加载设置正确
+            
+            console.log(`🎵 音频设置完成: preload=auto, volume=0.8 ${isMobile ? '(移动设备)' : '(桌面设备)'}`);
+            
+            // 检查音频是否已经缓存
+            if (audioElement.readyState >= 2) {
+                console.log('⚡ 音频已在浏览器缓存中，可立即播放！');
             } else {
-                // 桌面设备设置
-                audioElement.muted = false;
-                audioElement.volume = 0.8;
+                console.log('📥 音频开始缓存，请稍候...');
             }
             
             // 移动设备延迟更长，给用户时间适应
@@ -1930,10 +1966,34 @@
             }
         }
 
-        // 🚀 智能缓存音频播放系统
+        // 🚀 简化版智能缓存系统
         let audioCache = new Map(); // 内存音频缓存
-        let preloadQueue = []; // 预加载队列
         let cacheStorage = null; // 浏览器缓存存储
+        let audioBufferStatus = {}; // 音频缓冲状态追踪
+
+        // 📊 音频缓冲状态监控
+        function trackAudioBuffering(audioElement) {
+            if (!audioElement.src) return;
+            
+            const buffered = audioElement.buffered;
+            const duration = audioElement.duration || 0;
+            
+            if (buffered.length > 0 && duration > 0) {
+                const bufferedEnd = buffered.end(buffered.length - 1);
+                const bufferedPercent = Math.round((bufferedEnd / duration) * 100);
+                const bufferedSeconds = bufferedEnd.toFixed(1);
+                
+                console.log(`📊 音频缓冲: ${bufferedPercent}% (${bufferedSeconds}s/${duration.toFixed(1)}s)`);
+                
+                // 当缓冲达到100%时，标记为完全缓存
+                if (bufferedPercent >= 95) {
+                    console.log('🎯 音频完全缓冲完成，浏览器缓存生效！');
+                    updateCacheStatus(true, isMobile);
+                }
+            } else {
+                console.log('⚠️ 音频缓冲区为空，检查网络或文件');
+            }
+        }
 
         // 📱 移动设备检测
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -2149,21 +2209,19 @@
                 
                 const audio = new Audio();
                 
-                // 移动设备优化设置
-                if (isMobile) {
-                    audio.preload = 'metadata'; // 移动设备先加载元数据
-                    
-                    // iOS特殊处理
-                    if (isIOS) {
-                        // iOS不设置crossOrigin，避免CORS问题
-                        console.log('🍎 iOS设备，跳过crossOrigin设置');
-                    } else {
-                        audio.crossOrigin = 'anonymous';
-                    }
+                // 🔧 统一设置，让浏览器缓存正常工作
+                audio.preload = 'auto'; // 所有设备都使用auto预加载
+                
+                // iOS特殊处理
+                if (isIOS) {
+                    console.log('🍎 iOS设备，优化缓存策略');
+                    // iOS Safari支持preload="auto"，不设置crossOrigin避免CORS问题
                 } else {
-                    audio.preload = 'auto';
                     audio.crossOrigin = 'anonymous';
                 }
+                
+                console.log(`🎵 音频预加载配置: preload=auto ${isMobile ? '(移动设备)' : '(桌面设备)'}`);
+                
                 
                 const startTime = Date.now();
                 let progressCount = 0;
