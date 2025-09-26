@@ -175,6 +175,62 @@
             transform: scale(1.02);
         }
 
+        /* 🚀 优先级加载占位符样式 */
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-spinner {
+            text-align: center;
+            color: white;
+            opacity: 0.9;
+        }
+
+        .loading-spinner i {
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            display: block;
+            animation: pulse 2s ease-in-out infinite alternate;
+        }
+
+        .loading-spinner span {
+            font-size: 1rem;
+            font-weight: 500;
+            opacity: 0.8;
+        }
+
+        /* 加载状态指示器 */
+        .load-status {
+            font-size: 0.8rem;
+            color: #10B981;
+            background: rgba(16, 185, 129, 0.15);
+            padding: 4px 10px;
+            border-radius: 15px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            animation: statusPulse 2s ease-in-out infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% {
+                opacity: 0.8;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.02);
+            }
+        }
+
         .swiper-controls {
             position: absolute;
             bottom: 20px;
@@ -1966,10 +2022,12 @@
             }
         }
 
-        // 🚀 简化版智能缓存系统
+        // 🚀 优先级加载系统
         let audioCache = new Map(); // 内存音频缓存
         let cacheStorage = null; // 浏览器缓存存储
         let audioBufferStatus = {}; // 音频缓冲状态追踪
+        let priorityLoadingQueue = []; // 优先级加载队列
+        let isAudioPriorityLoading = false; // 音频是否在优先加载
 
         // 📊 音频缓冲状态监控
         function trackAudioBuffering(audioElement) {
@@ -1999,6 +2057,140 @@
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
         const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+        // 🎯 音频优先加载策略
+        function priorityLoadAudio() {
+            if (isAudioPriorityLoading) return;
+            
+            console.log('🎵 开始音频优先加载策略');
+            isAudioPriorityLoading = true;
+            
+            // 暂停其他资源加载，优先加载音频
+            const audioElement = document.querySelector('.audio-note-player');
+            if (audioElement && audioElement.src) {
+                console.log('🎯 音频获得最高优先级，暂停图片加载');
+                
+                // 强制音频加载
+                audioElement.load();
+                
+                // 更新状态
+                updateLoadStatus('🎵 音频优先加载中...');
+                
+                // 音频加载完成后，启动其余图片的懒加载
+                const onAudioReady = () => {
+                    console.log('✅ 音频优先加载完成，开始背景加载剩余图片');
+                    isAudioPriorityLoading = false;
+                    updateLoadStatus('📸 背景加载剩余图片...');
+                    startLazyImageLoading();
+                };
+                
+                audioElement.addEventListener('canplaythrough', onAudioReady, { once: true });
+                audioElement.addEventListener('error', () => {
+                    console.log('⚠️ 音频加载失败，继续加载剩余图片');
+                    isAudioPriorityLoading = false;
+                    startLazyImageLoading();
+                }, { once: true });
+                
+                // 超时保护
+                setTimeout(() => {
+                    if (isAudioPriorityLoading) {
+                        console.log('⏰ 音频加载超时，继续加载剩余图片');
+                        isAudioPriorityLoading = false;
+                        startLazyImageLoading();
+                    }
+                }, 8000); // 8秒超时
+            } else {
+                // 没有音频，直接加载剩余图片
+                console.log('📸 无音频文件，直接加载剩余图片');
+                startLazyImageLoading();
+            }
+        }
+
+        // 🖼️ 设置优先级加载策略
+        function setupPriorityLoading(images) {
+            console.log('🚀 设置优先级加载策略');
+            priorityLoadingQueue = images.slice(1); // 除了第一张图片
+            
+            // 如果没有音频，直接开始懒加载
+            const audioElement = document.querySelector('.audio-note-player');
+            if (!audioElement || !audioElement.src) {
+                setTimeout(() => {
+                    console.log('📸 无音频，2秒后开始懒加载剩余图片');
+                    startLazyImageLoading();
+                }, 2000);
+            }
+        }
+
+        // 🐌 启动懒加载剩余图片
+        function startLazyImageLoading() {
+            if (priorityLoadingQueue.length === 0) {
+                updateLoadStatus('✅ 所有资源加载完成');
+                return;
+            }
+            
+            console.log(`🐌 开始懒加载剩余 ${priorityLoadingQueue.length} 张图片`);
+            updateLoadStatus(`📸 加载剩余图片 (${priorityLoadingQueue.length}张)...`);
+            
+            // 逐个加载，避免带宽争抢
+            loadNextImageInQueue();
+        }
+
+        // 📥 加载队列中的下一张图片
+        function loadNextImageInQueue(delay = 500) {
+            if (priorityLoadingQueue.length === 0) {
+                updateLoadStatus('✅ 所有图片加载完成');
+                console.log('🎉 优先级加载策略完成！');
+                return;
+            }
+            
+            const imageIndex = swiperImages.length - priorityLoadingQueue.length;
+            const placeholder = document.querySelector(`[data-index="${imageIndex + 1}"] .image-placeholder`);
+            
+            if (placeholder) {
+                const src = placeholder.dataset.src;
+                const fullSrc = placeholder.dataset.fullsrc;
+                const name = placeholder.dataset.name;
+                
+                console.log(`📸 懒加载第 ${imageIndex + 2} 张图片:`, src);
+                
+                // 创建img元素
+                const img = document.createElement('img');
+                img.src = src;
+                img.alt = name;
+                img.onclick = () => openFullscreen(fullSrc);
+                
+                img.onload = () => {
+                    // 替换占位符
+                    placeholder.parentNode.replaceChild(img, placeholder);
+                    console.log(`✅ 第 ${imageIndex + 2} 张图片加载完成`);
+                    
+                    // 继续加载下一张
+                    priorityLoadingQueue.shift();
+                    setTimeout(() => loadNextImageInQueue(delay), delay);
+                };
+                
+                img.onerror = () => {
+                    console.log(`❌ 第 ${imageIndex + 2} 张图片加载失败`);
+                    handleImageError(img, fullSrc);
+                    
+                    // 继续加载下一张
+                    priorityLoadingQueue.shift();
+                    setTimeout(() => loadNextImageInQueue(delay), delay);
+                };
+            } else {
+                // 跳过这张，继续下一张
+                priorityLoadingQueue.shift();
+                setTimeout(() => loadNextImageInQueue(delay), delay);
+            }
+        }
+
+        // 📊 更新加载状态显示
+        function updateLoadStatus(status) {
+            const loadStatus = document.querySelector('.load-status');
+            if (loadStatus) {
+                loadStatus.textContent = status;
+            }
+        }
 
         // 🎯 初始化缓存系统（移动优化版）
         async function initializeCacheSystem() {
@@ -2216,7 +2408,7 @@
                 if (isIOS) {
                     console.log('🍎 iOS设备，优化缓存策略');
                     // iOS Safari支持preload="auto"，不设置crossOrigin避免CORS问题
-                } else {
+            } else {
                     audio.crossOrigin = 'anonymous';
                 }
                 
@@ -2396,22 +2588,42 @@
             return text.substr(0, maxLength) + '...';
         }
 
-        // 🎠 创建图片轮播组件
+        // 🚀 优先级加载图片轮播组件
         function createImageSwiper(images) {
             if (!images || images.length === 0) return '';
             
+            console.log(`📸 开始优先级加载策略: 总共${images.length}张图片`);
+            
+            // 🎯 只渲染第一张图片，其余用占位符
             const swiperHtml = `
                 <div class="image-swiper">
                     <div class="swiper-container" id="imageSwiper">
-                        ${images.map((img, index) => `
-                            <div class="swiper-slide ${index === 0 ? 'active' : ''}" data-index="${index}">
-                                <img src="${img.thumbnail || img.url}" 
-                                     alt="${img.name}" 
-                                     onclick="openFullscreen('${img.url}')"
-                                     onload="console.log('✅ 轮播图片加载成功:', this.src)"
-                                     onerror="handleImageError(this, '${img.url}')">
-                            </div>
-                        `).join('')}
+                        ${images.map((img, index) => {
+                            if (index === 0) {
+                                // 第一张图片立即加载
+                                return `
+                                    <div class="swiper-slide active" data-index="${index}">
+                                        <img src="${img.thumbnail || img.url}" 
+                                             alt="${img.name}" 
+                                             onclick="openFullscreen('${img.url}')"
+                                             onload="console.log('✅ 首张图片加载完成，开始音频优先加载'); priorityLoadAudio();"
+                                             onerror="handleImageError(this, '${img.url}')">
+                                    </div>
+                                `;
+                            } else {
+                                // 其余图片用占位符，稍后懒加载
+                                return `
+                                    <div class="swiper-slide" data-index="${index}">
+                                        <div class="image-placeholder" data-src="${img.thumbnail || img.url}" data-fullsrc="${img.url}" data-name="${img.name}">
+                                            <div class="loading-spinner">
+                                                <i class="fas fa-image"></i>
+                                                <span>图片加载中...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                        }).join('')}
                         
                         ${images.length > 1 ? `
                             <div class="swiper-controls">
@@ -2436,13 +2648,15 @@
                     <div class="swiper-info">
                         <span id="currentImageInfo">1 / ${images.length}</span>
                         <span id="currentImageName">${images[0].name}</span>
+                        <span class="load-status">📸 优先加载中...</span>
                     </div>
                 </div>
             `;
             
-            // 初始化轮播状态
+            // 初始化轮播状态和懒加载策略
             setTimeout(() => {
                 initializeSwiper(images);
+                setupPriorityLoading(images);
             }, 100);
             
             return swiperHtml;
@@ -2653,6 +2867,44 @@
             if (index >= 0 && index < swiperImages.length && index !== currentImageIndex) {
                 console.log('👆 手动跳转到第', index + 1, '张图片');
                 currentImageIndex = index;
+                
+                // 🚀 检查目标图片是否需要懒加载
+                const targetSlide = document.querySelector(`[data-index="${index}"]`);
+                const placeholder = targetSlide ? targetSlide.querySelector('.image-placeholder') : null;
+                
+                if (placeholder) {
+                    console.log(`📸 目标图片未加载，立即加载第 ${index + 1} 张图片`);
+                    
+                    // 立即加载这张图片
+                    const src = placeholder.dataset.src;
+                    const fullSrc = placeholder.dataset.fullsrc;
+                    const name = placeholder.dataset.name;
+                    
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.alt = name;
+                    img.onclick = () => openFullscreen(fullSrc);
+                    
+                    // 更新占位符状态
+                    placeholder.innerHTML = `
+                        <div class="loading-spinner">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <span>正在加载...</span>
+                        </div>
+                    `;
+                    
+                    img.onload = () => {
+                        placeholder.parentNode.replaceChild(img, placeholder);
+                        console.log(`✅ 第 ${index + 1} 张图片加载完成`);
+                        showNotification(`📸 第 ${currentImageIndex + 1} 张图片加载完成`, 'success');
+                    };
+                    
+                    img.onerror = () => {
+                        console.log(`❌ 第 ${index + 1} 张图片加载失败`);
+                        handleImageError(img, fullSrc);
+                    };
+                }
+                
                 updateSwiperDisplay();
                 
                 // 手动跳转也要重置自动翻页计时器
