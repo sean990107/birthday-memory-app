@@ -2096,8 +2096,8 @@
                     startLazyImageLoading();
                 };
                 
-                // 对于已缓存的音频，缩短等待时间
-                const waitTime = isCached ? 1000 : 3000;
+                // 🚀 优化等待时间 - 大幅减少延迟
+                const waitTime = isCached ? 300 : 1500; // 已缓存300ms，未缓存1.5s
                 
                 audioElement.addEventListener('canplaythrough', onAudioReady, { once: true });
                 audioElement.addEventListener('error', () => {
@@ -2106,10 +2106,19 @@
                     startLazyImageLoading();
                 }, { once: true });
                 
-                // 超时保护（已缓存音频超时更短）
+                // 添加更早的触发条件
+                audioElement.addEventListener('canplay', () => {
+                    if (isAudioPriorityLoading) {
+                        console.log('🎵 音频可播放，提前开始图片加载');
+                        isAudioPriorityLoading = false;
+                        startLazyImageLoading();
+                    }
+                }, { once: true });
+                
+                // 超时保护（大幅缩短）
                 setTimeout(() => {
                     if (isAudioPriorityLoading) {
-                        console.log(`⏰ 音频加载超时 (${waitTime}ms)，继续加载剩余图片`);
+                        console.log(`⏰ 音频等待超时 (${waitTime}ms)，继续加载剩余图片`);
                         isAudioPriorityLoading = false;
                         startLazyImageLoading();
                     }
@@ -2121,18 +2130,18 @@
             }
         }
 
-        // 🖼️ 设置优先级加载策略
+        // 🖼️ 设置优先级加载策略（速度优化版）
         function setupPriorityLoading(images) {
             console.log('🚀 设置优先级加载策略');
             priorityLoadingQueue = images.slice(1); // 除了第一张图片
             
-            // 如果没有音频，直接开始懒加载
+            // 如果没有音频，立即开始懒加载
             const audioElement = document.querySelector('.audio-note-player');
             if (!audioElement || !audioElement.src) {
                 setTimeout(() => {
-                    console.log('📸 无音频，2秒后开始懒加载剩余图片');
+                    console.log('📸 无音频，立即开始懒加载剩余图片');
                     startLazyImageLoading();
-                }, 2000);
+                }, 500); // 从2秒减少到500ms
             }
         }
 
@@ -2150,23 +2159,37 @@
             loadNextImageInQueue();
         }
 
-        // 📥 加载队列中的下一张图片
-        function loadNextImageInQueue(delay = 500) {
+        // 📥 修复的图片队列加载函数
+        function loadNextImageInQueue(delay = 100) { // 减少延迟到100ms
             if (priorityLoadingQueue.length === 0) {
                 updateLoadStatus('✅ 所有图片加载完成');
                 console.log('🎉 优先级加载策略完成！');
                 return;
             }
             
-            const imageIndex = swiperImages.length - priorityLoadingQueue.length;
-            const placeholder = document.querySelector(`[data-index="${imageIndex + 1}"] .image-placeholder`);
+            // 🔧 修复索引计算bug
+            const totalImages = swiperImages.length;
+            const remainingImages = priorityLoadingQueue.length;
+            const currentLoadingIndex = totalImages - remainingImages; // 当前要加载的图片索引
+            
+            console.log(`🔍 加载计算: 总数=${totalImages}, 剩余=${remainingImages}, 当前索引=${currentLoadingIndex}`);
+            
+            const placeholder = document.querySelector(`[data-index="${currentLoadingIndex}"] .image-placeholder`);
             
             if (placeholder) {
                 const src = placeholder.dataset.src;
                 const fullSrc = placeholder.dataset.fullsrc;
                 const name = placeholder.dataset.name;
                 
-                console.log(`📸 懒加载第 ${imageIndex + 2} 张图片:`, src);
+                console.log(`📸 开始加载第 ${currentLoadingIndex + 1} 张图片 (index=${currentLoadingIndex}):`, src);
+                
+                // 立即更新占位符显示加载状态
+                placeholder.innerHTML = `
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <span>加载中...</span>
+                    </div>
+                `;
                 
                 // 创建img元素
                 const img = document.createElement('img');
@@ -2174,28 +2197,41 @@
                 img.alt = name;
                 img.onclick = () => openFullscreen(fullSrc);
                 
+                const loadStartTime = Date.now();
+                
                 img.onload = () => {
+                    const loadTime = Date.now() - loadStartTime;
                     // 替换占位符
                     placeholder.parentNode.replaceChild(img, placeholder);
-                    console.log(`✅ 第 ${imageIndex + 2} 张图片加载完成`);
+                    console.log(`✅ 第 ${currentLoadingIndex + 1} 张图片加载完成 (${loadTime}ms)`);
                     
-                    // 继续加载下一张
+                    // 继续加载下一张（移除当前图片从队列）
                     priorityLoadingQueue.shift();
-                    setTimeout(() => loadNextImageInQueue(delay), delay);
+                    
+                    // 立即加载下一张，不延迟
+                    loadNextImageInQueue(delay);
                 };
                 
                 img.onerror = () => {
-                    console.log(`❌ 第 ${imageIndex + 2} 张图片加载失败`);
-                    handleImageError(img, fullSrc);
+                    console.log(`❌ 第 ${currentLoadingIndex + 1} 张图片加载失败`);
+                    
+                    // 显示错误占位符
+                    placeholder.innerHTML = `
+                        <div class="loading-spinner">
+                            <i class="fas fa-exclamation-triangle" style="color: #EF4444;"></i>
+                            <span style="color: #EF4444;">加载失败</span>
+                        </div>
+                    `;
                     
                     // 继续加载下一张
                     priorityLoadingQueue.shift();
                     setTimeout(() => loadNextImageInQueue(delay), delay);
                 };
             } else {
+                console.log(`⚠️ 未找到index=${currentLoadingIndex}的占位符，跳过`);
                 // 跳过这张，继续下一张
                 priorityLoadingQueue.shift();
-                setTimeout(() => loadNextImageInQueue(delay), delay);
+                loadNextImageInQueue(delay);
             }
         }
 

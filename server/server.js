@@ -854,16 +854,37 @@ app.get('/api/file/:id', async (req, res) => {
 
         console.log(`✅ 发送文件: ${filePath}, MIME: ${mimeType}`);
 
-        // 设置正确的Content-Type和文件名
+        // 🚀 优化的缓存和性能设置
         res.setHeader('Content-Type', mimeType);
-        res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1年缓存
+        res.setHeader('Cache-Control', 'public, max-age=31536000, immutable'); // 1年缓存 + immutable
         res.setHeader('Access-Control-Allow-Origin', '*'); // 允许跨域访问
+        res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Range');
+        
+        // 支持断点续传和范围请求
+        res.setHeader('Accept-Ranges', 'bytes');
+        
+        // 添加ETag和Last-Modified用于更好的缓存
+        const stats = fs.statSync(filePath);
+        const etag = `"${stats.size}-${stats.mtime.getTime()}"`;
+        res.setHeader('ETag', etag);
+        res.setHeader('Last-Modified', stats.mtime.toUTCString());
+        
+        // 检查客户端缓存
+        const clientETag = req.headers['if-none-match'];
+        const clientModified = req.headers['if-modified-since'];
+        
+        if (clientETag === etag || (clientModified && new Date(clientModified) >= stats.mtime)) {
+            console.log('⚡ 返回304，客户端已有最新缓存');
+            return res.status(304).end();
+        }
         
         // 为音频笔记设置合适的文件名
         if (req.query.type === 'audioNote') {
             res.setHeader('Content-Disposition', `inline; filename="audio-note-${fileRecord.id}.wav"`);
         }
         
+        console.log(`✅ 发送文件: ${filePath}, 大小: ${(stats.size / 1024).toFixed(1)}KB`);
         res.sendFile(path.resolve(filePath));
 
     } catch (error) {
