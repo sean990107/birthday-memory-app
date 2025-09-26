@@ -309,8 +309,9 @@
             transform: scale(1.2);
         }
 
-        /* 🎠 自动翻页指示器样式 */
+        /* 🎠 自动翻页指示器样式 - 完全隐藏 */
         .auto-slide-indicator {
+            display: none !important;
             position: absolute;
             top: 15px;
             left: 15px;
@@ -318,7 +319,6 @@
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 8px 12px;
-            display: flex;
             align-items: center;
             gap: 8px;
             z-index: 15;
